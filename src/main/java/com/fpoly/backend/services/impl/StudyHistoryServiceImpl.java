@@ -4,10 +4,14 @@ import com.fpoly.backend.entities.StudyHistory;
 import com.fpoly.backend.mapper.StudyHistoryMapper;
 import com.fpoly.backend.repository.StudentRepository;
 import com.fpoly.backend.repository.StudyHistoryRepository;
+import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.StudyHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +23,17 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
     StudentRepository studentRepository;
 
     @Autowired
-    StudyHistoryMapper studyHistoryMapper;
+    IdentifyUserAccessService identifyUserAccessService;
 
     @Override
     public StudyHistory findById(Integer id) {
         return studyHistoryRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllStudyHistoryByStudentId() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);
     }
 
 }
