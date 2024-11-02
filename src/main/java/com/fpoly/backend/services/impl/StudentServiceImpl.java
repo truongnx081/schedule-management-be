@@ -76,6 +76,8 @@ public class StudentServiceImpl implements StudentService {
             student.setAvatar(response.getPublicId());
         }
         student.setCreatedBy(adminCode);
+        Integer educationProgramId = request.getEducationProgramId();
+        student.setEducationProgram(educationProgramRepository.findById(educationProgramId).orElse(null));
         return studentMapper.toDTO(studentRepository.save(student));
     }
 

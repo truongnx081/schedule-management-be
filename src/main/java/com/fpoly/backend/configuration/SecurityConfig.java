@@ -27,7 +27,18 @@ public class SecurityConfig {
             "/api/students/studentInfor",
             "/api/students/updateStudentByStudent",
             "/api/clazzs/getAllClazzByStudent/*",
-            "/api/clazzs/registerClazz/*"
+            "/api/clazzs/registerClazz/*",
+            "/api/notes/countNoteByMonth",
+            "/api/notes/getNoteByMonth",
+            "/api/notes/getNoteByDay",
+            "/api/notes/createNote",
+            "/api/notes/updateNote",
+            "/api/notes/deleteNote",
+            "/api/subjects/getAllSubject",
+            "/api/subjects/getAllSubjectBySpecializationId",
+            "/api/schedules/getSchedules",
+            "/api/examSchedules/getExamSchedules",
+            "/api/studyHistories"
     };
 
     private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={

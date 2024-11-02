@@ -3,6 +3,7 @@ package com.fpoly.backend.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -14,8 +15,7 @@ import java.util.Date;
 @Table(name = "exam_schedules")
 public class ExamSchedule extends AbstractEntity<Integer> {
     @Column(name = "date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "batch")
     private Integer batch;
