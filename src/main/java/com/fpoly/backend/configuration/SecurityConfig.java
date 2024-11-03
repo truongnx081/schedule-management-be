@@ -21,6 +21,7 @@ public class SecurityConfig {
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
+            "api/sendemail"
 
     };
     private final String[] STUDENT_ENDPOINTS={
@@ -28,6 +29,7 @@ public class SecurityConfig {
             "/api/students/updateStudentByStudent",
             "/api/clazzs/getAllClazzByStudent/*",
             "/api/clazzs/registerClazz/*",
+            "/api/studyhistories//learningProgressByStudent"
             "/api/notes/countNoteByMonth",
             "/api/notes/getNoteByMonth",
             "/api/notes/getNoteByDay",
@@ -45,7 +47,8 @@ public class SecurityConfig {
             "api/events"
     };
     private final String[] INSTRUCTOR_ENDPOINTS={
-
+        "/api/shifts",
+            "/api/instructors/getAllTeachingSchedule"
     };
     private final String[] ADMIN_ENDPOINTS={
             "/api/students/updateStudentByAdmin",

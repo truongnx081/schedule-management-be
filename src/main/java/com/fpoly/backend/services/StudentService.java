@@ -19,7 +19,7 @@ public interface StudentService {
     public StudentDTO createStudent(StudentDTO request, MultipartFile file);
 
 
-    public StudentDTO updateStudentByStudent(StudentDTO request);
+    public StudentDTO updateStudentByStudent(StudentDTO request, MultipartFile file);
 
     StudentDTO updateStudentByAdmin(Integer studentId, StudentDTO request, MultipartFile file);
 
