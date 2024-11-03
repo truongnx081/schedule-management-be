@@ -10,7 +10,7 @@ import com.fpoly.backend.services.StudyHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,7 +23,7 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
     StudentRepository studentRepository;
 
     @Autowired
-    StudyHistoryMapper studyHistoryMapper;
+    IdentifyUserAccessService identifyUserAccessService;
 
     @Autowired
     IdentifyUserAccessService identifyUserAccessService;
@@ -46,6 +46,10 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
 
         Integer totalUnfinishedSubjects = totalSubjects-totalSubjectsPass;
         return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
+
+    public List<Map<String, Object>> getAllStudyHistoryByStudentId() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);
     }
 
 }

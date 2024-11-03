@@ -21,4 +21,16 @@ public interface StudyHistoryRepository extends JpaRepository<StudyHistory,Integ
             "GROUP BY stu.subject " +
             "HAVING SUM(m.marked * mc.percentage) / 100 >= 5")
     Integer countSubjectPassByStudent(@Param("studentId") Integer studentId);
+
+    @Query("SELECT s.code as subject_code, s.name as subject_name, s.credits as subject_credits, " +
+            "SUM(mkc.percentage * m.marked) / 100 AS DiemTB \n" +
+            "FROM StudyHistory st \n" +
+            "JOIN st.subject s \n" +
+            "JOIN st.student stu \n" +
+            "JOIN st.marks m \n" +
+            "JOIN m.markColumn mkc \n" +
+            "WHERE stu.id = :studentId \n" +
+            "GROUP BY s.code, s.name, s.credits")
+    List<Map<String, Object>> getAllStudyHistoryByStudentId(@Param("studentId") Integer studentId);
+
 }

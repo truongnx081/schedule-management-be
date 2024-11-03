@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ public class NoteDTO {
 
     private String content;
 
-    private Date date;
+    private LocalDate date;
 
     private LocalTime noteTime;
 

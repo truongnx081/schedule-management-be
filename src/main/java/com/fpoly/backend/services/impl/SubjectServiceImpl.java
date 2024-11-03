@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
@@ -15,5 +18,15 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public Subject findById(Integer id) {
         return subjectRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllSubjectBySpecializationId(Integer specializationId) {
+        return subjectRepository.getAllSubjectBySpecializationId(specializationId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllSubject() {
+        return subjectRepository.findAllSubject();
     }
 }

@@ -10,12 +10,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/studyhistories")
+@RequestMapping("/api/studyHistories")
 @Validated
 public class StudyHistoryController {
     @Autowired
@@ -32,6 +32,16 @@ public class StudyHistoryController {
                     HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+    private StudyHistoryService studyHistoryService;
+
+    @GetMapping()
+    public ResponseEntity<Response> getStudyHistoryByStudentId() {
+        try {
+            List<Map<String, Object>> studyHistories = studyHistoryService.getAllStudyHistoryByStudentId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), studyHistories, "Đã lấy thành công lịch sử các môn đã học theo studentId !  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
 }
