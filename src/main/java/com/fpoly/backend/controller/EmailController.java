@@ -24,7 +24,7 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-
+    //Gui email
     @PostMapping("/sendemail")
     public ResponseEntity<Response> sentEmail() {
         try {

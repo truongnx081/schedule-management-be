@@ -26,9 +26,6 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
     IdentifyUserAccessService identifyUserAccessService;
 
     @Autowired
-    IdentifyUserAccessService identifyUserAccessService;
-
-    @Autowired
     ApplyForRepository applyForRepository;
 
 
@@ -39,14 +36,14 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
 
     @Override
     public Map<String, Integer> getreportLearningProgressByStudentId() {
-        Integer studentId= identifyUserAccessService.getStudent().getId();
+        Integer studentId = identifyUserAccessService.getStudent().getId();
 
         Integer totalSubjects = applyForRepository.countSubjectByStudent(studentId);
         Integer totalSubjectsPass = applyForRepository.countSubjectByStudent(studentId);
 
-        Integer totalUnfinishedSubjects = totalSubjects-totalSubjectsPass;
+        Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
         return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
-
+    }
     public List<Map<String, Object>> getAllStudyHistoryByStudentId() {
         Integer studentId = identifyUserAccessService.getStudent().getId();
         return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);

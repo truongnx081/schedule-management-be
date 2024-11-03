@@ -124,6 +124,7 @@ public class StudentController {
         }
     }
 
+    //Get all student by admin
     @GetMapping("/getAllStudentByCourseAndMajor")
     public  ResponseEntity<Response> getAllStudentByCourseAndMajor(
             @RequestParam(value = "course", required = false) String course,

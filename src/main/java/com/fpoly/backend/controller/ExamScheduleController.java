@@ -25,6 +25,8 @@ import java.util.Map;
 public class ExamScheduleController {
     @Autowired
     private ExamScheduleService examScheduleService ;
+
+    //Get exam schedule
     @GetMapping("/getExamSchedules")
     public ResponseEntity<Response> getExamSchedulesByStudentIdAndStartDateAndEndDate(
             @RequestParam LocalDate startDate,

@@ -22,6 +22,7 @@ public class InstructorController {
     @Autowired
     InstructorService instructorService;
 
+    //Get all teaching schedule
     @GetMapping("/getAllTeachingSchedule")
     public ResponseEntity<Response> getTeachingSchedule(
             @RequestParam("startDate") LocalDate startDate,

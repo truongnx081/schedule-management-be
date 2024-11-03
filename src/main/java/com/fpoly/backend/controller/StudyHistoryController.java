@@ -21,6 +21,7 @@ public class StudyHistoryController {
     @Autowired
     StudyHistoryService studyHistoryService;
 
+    //Get learning progress by student
     @GetMapping("/learningProgressByStudent")
     public ResponseEntity<Response> getLearningProgressByStudentId() {
         try {
@@ -32,7 +33,9 @@ public class StudyHistoryController {
                     HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
-    private StudyHistoryService studyHistoryService;
+        }
+    }
+
 
     @GetMapping()
     public ResponseEntity<Response> getStudyHistoryByStudentId() {
