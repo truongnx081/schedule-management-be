@@ -21,6 +21,7 @@ public class ShiftController {
     @Autowired
     ShiftService shiftService;
 
+    //Get all shift
     @GetMapping()
     public ResponseEntity<Response> getAllShift() {
         try {

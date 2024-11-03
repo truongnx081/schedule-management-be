@@ -21,6 +21,8 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+
+    //Get All Event
     @GetMapping
     public ResponseEntity<Response> getAllEvent() {
             try {
