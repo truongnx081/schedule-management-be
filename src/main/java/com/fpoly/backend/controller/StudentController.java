@@ -39,18 +39,22 @@ public class StudentController {
 
     //API student tu cap nhat thong tin
     @PutMapping("/updateStudentByStudent")
-    public ResponseEntity<Response>updateStudentByStudent(@RequestBody StudentDTO request){
+    public ResponseEntity<Response> updateStudentByStudent(
+            @RequestPart("request") StudentDTO request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
-                    studentService.updateStudentByStudent(request),
+                    studentService.updateStudentByStudent(request, file),
                     "Update student successfully",
                     HttpStatus.OK.value())
             );
-        }catch (AppUnCheckedException e){
-            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
 
     //API Admin xem thong tin student
     @GetMapping("/studentByID/{studentId}")
