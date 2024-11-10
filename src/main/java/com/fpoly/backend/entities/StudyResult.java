@@ -9,8 +9,8 @@ import lombok.*;
 @Entity
 @Setter
 @Getter
-@Table(name = "marks")
-public class Mark extends AbstractEntity<Integer>{
+@Table(name = "study_results")
+public class StudyResult extends AbstractEntity<Integer>{
     @Column(name = "marked")
     private Double marked;
 
@@ -18,7 +18,10 @@ public class Mark extends AbstractEntity<Integer>{
     @JoinColumn(name = "mark_column_id")
     private MarkColumn markColumn;
 
+    @Column(name = "percentage")
+    private Double percentage;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_history_id")
-    private StudyHistory studyHistory;
+    @JoinColumn(name = "study_in_id")
+    private StudyIn studyIn;
 }

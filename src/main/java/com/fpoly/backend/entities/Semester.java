@@ -24,10 +24,6 @@ public class Semester {
 
     @JsonIgnore
     @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
-    private List<StudyHistory> studyHistories;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
     private List<EducationProgram> educationPrograms;
 
     @JsonIgnore

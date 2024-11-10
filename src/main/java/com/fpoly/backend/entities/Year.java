@@ -28,10 +28,6 @@ public class Year {
 
     @JsonIgnore
     @OneToMany(mappedBy = "year", fetch = FetchType.LAZY)
-    private List<StudyHistory> studyHistories;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "year", fetch = FetchType.LAZY)
     private List<Clazz> clazzes;
 
     @JsonIgnore

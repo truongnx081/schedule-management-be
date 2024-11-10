@@ -1,7 +1,10 @@
 package com.fpoly.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +22,8 @@ public class StudyIn extends AbstractEntity<Integer>{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
+
+    @OneToMany(mappedBy = "studyIn",fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<StudyResult> studyResults;
 }

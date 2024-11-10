@@ -18,4 +18,7 @@ public class SubjectMark extends  AbstractEntity<Integer>{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mark_column_id")
     private MarkColumn markColumn;
+
+    @Column(name = "percentage")
+    private Double percentage;
 }

@@ -17,12 +17,10 @@ public class MarkColumn extends AbstractEntity<Integer>{
     @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(name = "percentage")
-    private Double percentage;
 
     @JsonIgnore
     @OneToMany(mappedBy = "markColumn", fetch = FetchType.LAZY)
-    private List<Mark> marks;
+    private List<StudyResult> studyResults;
 
     @JsonIgnore
     @OneToMany(mappedBy = "markColumn", fetch = FetchType.LAZY)

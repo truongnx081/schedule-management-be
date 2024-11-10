@@ -14,5 +14,4 @@ public class MarkColumnDTO {
 
     private String name;
 
-    private Double percentage;
 }

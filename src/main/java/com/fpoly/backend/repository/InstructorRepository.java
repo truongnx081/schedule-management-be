@@ -1,5 +1,6 @@
 package com.fpoly.backend.repository;
 
+import com.fpoly.backend.dto.ShiftDTO;
 import com.fpoly.backend.entities.Instructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public interface InstructorRepository extends JpaRepository<Instructor,Integer> {
     boolean existsBySchoolEmail(String schoolEmail);
     Optional<Instructor> findBySchoolEmail(String schoolEmail);
+
 
     @Query("SELECT " +
             "s.date as date, " +
@@ -33,5 +35,6 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
             @Param("instructorId") Integer instructorId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
 
 }

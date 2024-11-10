@@ -44,11 +44,13 @@ public class SecurityConfig {
     };
 
     private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={
-            "api/events"
+            "api/events",
+            "/api/rooms/available",
     };
     private final String[] INSTRUCTOR_ENDPOINTS={
         "/api/shifts",
-            "/api/instructors/getAllTeachingSchedule"
+            "/api/instructors/getAllTeachingSchedule",
+            "/api/shifts/available"
     };
     private final String[] ADMIN_ENDPOINTS={
             "/api/students/updateStudentByAdmin",

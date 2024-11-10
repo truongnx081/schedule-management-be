@@ -24,10 +24,6 @@ public class Block {
 
     @JsonIgnore
     @OneToMany(mappedBy = "block", fetch = FetchType.LAZY)
-    private List<StudyHistory> studyHistories;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "block", fetch = FetchType.LAZY)
     private List<SemesterProgress> semesterProgresses;
 
 }

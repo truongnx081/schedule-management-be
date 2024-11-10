@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Table(name = "attendances")
 public class Attendance extends AbstractEntity<Integer>{
-    @Column(name = "present", columnDefinition = "NVARCHAR(255)", unique = true)
+    @Column(name = "present", columnDefinition = "NVARCHAR(255)")
     private Boolean present;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -9,12 +9,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MarkDTO {
+public class StudyResultDTO {
     private Long id;
 
     private Double marked;
 
     private Integer markColumnId;
 
-    private Integer studyHistoryId;
+    private Integer studyInId;
 }

@@ -75,9 +75,6 @@ public class Student extends AbstractEntity<Integer> {
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     private List<StudyIn> studyIns;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
-    private List<StudyHistory> studyHistories;
 
     @JsonIgnore
     @OneToMany(mappedBy = "receiveStudent", fetch = FetchType.LAZY)

@@ -5,9 +5,14 @@ import com.fpoly.backend.entities.Shift;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public interface ShiftService {
 
     public List<ShiftDTO> getAllShift();
+
+    public List<ShiftDTO> getAvailableShifts(Integer classId);
+
+    public Set<Integer> getAllShiftsByStudentByClassId(Integer clazzId);
 }

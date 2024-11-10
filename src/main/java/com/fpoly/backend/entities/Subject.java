@@ -57,9 +57,6 @@ public class Subject extends AbstractEntity<Integer>{
     @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
     private List<Clazz> clazzes;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
-    private List<StudyHistory> studyHistories;
 
     @JsonIgnore
     @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)

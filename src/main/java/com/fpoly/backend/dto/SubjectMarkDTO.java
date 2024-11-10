@@ -16,4 +16,6 @@ public class SubjectMarkDTO {
     private Integer subjectId;
 
     private Integer markColumnId;
+
+    private Double percentage;
 }
