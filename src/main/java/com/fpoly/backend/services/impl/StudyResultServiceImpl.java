@@ -1,26 +1,29 @@
-//package com.fpoly.backend.services.impl;
+package com.fpoly.backend.services.impl;
+
 //
-//import com.fpoly.backend.repository.ApplyForRepository;
-//import com.fpoly.backend.repository.StudentRepository;
-//import com.fpoly.backend.services.IdentifyUserAccessService;
-//import com.fpoly.backend.services.StudyHistoryService;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//import java.util.List;
-//import java.util.Map;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class StudyHistoryServiceImpl implements StudyHistoryService {
-//    @Autowired
-//    StudyHistoryRepository studyHistoryRepository;
+
+import com.fpoly.backend.repository.StudyResultRepository;
+import com.fpoly.backend.services.IdentifyUserAccessService;
+import com.fpoly.backend.services.StudyResultService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class StudyResultServiceImpl implements StudyResultService {
+
+    @Autowired
+    StudyResultRepository studyResultRepository;
 //
 //    @Autowired
 //    StudentRepository studentRepository;
 //
-//    @Autowired
-//    IdentifyUserAccessService identifyUserAccessService;
+    @Autowired
+    IdentifyUserAccessService identifyUserAccessService;
 //
 //    @Autowired
 //    ApplyForRepository applyForRepository;
@@ -40,4 +43,10 @@
 //        return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);
 //    }
 //
-//}
+    @Override
+    public List<Map<String, Object>> getAllStudyResultByStudentId() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+            return studyResultRepository.getAllStudyResultByStudentId(studentId);
+    }
+
+}
