@@ -1,5 +1,12 @@
 package com.fpoly.backend.dto;
 
+import com.fpoly.backend.entities.Clazz;
+import com.fpoly.backend.entities.Room;
+import com.fpoly.backend.entities.Shift;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +25,11 @@ public class ExamScheduleDTO {
     private Date date;
 
     private Integer clazzId;
+
+    private Integer batch;
+
+    private Integer roomId;
+
+    private Integer shiftId;
 
 }

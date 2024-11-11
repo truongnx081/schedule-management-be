@@ -97,7 +97,6 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         return semesterProgressMapper.toDTO(semesterProgressRepository.save(existingSP));
     }
 
-
     @Override
     public void deleteSP(Integer semesterProgressId) {
         SemesterProgress existingSP = semesterProgressRepository.findById(semesterProgressId)
@@ -110,5 +109,11 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         }
 
         semesterProgressRepository.delete(existingSP);
+    }
+
+    @Override
+    public SemesterProgress findActivedProgressTrue() {
+        return semesterProgressRepository.findByIsActive(true).orElseThrow(()->
+                new RuntimeException("SemesterProgress is true not found"));
     }
 }

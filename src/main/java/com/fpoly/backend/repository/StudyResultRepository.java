@@ -1,7 +1,6 @@
 package com.fpoly.backend.repository;
 
-import com.fpoly.backend.entities.StudyIn;
-import com.fpoly.backend.entities.StudyResult;
+import com.fpoly.backend.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,4 +21,5 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "GROUP BY clz.code, sub.code, sub.name, sub.credits, clz.block.block , clz.semester.semester , clz.year.year  " +
             "order by  clz.year.year,clz.semester.semester, clz.block.block, sub.name DESC" )
     List<Map<String, Object>> getAllStudyResultByStudentId(Integer studentId);
+
 }
