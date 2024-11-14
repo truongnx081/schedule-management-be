@@ -10,13 +10,19 @@ import org.mapstruct.MappingTarget;
 public abstract class ExamScheduleMapper {
 
     @Mapping(source = "clazz.id", target = "clazzId")
+    @Mapping(source = "room.id", target = "roomId")
+    @Mapping(source = "shift.id", target = "shiftId")
     public abstract ExamScheduleDTO toDTO (ExamSchedule examSchedule);
 
     @Mapping(target = "clazz",ignore = true)
+    @Mapping(target = "room",ignore = true)
+    @Mapping(target = "shift",ignore = true)
     public abstract  void updateExamSchedule(@MappingTarget ExamSchedule examSchedule, ExamScheduleDTO request);
 
 
     @Mapping(target = "clazz",ignore = true)
+    @Mapping(target = "room",ignore = true)
+    @Mapping(target = "shift",ignore = true)
     public abstract ExamSchedule toEntity(ExamScheduleDTO examScheduleDTO);
 
 }

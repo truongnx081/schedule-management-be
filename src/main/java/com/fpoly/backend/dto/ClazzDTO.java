@@ -11,7 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClazzDTO {
-    private  Integer id;
+
+    private Integer id;
 
     private String code;
 
