@@ -28,6 +28,8 @@ import java.util.Map;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class ClazzServiceImpl implements ClazzService {
+    @Autowired
+    ClazzRepository clazzRepository;
     ClazzMapper clazzMapper;
     ClazzRepository clazzRepository;
     BlockRepository blockRepository;

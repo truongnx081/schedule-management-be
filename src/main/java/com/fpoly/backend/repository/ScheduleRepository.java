@@ -3,6 +3,7 @@ package com.fpoly.backend.repository;
 import com.fpoly.backend.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -36,4 +37,19 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
             "GROUP BY s.date, r.name, subj.code, subj.name, c.code, i.code, sh.id, sh.startTime, sh.endTime " +
             "ORDER BY s.date ASC")
     List<Map<String, Object>> getScheduleByDateRange(Integer studentId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT " +
+            "c.id as clazzId, " +
+            "c.code as clazzCode, " +
+            "c.subject.code as codeSubject, " +
+            "c.subject.name as subjectName, " +
+            "sc.date as date, " +
+            "c.room.name as roomName, " +
+            "c.shift.id as shiftId "+
+            "FROM Clazz c " +
+            "JOIN c.instructor i " +
+            "JOIN c.schedules sc " +
+            "WHERE i.id = :instructorId " +
+            "AND sc.status = false")
+    List<Map<String, Object>> getClazzsByScheduleStatus(@Param("instructorId") Integer instructorId);
 }

@@ -11,6 +11,10 @@ import lombok.*;
 @Setter
 @Table(name = "subject_marks")
 public class SubjectMark extends  AbstractEntity<Integer>{
+
+    @Column(name = "percentage")
+    private Double percentage;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
     private Subject subject;
@@ -19,6 +23,5 @@ public class SubjectMark extends  AbstractEntity<Integer>{
     @JoinColumn(name = "mark_column_id")
     private MarkColumn markColumn;
 
-    @Column(name = "percentage")
-    private Double percentage;
+
 }

@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface WeekDayService {
-    WeekDay findById(Integer id);
+
 }

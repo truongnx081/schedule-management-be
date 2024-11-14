@@ -22,7 +22,6 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    //API lay thong tin Student dang dang nhap
     @GetMapping("/studentInfor")
     public ResponseEntity<Response> getStudentInfor() {
         try {
@@ -37,7 +36,6 @@ public class StudentController {
         }
     }
 
-    //API student tu cap nhat thong tin
     @PutMapping("/updateStudentByStudent")
     public ResponseEntity<Response> updateStudentByStudent(
             @RequestPart("request") StudentDTO request,
@@ -55,10 +53,8 @@ public class StudentController {
         }
     }
 
-
-    //API Admin xem thong tin student
-    @GetMapping("/studentByID/{studentId}")
-    public  ResponseEntity<Response> getStudentById(@PathVariable  Integer studentId){
+    @GetMapping("/studentByID")
+    public ResponseEntity<Response> getStudentById(@RequestParam Integer studentId) {
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
@@ -66,19 +62,17 @@ public class StudentController {
                     "Get student successfully",
                     HttpStatus.OK.value())
             );
-        }catch (AppUnCheckedException e){
+        } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
 
-    //Api Admin update Student
-    @PutMapping("/updateStudentByAdmin/{studentId}")
+    @PutMapping("/updateStudentByAdmin")
     public ResponseEntity<Response> updateStudentByAdmin(
-            @PathVariable("studentId") Integer studentId,
+            @RequestParam Integer studentId,
             @RequestPart("student") StudentDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            // Gọi service để cập nhật thông tin sinh viên
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
                     studentService.updateStudentByAdmin(studentId, request, file),
@@ -92,7 +86,6 @@ public class StudentController {
         }
     }
 
-    //API create Student
     @PostMapping("/createStudent")
     public ResponseEntity<Response> createStudent(@RequestPart("student") StudentDTO request,
                                                   @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -109,9 +102,8 @@ public class StudentController {
         }
     }
 
-    //API Delete Student
-    @DeleteMapping("deleteStudent/{id}")
-    public ResponseEntity<Response> deleteStudent(@PathVariable Integer id) {
+    @DeleteMapping("deleteStudent")
+    public ResponseEntity<Response> deleteStudent(@RequestParam Integer id) {
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
@@ -124,16 +116,15 @@ public class StudentController {
         }
     }
 
-    //Get all student by admin
     @GetMapping("/getAllStudentByCourseAndMajor")
-    public  ResponseEntity<Response> getAllStudentByCourseAndMajor(
+    public ResponseEntity<Response> getAllStudentByCourseAndMajor(
             @RequestParam(value = "course", required = false) String course,
-            @RequestParam(value = "majorId", required = false) Integer majorId){
+            @RequestParam(value = "majorId", required = false) Integer majorId) {
 
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
-                    studentService.getAllStudentByCourseAndMajor(course,majorId),
+                    studentService.getAllStudentByCourseAndMajor(course, majorId),
                     "Get All Student successfully",
                     HttpStatus.OK.value())
             );
@@ -159,16 +150,6 @@ public class StudentController {
                     e.getMessage(),
                     e.getStatus().value())
             );
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response(
-                    LocalDateTime.now(),
-                    null,
-                    "Lỗi không xác định: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR.value())
-            );
         }
     }
-
 }
-
-

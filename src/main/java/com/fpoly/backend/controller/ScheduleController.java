@@ -40,6 +40,46 @@ public class ScheduleController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+  
+    @PutMapping("/cancelSchedule")
+    public ResponseEntity<Response> updateScheduleStatus(
+            @RequestParam Integer scheduleId,
+            @RequestBody ScheduleDTO request) {
+        try {
+
+            ScheduleDTO updatedSchedule = scheduleService.putScheduleStatus(request, scheduleId);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    updatedSchedule,
+                    "Update schedule status successfully",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/getscheduleStatusFalse")
+    public ResponseEntity<Response> getClazzsByScheduleStatus() {
+        try {
+            List<Map<String, Object>> clazzs = scheduleService.getClazzsByScheduleStatus();
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    clazzs,
+                    "Lấy danh sách lớp thành công.",
+                    HttpStatus.OK.value()
+            ));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(
+                            LocalDateTime.now(),
+                            null,
+                            e.getMessage(),
+                            e.getStatus().value()
+                    ));
+        }
+    }
 
     // Lấy danh sách tất cả lịch học
     @GetMapping

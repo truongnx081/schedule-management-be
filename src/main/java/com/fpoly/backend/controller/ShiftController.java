@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -41,11 +42,14 @@ public class ShiftController {
 
     @GetMapping("/available")
     public ResponseEntity<Response> getAvailableShifts(
-            @RequestParam("clazzId") Integer clazzId){
+            @RequestParam("clazzId") Integer clazzId,
+            @RequestParam("date") LocalDate date
+    )
+          {
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
-                    shiftService.getAvailableShifts(clazzId),
+                    shiftService.getAvailableShifts(clazzId,date),
                     "Lấy ca học trống thành công",
                     HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
