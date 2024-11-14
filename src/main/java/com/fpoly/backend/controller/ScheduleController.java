@@ -1,6 +1,7 @@
 package com.fpoly.backend.controller;
 
 import com.fpoly.backend.dto.Response;
+import com.fpoly.backend.dto.ScheduleDTO;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,4 +37,45 @@ public class ScheduleController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+
+    @PutMapping("/cancelSchedule")
+    public ResponseEntity<Response> updateScheduleStatus(
+            @RequestParam Integer scheduleId,
+            @RequestBody ScheduleDTO request) {
+        try {
+
+            ScheduleDTO updatedSchedule = scheduleService.putScheduleStatus(request, scheduleId);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    updatedSchedule,
+                    "Update schedule status successfully",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/getscheduleStatusFalse")
+    public ResponseEntity<Response> getClazzsByScheduleStatus() {
+        try {
+            List<Map<String, Object>> clazzs = scheduleService.getClazzsByScheduleStatus();
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    clazzs,
+                    "Lấy danh sách lớp thành công.",
+                    HttpStatus.OK.value()
+            ));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(
+                            LocalDateTime.now(),
+                            null,
+                            e.getMessage(),
+                            e.getStatus().value()
+                    ));
+        }
+    }
+
 }

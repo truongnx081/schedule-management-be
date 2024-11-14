@@ -14,4 +14,5 @@ public class WeekDayDTO {
     private Integer id;
 
     private String day;
+    private Boolean status;
 }

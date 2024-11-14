@@ -23,4 +23,9 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
-public class ClazzServiceImpl implements ClazzService {}
+public class ClazzServiceImpl implements ClazzService {
+
+    @Autowired
+    ClazzRepository clazzRepository;
+
+}

@@ -215,12 +215,12 @@ public class StudentServiceImpl implements StudentService {
                 Row row = sheet.getRow(i);
                 if (row != null) {
                     Student student = new Student();
-
+                    
                     String studentCode;
-                    if (row.getCell(0).getCellType() == CellType.STRING) {
-                        studentCode = row.getCell(0).getStringCellValue();
-                    } else if (row.getCell(0).getCellType() == CellType.NUMERIC) {
-                        studentCode = String.valueOf((int) row.getCell(0).getNumericCellValue());
+                    if (row.getCell(1).getCellType() == CellType.STRING) {
+                        studentCode = row.getCell(1).getStringCellValue();
+                    } else if (row.getCell(1).getCellType() == CellType.NUMERIC) {
+                        studentCode = String.valueOf((int) row.getCell(1).getNumericCellValue());
                     } else {
                         throw new RuntimeException("Invalid code format in row " + (i + 1));
                     }
@@ -231,23 +231,17 @@ public class StudentServiceImpl implements StudentService {
                         continue;
                     }
                     student.setCode(studentCode);
-//                    if (row.getCell(0).getCellType() == CellType.STRING) {
-//                        student.setCode(row.getCell(0).getStringCellValue());
-//                    } else if (row.getCell(0).getCellType() == CellType.NUMERIC) {
-//                        student.setCode(String.valueOf((int) row.getCell(0).getNumericCellValue()));
-//                    }
 
-                    student.setFirstName(getCellStringValue(row.getCell(1)));
+                    student.setFirstName(getCellStringValue(row.getCell(2)));
+                    student.setLastName(getCellStringValue(row.getCell(3)));
 
-                    student.setLastName(getCellStringValue(row.getCell(2)));
-
-                    if (row.getCell(3).getCellType() == CellType.NUMERIC) {
-                        student.setBirthday(row.getCell(3).getLocalDateTimeCellValue().toLocalDate());
+                    if (row.getCell(4).getCellType() == CellType.NUMERIC) {
+                        student.setBirthday(row.getCell(4).getLocalDateTimeCellValue().toLocalDate());
                     } else {
                         student.setBirthday(LocalDate.now());
                     }
 
-                    String genderStr = getCellStringValue(row.getCell(4));
+                    String genderStr = getCellStringValue(row.getCell(5));
                     if ("Nam".equalsIgnoreCase(genderStr)) {
                         student.setGender(true);
                     } else if ("Nữ".equalsIgnoreCase(genderStr)) {
@@ -256,23 +250,19 @@ public class StudentServiceImpl implements StudentService {
                         throw new RuntimeException("Gender not existed:: " + genderStr);
                     }
 
-                    student.setAddress(getCellStringValue(row.getCell(5)));
+                    student.setAddress(getCellStringValue(row.getCell(6)));
+                    student.setEmail(getCellStringValue(row.getCell(7)));
+                    student.setPhone(getCellStringValue(row.getCell(8)));
+                    student.setDescription(getCellStringValue(row.getCell(9)));
+                    student.setAvatar(getCellStringValue(row.getCell(10)));
 
-                    student.setEmail(getCellStringValue(row.getCell(6)));
-
-                    student.setPhone(getCellStringValue(row.getCell(7)));
-
-                    student.setDescription(getCellStringValue(row.getCell(8)));
-
-                    student.setAvatar(getCellStringValue(row.getCell(9)));
-
-                    if (row.getCell(10).getCellType() == CellType.NUMERIC) {
-                        student.setCourse(String.valueOf((int) row.getCell(10).getNumericCellValue()));
+                    if (row.getCell(11).getCellType() == CellType.NUMERIC) {
+                        student.setCourse(String.valueOf((int) row.getCell(11).getNumericCellValue()));
                     } else {
-                        student.setCourse(getCellStringValue(row.getCell(10)));
+                        student.setCourse(getCellStringValue(row.getCell(11)));
                     }
 
-                    String majorName = getCellStringValue(row.getCell(11));
+                    String majorName = getCellStringValue(row.getCell(12));
                     Major major = majorRepository.findByName(majorName);
                     if (major != null) {
                         student.setMajor(major);
@@ -280,21 +270,21 @@ public class StudentServiceImpl implements StudentService {
                         throw new RuntimeException("Major not existed:: " + majorName);
                     }
 
-                    String semesterValue = getCellStringValue(row.getCell(12));
+                    String semesterValue = getCellStringValue(row.getCell(13));
                     Semester semester = semesterRepository.findById(semesterValue)
                             .orElseThrow(() -> new RuntimeException("Semester not existed:: " + semesterValue));
                     student.setSemester(semester);
 
-                    if (row.getCell(13).getCellType() == CellType.NUMERIC) {
-                        Integer yearValue = (int) row.getCell(13).getNumericCellValue();
+                    if (row.getCell(14).getCellType() == CellType.NUMERIC) {
+                        Integer yearValue = (int) row.getCell(14).getNumericCellValue();
                         Year year = yearRepository.findByYear(yearValue)
                                 .orElseThrow(() -> new RuntimeException("Year not existed: " + yearValue));
                         student.setYear(year);
                     } else {
-                        throw new RuntimeException("Year not existed: " + getCellStringValue(row.getCell(0)));
+                        throw new RuntimeException("Year not existed: " + getCellStringValue(row.getCell(1)));
                     }
 
-                    String educationProgramName = getCellStringValue(row.getCell(14));
+                    String educationProgramName = getCellStringValue(row.getCell(15));
                     EducationProgram educationProgram = educationProgramRepository.findByName(educationProgramName);
                     if (educationProgram != null) {
                         student.setEducationProgram(educationProgram);
@@ -312,6 +302,7 @@ public class StudentServiceImpl implements StudentService {
 
         return studentsDTO;
     }
+
 
     private String getCellStringValue(Cell cell) {
         if (cell == null) return "";

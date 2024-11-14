@@ -10,11 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class WeekDayServiceImpl implements WeekDayService {
-    @Autowired
-    WeekDayRepository weekDayRepository;
 
-    @Override
-    public WeekDay findById(Integer id) {
-        return weekDayRepository.findById(id).orElse(null);
-    }
 }

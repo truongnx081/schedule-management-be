@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -15,7 +16,9 @@ import java.util.Date;
 public class ScheduleDTO {
     private Integer id;
 
-    private Date date;
+    private LocalDate date;
 
     private Integer clazzId;
+
+    boolean status;
 }
