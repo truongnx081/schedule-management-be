@@ -4,6 +4,7 @@ import com.fpoly.backend.dto.ClazzDTO;
 import com.fpoly.backend.dto.StudyInDTO;
 import com.fpoly.backend.entities.Clazz;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -16,5 +17,5 @@ public interface ClazzService {
     ClazzDTO getOne(Integer id);
     List<ClazzDTO> getAll();
     List<Map<String, Object>> findClazzByBlockAndSemesterAndYear();
-    void importClazz(List<ClazzDTO> listRequestDTO);
+    void importClazz(MultipartFile file);
 }

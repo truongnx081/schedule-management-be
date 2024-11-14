@@ -11,13 +11,16 @@ import com.fpoly.backend.services.AuthenticationService;
 import com.fpoly.backend.services.ClazzService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SemesterProgressService;
+import com.fpoly.backend.until.ExcelUtility;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,15 +30,16 @@ import java.util.Map;
 public class ClazzServiceImpl implements ClazzService {
     ClazzMapper clazzMapper;
     ClazzRepository clazzRepository;
-    private final BlockRepository blockRepository;
-    private final SemesterRepository semesterRepository;
-    private final YearRepository yearRepository;
-    private final SubjectRepository subjectRepository;
-    private final InstructorRepository instructorRepository;
+    BlockRepository blockRepository;
+    SemesterRepository semesterRepository;
+    YearRepository yearRepository;
+    SubjectRepository subjectRepository;
+    InstructorRepository instructorRepository;
     IdentifyUserAccessService identifyUserAccessService;
-    private final ShiftRepository shiftRepository;
-    private final RoomRepository roomRepository;
-    private final SemesterProgressService semesterProgressService;
+    ShiftRepository shiftRepository;
+    RoomRepository roomRepository;
+    SemesterProgressService semesterProgressService;
+    ExcelUtility excelUtility;
 
     @Override
     public ClazzDTO create(ClazzDTO request) {
@@ -148,52 +152,12 @@ public class ClazzServiceImpl implements ClazzService {
     }
 
     @Override
-    public void importClazz(List<ClazzDTO> listRequestDTO) {
-        for (ClazzDTO clazzReq : listRequestDTO) {
-
-            // Kiểm tra sự tồn tại của mã clazz
-            if (clazzRepository.existsByCode(clazzReq.getCode())) {
-                throw new RuntimeException("Clazz was existed");
-            }
-
-            // Tạo và lưu đối tượng CLAZZ
-            Clazz clazz = clazzMapper.toEntity(clazzReq);
-
-            // Tìm block
-            Block block = blockRepository.findById(clazzReq.getBlock()).orElseThrow(() ->
-                    new RuntimeException("Block not found"));
-            // Tìm semester
-            Semester semester = semesterRepository.findById(clazzReq.getSemester()).orElseThrow(() ->
-                    new RuntimeException("Semester not found"));
-            // Tìm year
-            Year year = yearRepository.findById(clazzReq.getYear()).orElseThrow(() ->
-                    new RuntimeException("Year not found"));
-            // Tìm subject
-            Subject subject = subjectRepository.findById(clazzReq.getSubjectId()).orElseThrow(() ->
-                    new RuntimeException("Subject not found"));
-            // Tìm instructor
-            Instructor instructor = instructorRepository.findById(clazzReq.getInstructorId()).orElseThrow(() ->
-                    new RuntimeException("Instructor not found"));
-            // Tìm admin
-            Admin admin = identifyUserAccessService.getAdmin();
-            // Tìm shift
-            Shift shift = shiftRepository.findById(clazzReq.getShiftId()).orElseThrow(() ->
-                    new RuntimeException("Shift not found"));
-            // Tìm room
-            Room room = roomRepository.findById(clazzReq.getRoomId()).orElseThrow(() ->
-                    new RuntimeException("Room not found"));
-
-            clazz.setBlock(block);
-            clazz.setSemester(semester);
-            clazz.setYear(year);
-            clazz.setSubject(subject);
-            clazz.setInstructor(instructor);
-            clazz.setAdmin(admin);
-            clazz.setShift(shift);
-            clazz.setRoom(room);
-
-            // Lưu clazz
-            clazzRepository.save(clazz);
+    public void importClazz(MultipartFile file) {
+        try {
+            List<Clazz> clazzList = excelUtility.excelToClazzList(file.getInputStream());
+            clazzRepository.saveAll(clazzList);
+        } catch (IOException ex) {
+            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }
     }
 }

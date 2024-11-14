@@ -3,6 +3,7 @@ package com.fpoly.backend.services;
 import com.fpoly.backend.dto.ClazzDTO;
 import com.fpoly.backend.dto.ExamScheduleDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,5 +17,5 @@ public interface ExamScheduleService {
     void delete(Integer id);
     ExamScheduleDTO getOne(Integer id);
     List<ExamScheduleDTO> getAll();
-    void importExamSchedule(List<ExamScheduleDTO> listRequestDTO);
+    void importExamSchedule(MultipartFile file);
 }

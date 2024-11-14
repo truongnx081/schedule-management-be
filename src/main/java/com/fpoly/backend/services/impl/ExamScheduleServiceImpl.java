@@ -10,10 +10,13 @@ import com.fpoly.backend.repository.RoomRepository;
 import com.fpoly.backend.repository.ShiftRepository;
 import com.fpoly.backend.services.ExamScheduleService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
+import com.fpoly.backend.until.ExcelUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +37,8 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     private RoomRepository roomRepository;
     @Autowired
     private ShiftRepository shiftRepository;
+    @Autowired
+    private ExcelUtility excelUtility;
 
     @Override
     public List<Map<String, Object>> getExameScheduleByDateRange(LocalDate startDate, LocalDate endDate) {
@@ -99,30 +104,12 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     }
 
     @Override
-    public void importExamSchedule(List<ExamScheduleDTO> listRequestDTO) {
-        for (ExamScheduleDTO request : listRequestDTO) {
-
-            // Kiểm tra sự tồn tại của mã clazz
-            if (examScheduleRepository.existsById(request.getId())) {
-                throw new RuntimeException("Exam schedule was existed");
-            }
-
-            // Tạo và lưu đối tượng ExamSchedule
-            ExamSchedule examSchedule = examScheduleMapper.toEntity(request);
-
-            Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
-                    new RuntimeException("Clazz not found"));
-            Room room = roomRepository.findById(request.getRoomId()).orElseThrow(()->
-                    new RuntimeException("Room not found"));
-            Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(()->
-                    new RuntimeException("Shift not found"));
-
-            examSchedule.setClazz(clazz);
-            examSchedule.setRoom(room);
-            examSchedule.setShift(shift);
-
-            // Lưu examSchedule
-            examScheduleRepository.save(examSchedule);
+    public void importExamSchedule(MultipartFile file) {
+        try {
+            List<ExamSchedule> examSchedulesList = excelUtility.excelToExamScheduleList(file.getInputStream());
+            examScheduleRepository.saveAll(examSchedulesList);
+        } catch (IOException ex) {
+            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }
     }
 }
