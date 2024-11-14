@@ -39,8 +39,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     ScheduleMapper scheduleMapper;
     @Autowired
     ClazzRepository clazzRepository;
-    @Autowired
-    private ClazzRepository clazzRepository;
+
     @Autowired
     private ExcelUtility excelUtility;
 
@@ -58,15 +57,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleDTO putScheduleStatus(ScheduleDTO request, Integer scheduleId) {
 
-        Schedule schedule= scheduleRepository.findById(scheduleId)
-                .orElseThrow(()-> new RuntimeException("Schedule not found"));;
-        scheduleMapper.updateSchedule(schedule,request);
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Schedule not found"));
+        ;
+        scheduleMapper.updateSchedule(schedule, request);
         schedule.setId(scheduleId);
         Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(() ->
                 new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND)
         );
         schedule.setClazz(clazz);
         schedule.setStatus(false);
+        return scheduleMapper.toDTO(scheduleRepository.save(schedule));
+    }
 
     public ScheduleDTO create(ScheduleDTO request) {
         Schedule schedule = scheduleMapper.toEntity(request);
@@ -102,7 +104,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<Map<String, Object>> getClazzsByScheduleStatus() {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
         return scheduleRepository.getClazzsByScheduleStatus(instructorId);
-      
+    }
+
     public void delete(Integer id) {
         scheduleRepository.deleteById(id);
     }
