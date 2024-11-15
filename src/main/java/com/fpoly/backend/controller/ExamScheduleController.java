@@ -114,4 +114,16 @@ public class ExamScheduleController {
         message = "Please upload an excel file!";
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(LocalDateTime.now(), null, message, HttpStatus.BAD_REQUEST.value()));
     }
+
+    // load danh sach cac dot thi va sinh vien theo giang vien dang day lop do
+    @GetMapping("/getExamBatch")
+    public ResponseEntity<Response> getAllBatchByClassIdAndInstructorId(@RequestParam Integer clazzId) {
+        try {
+            List<Map<String, Object>> getAllByClassIdAndInstructorId = examScheduleService.getAllBathByClazzInstructor(clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllByClassIdAndInstructorId, "Load danh sach thanh cong !", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

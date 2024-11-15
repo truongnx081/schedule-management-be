@@ -35,4 +35,17 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
     List<Map<String, Object>> getExamScheduleByDateRange(@Param("studentId") Integer studentId,
                                                          @Param("startDate") LocalDate startDate,
                                                          @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT ex.date as exam_date, ex.batch as exam_batch, stu.code as student_code, " +
+            "CONCAT(stu.lastName, ' ', stu.firstName) AS student_fullname " +
+            "FROM ExamSchedule ex " +
+            "JOIN ex.clazz cs " +
+            "JOIN ArrangeBatch ar ON ar.clazz.id = cs.id " +
+            "JOIN ar.student stu " +
+            "WHERE cs.id = :clazzId " +
+            "  AND cs.instructor.id = :instructorId " +
+            "  AND ex.batch = ar.batch " +
+            "order by ex.batch")
+    List<Map<String, Object>> getAllBathByClazzInstructor(@Param("clazzId") Integer clazzId,
+                                                          @Param("instructorId") Integer instructorId);
 }

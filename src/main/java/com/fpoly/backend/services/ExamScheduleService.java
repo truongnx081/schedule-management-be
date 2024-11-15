@@ -18,4 +18,6 @@ public interface ExamScheduleService {
     ExamScheduleDTO getOne(Integer id);
     List<ExamScheduleDTO> getAll();
     void importExamSchedule(MultipartFile file);
+
+    List<Map<String, Object>> getAllBathByClazzInstructor(Integer clazzId);
 }

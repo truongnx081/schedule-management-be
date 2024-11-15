@@ -40,7 +40,8 @@ public class SecurityConfig {
             "/api/subjects/getAllSubjectBySpecializationId",
             "/api/schedules/getSchedules",
             "/api/examSchedules/getExamSchedules",
-            "/api/studyHistories"
+            "/api/studyHistories",
+
     };
 
     private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={
@@ -53,7 +54,11 @@ public class SecurityConfig {
             "/api/instructors/getAllTeachingSchedule",
             "/api/shifts/available",
             "/api/schedules/getSchedules",
-            "/api/schedules/getscheduleStatusFalse"
+            "/api/schedules/getscheduleStatusFalse",
+            "/api/examschedules/getExamBatch",
+            "/api/arrangebatchs/create",
+            "/api/arrangebatchs/update",
+            "/api/arrangebatchs/delete",
     };
     private final String[] ADMIN_ENDPOINTS={
             "/api/students/updateStudentByAdmin",
