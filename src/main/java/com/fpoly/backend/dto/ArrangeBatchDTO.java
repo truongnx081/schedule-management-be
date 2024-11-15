@@ -17,4 +17,5 @@ public class ArrangeBatchDTO {
 
     private Integer clazzId;
 
+    private Integer batch;
 }
