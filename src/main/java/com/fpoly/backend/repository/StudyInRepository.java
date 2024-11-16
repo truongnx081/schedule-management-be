@@ -23,4 +23,7 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
             @Param("semesterId") String semesterId,
             @Param("yearId") Integer yearId
     );
+
+    List<StudyIn> findByClazz_Instructor_Id(Integer instructorId);
+
 }

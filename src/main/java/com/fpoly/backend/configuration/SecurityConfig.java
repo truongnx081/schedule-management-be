@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
@@ -29,7 +30,7 @@ public class SecurityConfig {
             "/api/students/updateStudentByStudent",
             "/api/clazzs/getAllClazzByStudent/*",
             "/api/clazzs/registerClazz/*",
-            "/api/studyhistories//learningProgressByStudent",
+            "/api/studyResult//learningProgressByStudent",
             "/api/notes/countNoteByMonth",
             "/api/notes/getNoteByMonth",
             "/api/notes/getNoteByDay",
@@ -45,15 +46,21 @@ public class SecurityConfig {
 
     private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={
             "api/events",
-            "/api/rooms/available",
-            "/api/retakeschedules/createRetakeSchedule"
     };
     private final String[] INSTRUCTOR_ENDPOINTS={
         "/api/shifts",
             "/api/instructors/getAllTeachingSchedule",
             "/api/shifts/available",
             "/api/schedules/getSchedules",
-            "/api/schedules/getscheduleStatusFalse"
+            "/api/schedules/getscheduleStatusFalse",
+            "/api/rooms/available",
+            "/api/retakeschedules/createRetakeSchedule",
+            "/api/students/getStudentsByInstructorIdAndClazzId",
+            "api/clazzs/getClazzsByInstructorId",
+            "/api/attendances/attended",
+            "/api/attendances/attendedByClazzId",
+            "/api/attendances/putAttended"
+
     };
     private final String[] ADMIN_ENDPOINTS={
             "/api/students/updateStudentByAdmin",
@@ -87,25 +94,23 @@ public class SecurityConfig {
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .csrf(AbstractHttpConfigurer::disable);;
-
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
 
 
     @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.addAllowedHeader("*");
-
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-
-        return new CorsFilter(urlBasedCorsConfigurationSource);
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
+
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();

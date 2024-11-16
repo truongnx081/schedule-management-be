@@ -5,10 +5,7 @@ package com.fpoly.backend.services.impl;
 import com.fpoly.backend.dto.StudyResultDTO;
 import com.fpoly.backend.entities.*;
 import com.fpoly.backend.mapper.StudyResultMapper;
-import com.fpoly.backend.repository.BlockRepository;
-import com.fpoly.backend.repository.SemesterRepository;
-import com.fpoly.backend.repository.StudyResultRepository;
-import com.fpoly.backend.repository.YearRepository;
+import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.StudyInService;
 import com.fpoly.backend.services.StudyResultService;
@@ -42,25 +39,20 @@ public class StudyResultServiceImpl implements StudyResultService {
     @Autowired
     private StudyInService studyInService;
 
-    //
-//    @Autowired
-//    ApplyForRepository applyForRepository;
-//
-//    @Override
-//    public Map<String, Integer> getreportLearningProgressByStudentId() {
-//        Integer studentId = identifyUserAccessService.getStudent().getId();
-//
-//        Integer totalSubjects = applyForRepository.countSubjectByStudent(studentId);
-//        Integer totalSubjectsPass = applyForRepository.countSubjectByStudent(studentId);
-//
-//        Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
-//        return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
-//    }
-//    public List<Map<String, Object>> getAllStudyHistoryByStudentId() {
-//        Integer studentId = identifyUserAccessService.getStudent().getId();
-//        return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);
-//    }
-//
+    @Autowired
+    ApplyForRepository applyForRepository;
+
+    @Override
+    public Map<String, Integer> getreportLearningProgressByStudentId() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+
+        Integer totalSubjects = applyForRepository.countSubjectByStudent(studentId);
+        Integer totalSubjectsPass = studyResultRepository.countSubjectPassByStudent(studentId);
+
+        Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
+        return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
+    }
+
     @Override
     public List<Map<String, Object>> getAllStudyResultByStudentId() {
         Integer studentId = identifyUserAccessService.getStudent().getId();

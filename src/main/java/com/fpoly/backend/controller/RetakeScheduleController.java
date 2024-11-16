@@ -24,6 +24,7 @@ public class RetakeScheduleController {
     @Autowired
     private RetakeScheduleService retakeScheduleService;
 
+    //Tạo lịch học lại
     @PostMapping("/createRetakeSchedule")
     public ResponseEntity<Response> createRetakeSchedule(@RequestBody RetakeScheduleDTO retakeScheduleDTO) {
         try {

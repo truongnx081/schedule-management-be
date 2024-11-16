@@ -14,4 +14,5 @@ public interface StudyResultService {
     Map<String, Object> countPassAndFalseByBlockAndSemesterAndYearOfStudent(
             Integer blockId, String semesterId, Integer yearId
     );
+    public Map<String, Integer> getreportLearningProgressByStudentId();
 }

@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class StudentServiceImpl implements StudentService {
     MajorRepository majorRepository;
     YearRepository yearRepository;
     SemesterRepository semesterRepository;
-
+    StudyInRepository studyInRepository;
 
     @Override
     public Student findById(Integer id) {
@@ -56,7 +57,6 @@ public class StudentServiceImpl implements StudentService {
         return studentMapper.toDTO(studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId)));
     }
-
 
     @Override
     public StudentDTO createStudent(StudentDTO request, MultipartFile file) {
@@ -301,6 +301,15 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return studentsDTO;
+    }
+
+    @Override
+    public List<StudentDTO> getStudentsByInstructorId() {
+        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+
+        List<StudyIn> studyIns = studyInRepository.findByClazz_Instructor_Id(instructorId);
+        return studyIns.stream()
+                .map(studyIn -> studentMapper.toDTO(studyIn.getStudent())).collect(Collectors.toList());
     }
 
 
