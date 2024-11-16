@@ -112,4 +112,10 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getAllBathByClazzInstructor(Integer clazzId) {
+        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+        return examScheduleRepository.getAllBathByClazzInstructor(clazzId, instructorId);
+    }
 }
