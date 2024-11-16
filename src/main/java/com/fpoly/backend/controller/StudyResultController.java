@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +57,18 @@ public class StudyResultController {
         try {
             Map<String, Object> studyResultDTOS = studyResultService.countPassAndFalseByBlockAndSemesterAndYearOfStudent(block, semester, year);
             return ResponseEntity.ok(new Response(LocalDateTime.now(), studyResultDTOS, "Đếm số lượng môn học pass và false của sinh viên theo block, học kỳ và năm học thành công !  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    // Load bảng điểm chi tiết của mỗi sinh vien tương ứng với clazzID
+    @GetMapping("/markColumn")
+    public ResponseEntity<Response> getAllMarkColumn(@RequestParam Integer clazzId, @RequestParam Integer studentId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.getAllMarkColumn(clazzId, studentId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy thành công các cột điểm theo clazzId và studentId thành công!  ", HttpStatus.OK.value()));
         }
         catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
