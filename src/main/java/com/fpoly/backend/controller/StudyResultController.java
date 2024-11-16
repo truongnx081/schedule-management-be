@@ -21,23 +21,23 @@ import java.util.Map;
 public class StudyResultController {
     @Autowired
     StudyResultService studyResultService;
-//
-//    //Get learning progress by student
-//    @GetMapping("/learningProgressByStudent")
-//    public ResponseEntity<Response> getLearningProgressByStudentId() {
-//        try {
-//            Map<String, Integer> learningProgress = studyHistoryService.getreportLearningProgressByStudentId();
-//            return ResponseEntity.ok(new Response(
-//                    LocalDateTime.now(),
-//                    learningProgress,
-//                    "Successful",
-//                    HttpStatus.OK.value()));
-//        } catch (AppUnCheckedException e) {
-//            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
-//        }
-//    }
-//
-//
+
+    //Get learning progress by student
+    @GetMapping("/learningProgressByStudent")
+    public ResponseEntity<Response> getLearningProgressByStudentId() {
+        try {
+            Map<String, Integer> learningProgress = studyResultService.getreportLearningProgressByStudentId();
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    learningProgress,
+                    "Successful",
+                    HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+
     @GetMapping()
     public ResponseEntity<Response> getStudyResultByStudentId() {
         try {

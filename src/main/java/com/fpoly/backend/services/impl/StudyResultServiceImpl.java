@@ -43,25 +43,20 @@ public class StudyResultServiceImpl implements StudyResultService {
     @Autowired
     private ClazzRepository clazzRepository;
 
-    //
-//    @Autowired
-//    ApplyForRepository applyForRepository;
-//
-//    @Override
-//    public Map<String, Integer> getreportLearningProgressByStudentId() {
-//        Integer studentId = identifyUserAccessService.getStudent().getId();
-//
-//        Integer totalSubjects = applyForRepository.countSubjectByStudent(studentId);
-//        Integer totalSubjectsPass = applyForRepository.countSubjectByStudent(studentId);
-//
-//        Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
-//        return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
-//    }
-//    public List<Map<String, Object>> getAllStudyHistoryByStudentId() {
-//        Integer studentId = identifyUserAccessService.getStudent().getId();
-//        return studyHistoryRepository.getAllStudyHistoryByStudentId(studentId);
-//    }
-//
+    @Autowired
+    ApplyForRepository applyForRepository;
+
+    @Override
+    public Map<String, Integer> getreportLearningProgressByStudentId() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+
+        Integer totalSubjects = applyForRepository.countSubjectByStudent(studentId);
+        Integer totalSubjectsPass = studyResultRepository.countSubjectPassByStudent(studentId);
+
+        Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
+        return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
+    }
+
     @Override
     public List<Map<String, Object>> getAllStudyResultByStudentId() {
         Integer studentId = identifyUserAccessService.getStudent().getId();

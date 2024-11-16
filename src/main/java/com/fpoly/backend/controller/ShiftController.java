@@ -40,6 +40,7 @@ public class ShiftController {
         }
     }
 
+    //Get all shift available
     @GetMapping("/available")
     public ResponseEntity<Response> getAvailableShifts(
             @RequestParam("clazzId") Integer clazzId,

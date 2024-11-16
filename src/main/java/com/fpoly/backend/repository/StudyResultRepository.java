@@ -30,6 +30,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             @Param("studyInId") Integer studyInId
     );
 
+
     @Query("SELECT CONCAT(std.lastName, ' ', std.firstName, ' - ', std.code) AS studentName, " +
             "mcs.name AS markColumnName, " +
             "srs.marked AS mark " +
@@ -43,4 +44,16 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "WHERE czs.id = :clazzId AND std.id = :studentId")
     List<Map<String, Object>> getAllMarkColumn(@Param("clazzId") Integer clazzId,
                                                @Param("studentId") Integer studentId);
+
+    @Query("SELECT COUNT(DISTINCT s.subject.id ) " +
+            "FROM StudyResult str " +
+            "JOIN str.studyIn st " +
+            "JOIN str.markColumn m " +
+            "JOIN m.subjectMarks s " +
+            "WHERE st.student.id = :studentId " +
+            "GROUP BY s.subject.id " +
+            "HAVING SUM(str.marked * str.percentage) / 100 >= 5")
+    Integer countSubjectPassByStudent(@Param("studentId") Integer studentId);
+
+
 }

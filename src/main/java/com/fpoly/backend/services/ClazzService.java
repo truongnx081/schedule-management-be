@@ -19,4 +19,6 @@ public interface ClazzService {
     List<ClazzDTO> getAll();
     List<Map<String, Object>> findClazzByBlockAndSemesterAndYear();
     void importClazz(MultipartFile file);
+
+    List<ClazzDTO> getClazzsByInstructorId();
 }

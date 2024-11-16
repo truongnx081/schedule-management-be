@@ -30,4 +30,6 @@ public interface StudentService {
     public List<StudentDTO> getAllStudentByCourseAndMajor( String course, Integer majorId);
 
     public List<StudentDTO> importExcelFile(MultipartFile file);
+
+    public List<StudentDTO> getStudentsByInstructorId();
 }

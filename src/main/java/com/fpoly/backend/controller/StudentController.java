@@ -22,6 +22,7 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    //Student get student information
     @GetMapping("/studentInfor")
     public ResponseEntity<Response> getStudentInfor() {
         try {
@@ -36,6 +37,7 @@ public class StudentController {
         }
     }
 
+    //Student update student information
     @PutMapping("/updateStudentByStudent")
     public ResponseEntity<Response> updateStudentByStudent(
             @RequestPart("request") StudentDTO request,
@@ -53,6 +55,7 @@ public class StudentController {
         }
     }
 
+    //Admin get student information
     @GetMapping("/studentByID")
     public ResponseEntity<Response> getStudentById(@RequestParam Integer studentId) {
         try {
@@ -67,6 +70,7 @@ public class StudentController {
         }
     }
 
+    //Admin update student information
     @PutMapping("/updateStudentByAdmin")
     public ResponseEntity<Response> updateStudentByAdmin(
             @RequestParam Integer studentId,
@@ -86,6 +90,7 @@ public class StudentController {
         }
     }
 
+    //Admin post student information
     @PostMapping("/createStudent")
     public ResponseEntity<Response> createStudent(@RequestPart("student") StudentDTO request,
                                                   @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -102,6 +107,7 @@ public class StudentController {
         }
     }
 
+    //Admin delete student
     @DeleteMapping("deleteStudent")
     public ResponseEntity<Response> deleteStudent(@RequestParam Integer id) {
         try {
@@ -116,6 +122,7 @@ public class StudentController {
         }
     }
 
+    // Admin get student by course anh major
     @GetMapping("/getAllStudentByCourseAndMajor")
     public ResponseEntity<Response> getAllStudentByCourseAndMajor(
             @RequestParam(value = "course", required = false) String course,
@@ -133,6 +140,7 @@ public class StudentController {
         }
     }
 
+    //Admin import student from excel
     @PostMapping("/import")
     public ResponseEntity<Response> importStudents(@RequestParam("file") MultipartFile file) {
         try {
@@ -150,6 +158,21 @@ public class StudentController {
                     e.getMessage(),
                     e.getStatus().value())
             );
+        }
+    }
+
+    @GetMapping("/getStudentsByInstructorIdAndClazzId")
+    public ResponseEntity<Response> getStudentsByInstructorId() {
+
+        try {
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    studentService.getStudentsByInstructorId(),
+                    "Get All Student successfully",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
 }

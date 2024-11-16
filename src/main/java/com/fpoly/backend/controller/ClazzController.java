@@ -111,5 +111,15 @@ public class ClazzController {
         message = "Please upload an excel file!";
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(LocalDateTime.now(), null, message, HttpStatus.BAD_REQUEST.value()));
     }
+
+    @GetMapping("/getClazzsByInstructorId")
+    public ResponseEntity<Response> getClazzsByInstructorId(){
+        try {
+            List<ClazzDTO> clazzs = clazzService.getClazzsByInstructorId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzs, "Lấy danh sách lớp học thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }
 
