@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -40,6 +41,7 @@ public class ClazzServiceImpl implements ClazzService {
     RoomRepository roomRepository;
     SemesterProgressService semesterProgressService;
     ExcelUtility excelUtility;
+    StudyInRepository studyInRepository;
 
     @Override
     public ClazzDTO create(ClazzDTO request) {
@@ -159,5 +161,15 @@ public class ClazzServiceImpl implements ClazzService {
         } catch (IOException ex) {
             throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }
+    }
+
+    @Override
+    public List<ClazzDTO> getClazzsByInstructorId() {
+        Integer instructorId =identifyUserAccessService.getInstructor().getId();
+        List<StudyIn> studyIns = studyInRepository.findByClazz_Instructor_Id(instructorId);
+        return studyIns.stream()
+                .map(studyIn -> clazzMapper.toDTO(studyIn.getClazz()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

@@ -28,6 +28,7 @@ public class RoomController {
     @Autowired
     RoomService roomService;
 
+    //Get All room available
     @GetMapping("/available")
     public ResponseEntity<Response> getAllBlock(@RequestParam Integer buildingId,
                                                 @RequestParam LocalDate date){

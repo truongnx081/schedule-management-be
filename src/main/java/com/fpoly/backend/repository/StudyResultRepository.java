@@ -29,4 +29,15 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
     List<Map<String, Object>> findAllByStudyInIdOfStudent(
             @Param("studyInId") Integer studyInId
     );
+
+    @Query("SELECT COUNT(DISTINCT s.subject.id ) " +
+            "FROM StudyResult str " +
+            "JOIN str.studyIn st " +
+            "JOIN str.markColumn m " +
+            "JOIN m.subjectMarks s " +
+            "WHERE st.student.id = :studentId " +
+            "GROUP BY s.subject.id " +
+            "HAVING SUM(str.marked * str.percentage) / 100 >= 5")
+    Integer countSubjectPassByStudent(@Param("studentId") Integer studentId);
+
 }

@@ -40,7 +40,8 @@ public class ScheduleController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
-  
+
+    //Cancel schedule
     @PutMapping("/cancelSchedule")
     public ResponseEntity<Response> updateScheduleStatus(
             @RequestParam Integer scheduleId,
