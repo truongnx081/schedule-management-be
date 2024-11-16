@@ -60,7 +60,7 @@ public class SecurityConfig {
             "api/clazzs/getClazzsByInstructorId",
             "/api/attendances/attended",
             "/api/attendances/attendedByClazzId",
-            "/api/attendances/putAttended"
+            "/api/attendances/putAttended",
             "/api/examschedules/getExamBatch",
             "/api/arrangebatchs/create",
             "/api/arrangebatchs/update",
