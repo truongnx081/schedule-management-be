@@ -25,4 +25,6 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
                                                                   @Param("year") Integer year);
 
     boolean existsByCode(String code);
+
+    boolean existsByIdAndInstructorId(Integer clazzId, Integer instructorId);
 }

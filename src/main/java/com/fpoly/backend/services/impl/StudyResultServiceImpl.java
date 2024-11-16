@@ -4,17 +4,16 @@ package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.StudyResultDTO;
 import com.fpoly.backend.entities.*;
+import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.StudyResultMapper;
-import com.fpoly.backend.repository.BlockRepository;
-import com.fpoly.backend.repository.SemesterRepository;
-import com.fpoly.backend.repository.StudyResultRepository;
-import com.fpoly.backend.repository.YearRepository;
+import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.StudyInService;
 import com.fpoly.backend.services.StudyResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -41,6 +40,8 @@ public class StudyResultServiceImpl implements StudyResultService {
     private StudyResultMapper studyResultMapper;
     @Autowired
     private StudyInService studyInService;
+    @Autowired
+    private ClazzRepository clazzRepository;
 
     //
 //    @Autowired
@@ -114,5 +115,26 @@ public class StudyResultServiceImpl implements StudyResultService {
 
         return map;
     }
+
+    @Override
+    public List<Map<String, Object>> getAllMarkColumn(Integer clazzId, Integer studentId) {
+        // Lấy thông tin instructor đang đăng nhập
+        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+
+        // Kiểm tra xem instructor có quản lý lớp này không
+        boolean isInstructorOfClass = clazzRepository.existsByIdAndInstructorId(clazzId, instructorId);
+        if (!isInstructorOfClass) {
+            throw new AppUnCheckedException("Bạn không có quyền xem điểm cho lớp học này!", HttpStatus.FORBIDDEN);
+        }
+
+        // Truy vấn dữ liệu điểm của sinh viên
+        try {
+            return studyResultRepository.getAllMarkColumn(clazzId, studentId);
+        } catch (Exception e) {
+            // Xử lý lỗi trong quá trình truy vấn
+            throw new AppUnCheckedException("Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

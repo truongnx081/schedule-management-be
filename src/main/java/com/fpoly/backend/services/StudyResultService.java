@@ -14,4 +14,6 @@ public interface StudyResultService {
     Map<String, Object> countPassAndFalseByBlockAndSemesterAndYearOfStudent(
             Integer blockId, String semesterId, Integer yearId
     );
+
+    List<Map<String, Object>> getAllMarkColumn(Integer clazzId, Integer studentId);
 }

@@ -39,8 +39,7 @@ public class SecurityConfig {
             "/api/subjects/getAllSubject",
             "/api/subjects/getAllSubjectBySpecializationId",
             "/api/schedules/getSchedules",
-            "/api/examSchedules/getExamSchedules",
-            "/api/studyHistories",
+            "/api/examSchedules/getExamSchedules"
 
     };
 
@@ -59,6 +58,7 @@ public class SecurityConfig {
             "/api/arrangebatchs/create",
             "/api/arrangebatchs/update",
             "/api/arrangebatchs/delete",
+            "/api/studyResult/markColumn"
     };
     private final String[] ADMIN_ENDPOINTS={
             "/api/students/updateStudentByAdmin",
