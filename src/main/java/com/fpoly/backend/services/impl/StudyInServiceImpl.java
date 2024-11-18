@@ -2,15 +2,14 @@ package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.StudyInDTO;
 import com.fpoly.backend.entities.*;
+import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.StudyInMapper;
-import com.fpoly.backend.repository.BlockRepository;
-import com.fpoly.backend.repository.SemesterRepository;
-import com.fpoly.backend.repository.StudyInRepository;
-import com.fpoly.backend.repository.YearRepository;
+import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SemesterProgressService;
 import com.fpoly.backend.services.StudyInService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class StudyInServiceImpl implements StudyInService {
     private final StudyInRepository studyInRepository;
     private final StudyInMapper studyInMapper;
     private final IdentifyUserAccessService identifyUserAccessService;
+    private final ClazzRepository clazzRepository;
 
     @Override
     public List<StudyInDTO> findAllByBlockAndSemesterAnhYear() {
@@ -52,5 +52,17 @@ public class StudyInServiceImpl implements StudyInService {
         return studyInRepository.getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent(
                 blockId, semesterId, yearId
         );
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllMarkAverageStudentsByClazzId(Integer clazzId) {
+
+        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Lớp học không tồn tại", HttpStatus.NOT_FOUND));
+        if(!instructorId.equals(clazz.getInstructor().getId())) {
+            throw new AppUnCheckedException("Bạn không có quyền xem danh sách này !", HttpStatus.FORBIDDEN);
+        }
+        return studyInRepository.getAllMarkAverageStudentsByClazzId(clazzId);
     }
 }

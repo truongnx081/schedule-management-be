@@ -64,13 +64,35 @@ public class StudyResultController {
     }
 
     // Load bảng điểm chi tiết của mỗi sinh vien tương ứng với clazzID
-    @GetMapping("/markColumn")
+    @GetMapping("/getMarkColumn")
     public ResponseEntity<Response> getAllMarkColumn(@RequestParam Integer clazzId, @RequestParam Integer studentId) {
         try {
             List<Map<String, Object>> getAllMarkColumn = studyResultService.getAllMarkColumn(clazzId, studentId);
             return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy thành công các cột điểm theo clazzId và studentId thành công!  ", HttpStatus.OK.value()));
         }
         catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    // tạo bảng điểm cho sinh viên
+    @PostMapping("/create")
+    public ResponseEntity<Response> createStudyResult(@RequestParam Integer studentId, @RequestBody StudyResultDTO studyResultDTO) {
+        try {
+            StudyResultDTO createStudyResult = studyResultService.createStudyResult(studentId, studyResultDTO);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), createStudyResult, "Study Result được tạo thành công !", HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    // cập nhật bảng điểm cho sinh viên
+    @PutMapping("/update")
+    public ResponseEntity<Response> updateStudyResult(@RequestParam Integer studyResultId, @RequestBody StudyResultDTO studyResultDTO) {
+        try {
+            StudyResultDTO updateStudyResult = studyResultService.updateStudyResult(studyResultId, studyResultDTO);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), updateStudyResult, "Study Result được cập nhật thành công !", HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }

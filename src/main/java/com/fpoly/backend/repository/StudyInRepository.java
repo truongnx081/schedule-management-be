@@ -26,4 +26,16 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
 
     List<StudyIn> findByClazz_Instructor_Id(Integer instructorId);
 
+    @Query("SELECT clz.id as clazz_id ,clz.code as clazz_code, stu.code as student_code ,CONCAT(stu.lastName ,' ', stu.firstName) as fullname,\n" +
+            "sub.name as subject_name,sum(srs.marked * srs.percentage)/100 as AVG " +
+            "FROM StudyIn sti " +
+            "JOIN sti.clazz clz " +
+            "JOIN sti.student stu " +
+            "JOIN sti.studyResults srs " +
+            "JOIN clz.instructor ins " +
+            "JOIN clz.subject sub " +
+            "WHERE clz.id = :clazzId " +
+            "group by clz.id, stu.code, CONCAT(stu.lastName ,' ', stu.firstName), clz.code, sub.name " +
+            "order by CONCAT(stu.lastName ,' ', stu.firstName)")
+    List<Map<String, Object>> getAllMarkAverageStudentsByClazzId(@Param("clazzId")Integer clazzId);
 }

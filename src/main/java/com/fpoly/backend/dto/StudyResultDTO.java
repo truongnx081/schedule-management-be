@@ -17,4 +17,6 @@ public class StudyResultDTO {
     private Integer markColumnId;
 
     private Integer studyInId;
+
+    private Double percentage;
 }

@@ -20,4 +20,7 @@ public interface StudyResultService {
 
     public Map<String, Integer> getreportLearningProgressByStudentId();
 
+    StudyResultDTO createStudyResult(Integer studentId, StudyResultDTO studyResultDTO);
+
+    StudyResultDTO updateStudyResult(Integer studyResultId, StudyResultDTO studyResultDTO);
 }
