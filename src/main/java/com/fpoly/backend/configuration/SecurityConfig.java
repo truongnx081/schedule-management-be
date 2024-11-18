@@ -64,7 +64,10 @@ public class SecurityConfig {
             "/api/arrangebatchs/create",
             "/api/arrangebatchs/update",
             "/api/arrangebatchs/delete",
-            "/api/studyResult/markColumn"
+            "/api/studyResult/markColumn",
+            "/api/studyResult/create",
+            "/api/studyResult/update",
+            "/api/studyins/getAllAverage"
 
     };
     private final String[] ADMIN_ENDPOINTS={

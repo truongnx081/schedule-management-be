@@ -13,4 +13,6 @@ public interface StudyInService {
     List<Map<String, Object>> getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent(
             Integer blockId, String semesterId, Integer yearId
     );
+
+    List<Map<String, Object>> getAllMarkAverageStudentsByClazzId(Integer clazzId);
 }

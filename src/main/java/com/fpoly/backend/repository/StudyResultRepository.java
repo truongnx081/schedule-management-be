@@ -56,4 +56,5 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
     Integer countSubjectPassByStudent(@Param("studentId") Integer studentId);
 
 
+    boolean existsByMarkColumnIdAndStudyInId(Integer markColumnId, Integer studyInId);
 }

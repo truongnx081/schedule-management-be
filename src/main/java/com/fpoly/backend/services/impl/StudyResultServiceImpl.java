@@ -8,6 +8,7 @@ import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.StudyResultMapper;
 import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
+import com.fpoly.backend.services.MarkColumnService;
 import com.fpoly.backend.services.StudyInService;
 import com.fpoly.backend.services.StudyResultService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class StudyResultServiceImpl implements StudyResultService {
     @Autowired
     ApplyForRepository applyForRepository;
 
+    @Autowired
+    private MarkColumnRepository markColumnRepository;
+    @Autowired
+    private StudyInRepository studyInRepository;
+
     @Override
     public Map<String, Integer> getreportLearningProgressByStudentId() {
         Integer studentId = identifyUserAccessService.getStudent().getId();
@@ -56,6 +62,8 @@ public class StudyResultServiceImpl implements StudyResultService {
         Integer totalUnfinishedSubjects = totalSubjects - totalSubjectsPass;
         return Map.of("passedSubjects", totalSubjectsPass, "unfinishedSubjects", totalUnfinishedSubjects);
     }
+
+
 
     @Override
     public List<Map<String, Object>> getAllStudyResultByStudentId() {
@@ -129,6 +137,63 @@ public class StudyResultServiceImpl implements StudyResultService {
             // Xử lý lỗi trong quá trình truy vấn
             throw new AppUnCheckedException("Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public StudyResultDTO createStudyResult(Integer studentId, StudyResultDTO studyResultDTO) {
+        String instructorCode = identifyUserAccessService.getInstructor().getCode();
+        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+        StudyResult studyResult = studyResultMapper.toEntity(studyResultDTO);
+        if (studyResultDTO.getMarkColumnId() == null || studyResultDTO.getStudyInId() == null) {
+            throw new AppUnCheckedException("Dữ liệu đầu vào không hợp lệ!", HttpStatus.BAD_REQUEST);
+        }
+        boolean exists = studyResultRepository.existsByMarkColumnIdAndStudyInId(
+                studyResultDTO.getMarkColumnId(),
+                studyResultDTO.getStudyInId()
+        );
+        if (exists) {
+            throw new AppUnCheckedException("Kết quả học tập cho sinh viên này đã tồn tại!", HttpStatus.CONFLICT);
+        }
+        MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
+                .orElseThrow(()-> new AppUnCheckedException("Mark column không tồn tại !", HttpStatus.NOT_FOUND));
+        studyResult.setMarkColumn(markColumn);
+        StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
+                .orElseThrow(()-> new AppUnCheckedException("Study in không tồn tại !", HttpStatus.NOT_FOUND));
+        studyResult.setStudyIn(studyIn);
+
+        if(!instructorId.equals(studyResult.getStudyIn().getClazz().getInstructor().getId())){
+            throw new AppUnCheckedException("Bạn không có quyền tạo kết quả học tập cho sinh viên này!", HttpStatus.FORBIDDEN);
+        }
+        studyResult.setCreatedBy(instructorCode);
+        studyResult.setPercentage(studyResultDTO.getPercentage());
+        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
+    }
+
+    @Override
+    public StudyResultDTO updateStudyResult(Integer studyResultId, StudyResultDTO studyResultDTO) {
+        String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
+
+        // Lấy StudyResult từ DB
+        StudyResult studyResult = studyResultRepository.findById(studyResultId)
+                .orElseThrow(() -> new AppUnCheckedException("Kết quả học tập không tồn tại!", HttpStatus.NOT_FOUND));
+
+        if (!studyResult.getCreatedBy().equals(currentInstructorCode)) {
+            throw new AppUnCheckedException("Bạn không có quyền cập nhật kết quả học tập này!", HttpStatus.FORBIDDEN);
+        }
+        if (studyResultDTO.getMarkColumnId() != null) {
+            MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
+                    .orElseThrow(() -> new AppUnCheckedException("Mark column không tồn tại!", HttpStatus.NOT_FOUND));
+            studyResult.setMarkColumn(markColumn);
+        }
+        if (studyResultDTO.getStudyInId() != null) {
+            StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
+                    .orElseThrow(() -> new AppUnCheckedException("Study in không tồn tại!", HttpStatus.NOT_FOUND));
+            studyResult.setStudyIn(studyIn);
+        }
+        studyResult.setMarked(studyResultDTO.getMarked());
+        studyResult.setPercentage(studyResultDTO.getPercentage());
+        studyResult.setUpdatedBy(currentInstructorCode);
+        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
     }
 
 
