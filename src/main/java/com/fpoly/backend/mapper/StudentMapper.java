@@ -24,12 +24,17 @@ public abstract class StudentMapper {
 
 
     @Mapping(target = "semester", ignore = true)
-    @Mapping(target = "year",ignore = true)
-    @Mapping(target = "educationProgram",ignore = true)
+    @Mapping(target = "year", ignore = true)
+    @Mapping(target = "educationProgram", ignore = true)
     @Mapping(target = "major", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "code", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "birthday", ignore = true)
+    @Mapping(target = "gender", ignore = true)
+    @Mapping(target = "course", ignore = true)
     public abstract void updateStudent(@MappingTarget Student student, StudentDTO request);
 
 }

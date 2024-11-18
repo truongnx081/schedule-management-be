@@ -101,22 +101,6 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO updateStudentByStudent(StudentDTO request, MultipartFile file) {
         Student student = identifyUserAccessService.getStudent();
         student.setUpdatedBy(student.getCode());
-
-        student.setEducationProgram(educationProgramRepository.findById(request.getEducationProgramId())
-                .orElseThrow(() -> new AppUnCheckedException("Education Program not found", HttpStatus.NOT_FOUND)));
-
-        Semester semester = semesterRepository.findById(request.getSemester())
-                .orElseThrow(() -> new AppUnCheckedException("Semester not found", HttpStatus.NOT_FOUND));
-        student.setSemester(semester);
-
-        Year year = yearRepository.findById(request.getYear())
-                .orElseThrow(() -> new AppUnCheckedException("Year not found", HttpStatus.NOT_FOUND));
-        student.setYear(year);
-
-        Major major = majorRepository.findById(request.getMajorId())
-                .orElseThrow(() -> new AppUnCheckedException("Major not found", HttpStatus.NOT_FOUND));
-        student.setMajor(major);
-
         studentMapper.updateStudent(student, request);
 
         if (file != null && !file.isEmpty()) {
@@ -152,24 +136,7 @@ public class StudentServiceImpl implements StudentService {
         }
         String adminCode = identifyUserAccessService.getAdmin().getCode();
         student.setUpdatedBy(adminCode);
-        student.setEducationProgram(educationProgramRepository.findById(request.getEducationProgramId()).orElseThrow(() ->
-                new AppUnCheckedException("Education Program not found", HttpStatus.NOT_FOUND)
-        ));
 
-        Semester semester = semesterRepository.findById(request.getSemester()).orElseThrow(() ->
-                new AppUnCheckedException("Semester not found", HttpStatus.NOT_FOUND)
-        );
-        student.setSemester(semester);
-
-        Year year = yearRepository.findById(request.getYear()).orElseThrow(() ->
-                new AppUnCheckedException("Year not found", HttpStatus.NOT_FOUND)
-        );
-        student.setYear(year);
-
-        Major major = majorRepository.findById(request.getMajorId()).orElseThrow(() ->
-                new AppUnCheckedException("Major not found", HttpStatus.NOT_FOUND)
-        );
-        student.setMajor(major);
         return studentMapper.toDTO(studentRepository.save(student));
     }
 
