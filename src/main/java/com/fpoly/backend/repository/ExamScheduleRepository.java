@@ -48,4 +48,68 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
             "order by ex.batch")
     List<Map<String, Object>> getAllBathByClazzInstructor(@Param("clazzId") Integer clazzId,
                                                           @Param("instructorId") Integer instructorId);
+    @Query("SELECT " +
+            "exm.id AS exam_id, " +
+            "clz.code AS clazz_code, " +
+            "sub.code AS subject_code, " +
+            "sub.name AS subject_name, " +
+            "sif.id AS shift_id, " +
+            "sif.startTime AS start_time, " +
+            "sif.endTime AS end_time, " +
+            "ins.firstName as first_name,  " +
+            "ins.lastName AS last_name, " +
+            "ins.code AS instructor_code, " +
+            "bls.block AS block, " +
+            "ses.semester AS semester, " +
+            "yrs.year AS year, " +
+            "ros.name AS room_name, " +
+            "bld.name AS building_name, " +
+            "exm.batch AS batch_exam, " +
+            "spe.id AS specialization_id " +
+            "FROM ExamSchedule exm " +
+            "JOIN exm.clazz clz " +
+            "JOIN clz.subject sub " +
+            "JOIN clz.shift sif " +
+            "JOIN clz.block bls " +
+            "JOIN clz.instructor ins " +
+            "JOIN clz.semester ses " +
+            "JOIN clz.room ros " +
+            "JOIN ros.building bld " +
+            "JOIN clz.year yrs " +
+            "JOIN sub.specialization spe")
+    List<Map<String, Object>> getAllExamScheduleOfAdmin();
+    @Query("SELECT " +
+            "exm.id AS exam_id, " +
+            "clz.code AS clazz_code, " +
+            "sub.code AS subject_code, " +
+            "sub.name AS subject_name, " +
+            "sif.id AS shift_id, " +
+            "sif.startTime AS start_time, " +
+            "sif.endTime AS end_time, " +
+            "ins.firstName as first_name,  " +
+            "ins.lastName AS last_name, " +
+            "ins.code AS instructor_code, " +
+            "bls.block AS block, " +
+            "ses.semester AS semester, " +
+            "yrs.year AS year, " +
+            "ros.name AS room_name, " +
+            "bld.name AS building_name, " +
+            "exm.batch AS batch_exam, " +
+            "spe.id AS specialization_id " +
+            "FROM ExamSchedule exm " +
+            "JOIN exm.clazz clz " +
+            "JOIN clz.subject sub " +
+            "JOIN clz.shift sif " +
+            "JOIN clz.block bls " +
+            "JOIN clz.instructor ins " +
+            "JOIN clz.semester ses " +
+            "JOIN clz.room ros " +
+            "JOIN ros.building bld " +
+            "JOIN clz.year yrs " +
+            "JOIN sub.specialization spe " +
+            "WHERE bls.block = :block and ses.semester = :semester and yrs.year = :year and spe.id = :specializationId")
+    List<Map<String, Object>> getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin(@Param("block") Integer block,
+                                                                                            @Param("semester") String semester,
+                                                                                            @Param("year") Integer year,
+                                                                                            @Param("specializationId") Integer specializationId);
 }

@@ -46,9 +46,9 @@ public class ArrangeBatchController {
 
     // xoa arrange batch
     @DeleteMapping("/delete")
-    public ResponseEntity<Response> delete(@RequestParam Integer arrangeBatchId) {
+    public ResponseEntity<Response> delete(@RequestParam Integer clazzId) {
         try {
-            arrangeBatchService.deleteArrangeBatch(arrangeBatchId);
+            arrangeBatchService.deleteArrangeBatch(clazzId);
             return ResponseEntity.ok(new Response(LocalDateTime.now(), null, "Arrange batch đã được xóa thành công!", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));

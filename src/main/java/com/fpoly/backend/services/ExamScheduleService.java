@@ -16,8 +16,12 @@ public interface ExamScheduleService {
     ExamScheduleDTO update(ExamScheduleDTO request, Integer id);
     void delete(Integer id);
     ExamScheduleDTO getOne(Integer id);
-    List<ExamScheduleDTO> getAll();
+    
     void importExamSchedule(MultipartFile file);
 
     List<Map<String, Object>> getAllBathByClazzInstructor(Integer clazzId);
+
+    List<Map<String, Object>> getAllExamOfAdmin();
+
+    List<Map<String, Object>> getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin(Integer block, String semester, Integer year, Integer specializationId);
 }

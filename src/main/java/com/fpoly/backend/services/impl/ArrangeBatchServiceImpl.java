@@ -9,6 +9,7 @@ import com.fpoly.backend.repository.ClazzRepository;
 import com.fpoly.backend.repository.StudentRepository;
 import com.fpoly.backend.services.ArrangeBatchService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -86,18 +87,24 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
         return arrangeBatchMapper.toDTO(arrangeBatchRepository.save(existingArrangeBatch));
     }
 
+    @Transactional
     @Override
-    public void deleteArrangeBatch(Integer arrangeBatchId) {
-        ArrangeBatch existingArrangeBatch = arrangeBatchRepository.findById(arrangeBatchId)
-                .orElseThrow(() -> new AppUnCheckedException("Arrange batch không tồn tại", HttpStatus.NOT_FOUND));
-
-        String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
-
-        if (!existingArrangeBatch.getCreatedBy().equals(currentInstructorCode)) {
-            throw new AppUnCheckedException("Bạn không có quyền xoa arrange batch này !", HttpStatus.FORBIDDEN);
+    public void deleteArrangeBatch(Integer clazzId) {
+        List<ArrangeBatch> arrangeBatches = arrangeBatchRepository.findAllByClazzId(clazzId);
+        if (arrangeBatches.isEmpty()) {
+            throw new AppUnCheckedException("Không có ArrangeBatch nào cho clazzId: " + clazzId, HttpStatus.NOT_FOUND);
         }
 
-        arrangeBatchRepository.delete(existingArrangeBatch);
+        String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
+        for (ArrangeBatch arrangeBatch : arrangeBatches) {
+            if (!arrangeBatch.getCreatedBy().equals(currentInstructorCode)) {
+                throw new AppUnCheckedException("Bạn không có quyền xóa arrange batch của clazz này!", HttpStatus.FORBIDDEN);
+            }
+        }
+
+// Xóa tất cả ArrangeBatch liên quan đến Clazz
+        arrangeBatchRepository.deleteByClazzId(clazzId);
+
     }
 
 }
