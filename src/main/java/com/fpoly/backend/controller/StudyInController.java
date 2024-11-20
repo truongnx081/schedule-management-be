@@ -43,14 +43,40 @@ public class StudyInController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
-
+    // dang ky mon hoc
     @PostMapping("/register-clazz")
-    public ResponseEntity<Response> create(StudyInDTO studyInDTO){
+//    public ResponseEntity<Response> create(StudyInDTO studyInDTO){
+//        try {
+//            StudyInDTO createStudyIn = studyInService.createStudyIn(studyInDTO);
+//            return ResponseEntity.ok(new Response(LocalDateTime.now(),createStudyIn , "Đăng ký thành công lớp học !", HttpStatus.OK.value()));
+//        } catch (AppUnCheckedException e){
+//            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+//        }
+//    }
+    public ResponseEntity<Response> create(@RequestParam Integer clazzId){
         try {
-            StudyInDTO createStudyIn = studyInService.createStudyIn(studyInDTO);
+            StudyInDTO createStudyIn = studyInService.createStudyIn2(clazzId);
             return ResponseEntity.ok(new Response(LocalDateTime.now(),createStudyIn , "Đăng ký thành công lớp học !", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+    // đổi lớp học
+    @PutMapping("/change-clazz")
+    public ResponseEntity<Response> update(@RequestParam Integer studyInId, @RequestParam Integer newClazzId){
+//        try {
+//            StudyInDTO updateStudyIn = studyInService.updateStudyIn(studyInId, studyInDTO);
+//            return ResponseEntity.ok(new Response(LocalDateTime.now(),updateStudyIn , "Đổi thành công lớp học !", HttpStatus.OK.value()));
+//        } catch (AppUnCheckedException e){
+//            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+//        }
+        try {
+            // Gọi service để cập nhật thông tin
+            StudyInDTO updatedStudyIn = studyInService.updateStudyIn2(studyInId, newClazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),updatedStudyIn , "Đổi thành công lớp học !", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            // Xử lý lỗi nếu có
+            return new ResponseEntity<>(null, e.getStatus());
         }
     }
 }
