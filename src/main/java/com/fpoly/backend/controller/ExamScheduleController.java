@@ -40,17 +40,29 @@ public class ExamScheduleController {
         }
     }
 
-    // Lấy danh sách lịch thi
-    @GetMapping
-    public ResponseEntity<Response> getAll(){
+    // Lấy tất cả danh sách lịch thi cho admin
+    @GetMapping("/admin")
+    public ResponseEntity<Response> getAllExamOfAdmin(){
         try {
-            List<ExamScheduleDTO> examScheduleDTOS = examScheduleService.getAll();
-            return ResponseEntity.ok(new Response(LocalDateTime.now(), examScheduleDTOS, "Lấy danh sách lịch thi thành công", HttpStatus.OK.value()));
+            List<Map<String, Object>> getAllExam = examScheduleService.getAllExamOfAdmin();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllExam, "Lấy danh sách lịch thi thành công", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
-
+    // Lấy tất cả danh sách lịch thi cho admin
+    @GetMapping("/admin/sort")
+    public ResponseEntity<Response> getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin( @RequestParam Integer block,
+                                                                                                 @RequestParam String semester,
+                                                                                                 @RequestParam Integer year,
+                                                                                                 @RequestParam Integer specializationId){
+        try {
+            List<Map<String, Object>> getAllExam = examScheduleService.getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin(block, semester, year, specializationId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllExam, "Lấy danh sách lịch thi thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
     // Lấy lịch thi theo id
     @GetMapping("/{clazzId}")
     public ResponseEntity<Response> getOne(@PathVariable Integer clazzId){

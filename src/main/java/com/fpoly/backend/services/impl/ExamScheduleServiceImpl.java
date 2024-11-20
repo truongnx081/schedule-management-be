@@ -97,11 +97,6 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         return examScheduleMapper.toDTO(examSchedule);
     }
 
-    @Override
-    public List<ExamScheduleDTO> getAll() {
-        return examScheduleRepository.findAll().stream()
-                .map(examScheduleMapper::toDTO).toList();
-    }
 
     @Override
     public void importExamSchedule(MultipartFile file) {
@@ -117,5 +112,15 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     public List<Map<String, Object>> getAllBathByClazzInstructor(Integer clazzId) {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
         return examScheduleRepository.getAllBathByClazzInstructor(clazzId, instructorId);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllExamOfAdmin() {
+        return examScheduleRepository.getAllExamScheduleOfAdmin();
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin(Integer block, String semester, Integer year, Integer specializationId) {
+        return examScheduleRepository.getAllExamByBlockAndSemesterAndYearAndSpecializationIdOfAdmin(block, semester, year, specializationId);
     }
 }

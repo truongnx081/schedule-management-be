@@ -82,7 +82,8 @@ public class SecurityConfig {
             "/api/students/import",
             "/api/semesterprogresses/createSP",
             "/api/semesterprogresses/updateSP",
-            "/api/semesterprogresses/deleteSP"
+            "/api/semesterprogresses/deleteSP",
+            "/api/examschedules/admin"
 
     };
     @Bean
