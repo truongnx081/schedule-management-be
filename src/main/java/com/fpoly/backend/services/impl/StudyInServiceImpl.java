@@ -26,6 +26,7 @@ public class StudyInServiceImpl implements StudyInService {
     private final StudyInMapper studyInMapper;
     private final IdentifyUserAccessService identifyUserAccessService;
     private final ClazzRepository clazzRepository;
+    private final StudentRepository studentRepository;
 
     @Override
     public List<StudyInDTO> findAllByBlockAndSemesterAnhYear() {
@@ -64,5 +65,18 @@ public class StudyInServiceImpl implements StudyInService {
             throw new AppUnCheckedException("Bạn không có quyền xem danh sách này !", HttpStatus.FORBIDDEN);
         }
         return studyInRepository.getAllMarkAverageStudentsByClazzId(clazzId);
+    }
+
+    @Override
+    public StudyInDTO createStudyIn(StudyInDTO studyInDTO) {
+        String studentCode = identifyUserAccessService.getStudent().getCode();
+        StudyIn studyIn = studyInMapper.toEntity(studyInDTO);
+        Student student = studentRepository.findById(studyInDTO.getStudentId())
+                .orElseThrow(()-> new AppUnCheckedException("Student not found", HttpStatus.NOT_FOUND));
+        studyIn.setStudent(student);
+        Clazz clazz = clazzRepository.findById(studyInDTO.getClazzId())
+                .orElseThrow(()-> new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND));
+        studyIn.setClazz(clazz);
+        return studyInMapper.toDTO(studyInRepository.save(studyIn));
     }
 }

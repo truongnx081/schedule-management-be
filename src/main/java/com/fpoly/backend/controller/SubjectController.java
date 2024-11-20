@@ -47,4 +47,17 @@ public class SubjectController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+
+    // Tìm kiếm môn học theo id bộ môn
+    @GetMapping("/getSubjectDetail")
+    public ResponseEntity<Response> getSubjectById(@RequestParam Integer subjectId) {
+        try {
+            List<Map<String, Object>> subjects = subjectService.getSubjectDetail(subjectId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), subjects, "Lấy chi tiết môn hc thành công !", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
 }

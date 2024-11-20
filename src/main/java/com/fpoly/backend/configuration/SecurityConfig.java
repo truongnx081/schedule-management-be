@@ -22,7 +22,10 @@ public class SecurityConfig {
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
-            "api/sendemail"
+            "api/sendemail",
+            "/api/subjects/getAllSubject",
+            "/api/subjects/getAllSubjectBySpecializationId",
+            "/api/subjects/getSubjectDetail"
 
     };
     private final String[] STUDENT_ENDPOINTS={
@@ -37,8 +40,6 @@ public class SecurityConfig {
             "/api/notes/createNote",
             "/api/notes/updateNote",
             "/api/notes/deleteNote",
-            "/api/subjects/getAllSubject",
-            "/api/subjects/getAllSubjectBySpecializationId",
             "/api/schedules/getSchedules",
             "/api/examSchedules/getExamSchedules"
 
@@ -79,6 +80,9 @@ public class SecurityConfig {
             "/api/students/getAllStudentByCourseAndMajor",
             "/api/students/createStudent",
             "/api/students/import",
+            "/api/semesterprogresses/createSP",
+            "/api/semesterprogresses/updateSP",
+            "/api/semesterprogresses/deleteSP"
 
     };
     @Bean

@@ -15,4 +15,6 @@ public interface StudyInService {
     );
 
     List<Map<String, Object>> getAllMarkAverageStudentsByClazzId(Integer clazzId);
+
+    StudyInDTO createStudyIn(StudyInDTO studyInDTO);
 }
