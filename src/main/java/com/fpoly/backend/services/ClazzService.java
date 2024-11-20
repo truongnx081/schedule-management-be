@@ -21,4 +21,16 @@ public interface ClazzService {
     void importClazz(MultipartFile file);
 
     List<ClazzDTO> getClazzsByInstructorId();
+
+
+    List<Map<String, Object>> findClazzesForRegisterByBlockAndSemesterAndYearAndStudentId();
+
+    List<Map<String, Object>> findCurrentClazzesByBlockAndSemesterAndYearAndStudentId();
+
+    Map<String, Object> findClazzToChangeShiftById(Integer id);
+
+    List<Map<String, Object>> findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(Integer subjectId, Integer shift);
+
+    List<Map<String, Object>> findClazzesByInstructorIdAndBlockAndSemesterAndYear(Integer block, String semester, Integer year);
+
 }

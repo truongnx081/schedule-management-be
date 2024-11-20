@@ -52,4 +52,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
             "WHERE i.id = :instructorId " +
             "AND sc.status = false")
     List<Map<String, Object>> getClazzsByScheduleStatus(@Param("instructorId") Integer instructorId);
+
+    @Query ("SELECT s.date FROM Schedule s WHERE s.clazz.id = :clazzId ORDER BY s.date ASC")
+    List<LocalDate> findDateByClazzId(@Param("clazzId") Integer clazzId);
 }
