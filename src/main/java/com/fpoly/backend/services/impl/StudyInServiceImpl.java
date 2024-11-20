@@ -1,5 +1,6 @@
 package com.fpoly.backend.services.impl;
 
+import com.fpoly.backend.dto.Response;
 import com.fpoly.backend.dto.StudyInDTO;
 import com.fpoly.backend.entities.*;
 import com.fpoly.backend.exception.AppUnCheckedException;
@@ -11,6 +12,7 @@ import com.fpoly.backend.services.StudyInService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -70,13 +72,73 @@ public class StudyInServiceImpl implements StudyInService {
     @Override
     public StudyInDTO createStudyIn(StudyInDTO studyInDTO) {
         String studentCode = identifyUserAccessService.getStudent().getCode();
+        Integer studentId = identifyUserAccessService.getStudent().getId();
         StudyIn studyIn = studyInMapper.toEntity(studyInDTO);
-        Student student = studentRepository.findById(studyInDTO.getStudentId())
+        Student student = studentRepository.findById(studentId)
                 .orElseThrow(()-> new AppUnCheckedException("Student not found", HttpStatus.NOT_FOUND));
-        studyIn.setStudent(student);
+
         Clazz clazz = clazzRepository.findById(studyInDTO.getClazzId())
                 .orElseThrow(()-> new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND));
+        studyIn.setStudent(student);
         studyIn.setClazz(clazz);
+        studyIn.setCreatedBy(studentCode);
         return studyInMapper.toDTO(studyInRepository.save(studyIn));
+    }
+
+    @Override
+    public StudyInDTO updateStudyIn(Integer studyInId, StudyInDTO studyInDTO) {
+        return null;
+    }
+
+
+    @Override
+    public StudyInDTO createStudyIn2(Integer clazzId) {
+        String studentCode = identifyUserAccessService.getStudent().getCode();
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        StudyIn studyIn = new StudyIn();
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(()-> new AppUnCheckedException("Student not found", HttpStatus.NOT_FOUND));
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(()-> new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND));
+
+        // Kiểm tra xem sinh viên đã đăng ký lớp học này chưa
+        boolean isAlreadyRegistered = studyInRepository.existsByStudentIdAndClazzId(studentId, clazzId);
+        if (isAlreadyRegistered) {
+            throw new AppUnCheckedException("Student has already registered for this class", HttpStatus.CONFLICT);
+        }
+
+        studyIn.setStudent(student);
+        studyIn.setClazz(clazz);
+        studyIn.setCreatedBy(studentCode);
+        return studyInMapper.toDTO(studyInRepository.save(studyIn));
+    }
+
+    @Override
+    public StudyInDTO updateStudyIn2(Integer studyInId, Integer newClazzId) {
+        String studentCode = identifyUserAccessService.getStudent().getCode();
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+
+        // Kiểm tra xem StudyIn có tồn tại không
+        StudyIn existingStudyIn = studyInRepository.findById(studyInId)
+                .orElseThrow(() -> new AppUnCheckedException("StudyIn not found", HttpStatus.NOT_FOUND));
+
+        if (!existingStudyIn.getStudent().getId().equals(studentId)) {
+            throw new AppUnCheckedException("You cannot update this StudyIn", HttpStatus.FORBIDDEN);
+        }
+
+        // Kiểm tra lớp học mới có tồn tại không
+        Clazz newClazz = clazzRepository.findById(newClazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND));
+
+        // Kiểm tra xem sinh viên đã đăng ký lớp học mới chưa
+        boolean isAlreadyRegistered = studyInRepository.existsByStudentIdAndClazzId(studentId, newClazzId);
+        if (isAlreadyRegistered) {
+            throw new AppUnCheckedException("Student has already registered for this class", HttpStatus.CONFLICT);
+        }
+
+        // Cập nhật lớp học mới cho StudyIn
+        existingStudyIn.setClazz(newClazz);
+        existingStudyIn.setUpdatedBy(studentCode);
+        return studyInMapper.toDTO(studyInRepository.save(existingStudyIn));
     }
 }

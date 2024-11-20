@@ -102,7 +102,7 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
             }
         }
 
-// Xóa tất cả ArrangeBatch liên quan đến Clazz
+        // Xóa tất cả ArrangeBatch liên quan đến Clazz
         arrangeBatchRepository.deleteByClazzId(clazzId);
 
     }
