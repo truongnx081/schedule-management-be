@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,9 +39,12 @@ public class ClazzServiceImpl implements ClazzService {
     IdentifyUserAccessService identifyUserAccessService;
     ShiftRepository shiftRepository;
     RoomRepository roomRepository;
-    SemesterProgressService semesterProgressService;
     ExcelUtility excelUtility;
+    SemesterProgressRepository semesterProgressRepository;
     StudyInRepository studyInRepository;
+    WeekDayRepository weekDayRepository;
+    ScheduleRepository scheduleRepository;
+    SemesterProgressService semesterProgressService;
 
     @Override
     public ClazzDTO create(ClazzDTO request) {
@@ -171,5 +174,195 @@ public class ClazzServiceImpl implements ClazzService {
                 .map(studyIn -> clazzMapper.toDTO(studyIn.getClazz()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<Map<String, Object>> findClazzesForRegisterByBlockAndSemesterAndYearAndStudentId() {
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+        Student student = identifyUserAccessService.getStudent();
+
+        //Tìm toàn bộ môn phải học trong CTDT
+        List<Integer> allSubjects = subjectRepository.findSubjectsIdByEducationProgram(student.getEducationProgram().getId());
+        System.out.println("All: " + allSubjects.toString());
+
+        //Tìm các môn đã pass
+        List<Integer> passedSubjects = subjectRepository.findPassedSubjectsIdByStudentId(student.getId());
+        System.out.println("Passed: " + passedSubjects.toString());
+
+        //Tìm các môn đăng ký học
+        List<Integer> registedSubject = subjectRepository.findRegistedSubjectsIdByStudentIdAndBlockAndSemesterAndYear(
+                student.getId(),
+                block,
+                semester,
+                year);
+        System.out.println("Registed: " + registedSubject.toString());
+
+        //So sánh nếu pass môn thì cho môn đó là null
+        for (int i = 0; i < allSubjects.size(); i++){
+            for (int j = 0; j < passedSubjects.size(); j++){
+                if (Objects.equals(allSubjects.get(i), passedSubjects.get(j))){
+                    allSubjects.set(i, null);
+                    break;
+                }
+            }
+        }
+
+        //So sánh nếu đã đăng ký môn này trong kỳ này thì môn đó là null
+        for (int i = 0; i < allSubjects.size(); i++){
+            for (int j = 0; j < registedSubject.size(); j++){
+                if(Objects.equals(allSubjects.get(i), registedSubject.get(j))){
+                    allSubjects.set(i, null);
+                    break;
+                }
+            }
+        }
+
+        System.out.println(allSubjects.toString());
+        List<Map<String, Object>> registerClazzes = new ArrayList<Map<String, Object>>();
+
+        //Nếu môn đó null thì không cần tải lớp có môn đó lên nữa
+        for (int i = 0; i < allSubjects.size(); i++){
+            if (allSubjects.get(i) != null){
+                List<Map<String, Object>> clazzes = clazzRepository.findClazzesToRegistByBlockAndYearAndSemesterAndYearAndSubjectId(
+                        block, semester, year, allSubjects.get(i));
+                for (int j = 0; j < clazzes.size(); j++){
+                    registerClazzes.add(clazzes.get(j));
+                }
+            }
+        }
+
+        for (int i = 0; i <registerClazzes.size(); i++){
+            Map<String, Object> clazz = new HashMap<>(registerClazzes.get(i));
+
+            Integer amout = studyInRepository.countStudentByClazzId((Integer) registerClazzes.get(i).get("id"));
+            clazz.put("amout", amout);
+
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("id"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            clazz.put("study_day", studyDays);
+
+            registerClazzes.set(i, clazz);
+        }
+        return registerClazzes;
+    }
+
+    @Override
+    public List<Map<String, Object>> findCurrentClazzesByBlockAndSemesterAndYearAndStudentId() {
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+        Student student = identifyUserAccessService.getStudent();
+        List<Map<String,Object>> clazzes = clazzRepository.findCurrentClassesByBlockAndSemesterAndYearAndStudentId(block, semester, year, student.getId());
+
+        for (int i = 0; i < clazzes.size(); i++){
+            HashMap<String, Object> clazz = new HashMap<>(clazzes.get(i));
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("id"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            clazz.put("study_day", studyDays);
+            clazzes.set(i,clazz);
+        }
+        return clazzes;
+    }
+
+
+    @Override
+    public Map<String, Object> findClazzToChangeShiftById(Integer id) {
+        HashMap<String, Object> clazz = new HashMap<>(clazzRepository.findClazzToChangeByClazzId(id));
+        List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("id"));
+        String studyDays = "";
+        for (int j = 0; j < weekDays.size(); j++){
+            if (j < weekDays.size() -1){
+                studyDays += weekDays.get(j) + ", ";
+            } else {
+                studyDays += weekDays.get(j);
+            }
+        }
+        clazz.put("study_day", studyDays);
+        return clazz;
+    }
+
+    @Override
+    public List<Map<String, Object>> findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(Integer subjectId, Integer shift) {
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+
+        List<Map<String,Object>> clazzes = clazzRepository.findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear
+                (subjectId, shift,block,semester,year);
+
+        for (int i = 0; i <clazzes.size(); i++){
+            Map<String, Object> clazz = new HashMap<>(clazzes.get(i));
+
+            Integer amout = studyInRepository.countStudentByClazzId((Integer) clazz.get("clazz_id"));
+            clazz.put("amout", amout);
+
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("clazz_id"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            clazz.put("study_day", studyDays);
+
+            List<LocalDate> dates = scheduleRepository.findDateByClazzId((Integer) clazz.get("clazz_id"));
+            if (!dates.isEmpty()) {
+                clazz.put("start_date", dates.get(0));
+            }
+
+
+            clazzes.set(i, clazz);
+        }
+
+
+        return clazzes;
+    }
+
+    @Override
+    public List<Map<String, Object>> findClazzesByInstructorIdAndBlockAndSemesterAndYear(Integer block, String semester, Integer year) {
+        Instructor instructor = identifyUserAccessService.getInstructor();
+        List<Map<String,Object>> clazzes = clazzRepository.findClazzesByInstructorIdAndBlockAndSemesterAndYear(
+                instructor.getId(),
+                block,
+                semester,
+                year);
+        for (int i = 0; i < clazzes.size(); i++){
+            HashMap<String, Object> clazz = new HashMap<>(clazzes.get(i));
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("id"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            clazz.put("study_day", studyDays);
+            clazzes.set(i,clazz);
+        }
+
+        return clazzes;
     }
 }

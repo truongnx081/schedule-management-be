@@ -39,5 +39,11 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
             "order by CONCAT(stu.lastName ,' ', stu.firstName)")
     List<Map<String, Object>> getAllMarkAverageStudentsByClazzId(@Param("clazzId")Integer clazzId);
 
+
     boolean existsByStudentIdAndClazzId(Integer studentId, Integer clazzId);
+
+
+    @Query("SELECT COUNT(si) FROM StudyIn si WHERE si.clazz.id = :clazzId")
+    Integer countStudentByClazzId(@Param("clazzId") Integer clazzId);
+
 }

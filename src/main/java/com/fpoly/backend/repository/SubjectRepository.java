@@ -35,4 +35,32 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
             "JOIN sub.specialization spe " +
             "where sub.id = :subjectId")
     List<Map<String, Object>> getSubjectDetailById(@Param("subjectId") Integer subjectId);
+
+    @Query("SELECT s.id " +
+            "FROM Subject s " +
+            "JOIN s.applyFors af " +
+            "WHERE af.educationProgram.id = :educationProgramId")
+    List<Integer> findSubjectsIdByEducationProgram(@Param("educationProgramId") Integer educationProgramId);
+
+    @Query("SELECT c.subject.id " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns si " +
+            "JOIN si.studyResults sr " +
+            "WHERE si.student.id = :studentId " +
+            "GROUP BY c.subject.id " +
+            "HAVING SUM(sr.marked * sr.percentage)/100 >= 5")
+    List<Integer> findPassedSubjectsIdByStudentId(@Param("studentId") Integer studentId);
+
+    @Query("SELECT c.subject.id " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE c.block.block = :block AND c.semester.semester = :semester AND c.year.year = :year AND si.student.id = :studentId")
+    List<Integer> findRegistedSubjectsIdByStudentIdAndBlockAndSemesterAndYear(
+            @Param("studentId") Integer studentId,
+            @Param("block") Integer block,
+            @Param("semester") String semester,
+            @Param("year") Integer year);
+
+    @Query("SELECT s.id FROM Subject s JOIN Clazz c WHERE c.id = :clazzId")
+    Integer findSubjectByClazzId (@Param("clazzId") Integer clazzId);
 }
