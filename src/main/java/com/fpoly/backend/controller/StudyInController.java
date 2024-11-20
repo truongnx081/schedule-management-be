@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,4 +44,13 @@ public class StudyInController {
         }
     }
 
+    @PostMapping("/register-clazz")
+    public ResponseEntity<Response> create(StudyInDTO studyInDTO){
+        try {
+            StudyInDTO createStudyIn = studyInService.createStudyIn(studyInDTO);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),createStudyIn , "Đăng ký thành công lớp học !", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

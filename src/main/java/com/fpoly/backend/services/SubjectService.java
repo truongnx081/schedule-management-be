@@ -13,4 +13,6 @@ public interface SubjectService {
     List<Map<String, Object>> getAllSubjectBySpecializationId(Integer specializationId);
 
     List<Map<String, Object>> findAllSubject();
+
+    List<Map<String, Object>> getSubjectDetail(Integer subjectId);
 }
