@@ -85,7 +85,7 @@ public class ClazzController {
     @GetMapping("/clazzs-for-register")
     public ResponseEntity<Response> findClazzsByBlockAndSemesterAndYear(){
         try {
-            List<Map<String, Object>> clazzs = clazzService.findClazzByBlockAndSemesterAndYear();
+            List<Map<String, Object>> clazzs = clazzService.findClazzesForRegisterByBlockAndSemesterAndYearAndStudentId();
             return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzs, "Lấy danh sách lớp học theo block, semester và year thành công", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
@@ -121,5 +121,45 @@ public class ClazzController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+
+    //Lớp học hiện tại
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @GetMapping("/current-clazzes")
+    public ResponseEntity<Response> findClazzesByBlockAndSemesterAndYearAndStudentId(){
+        try {
+            List<Map<String, Object>> clazzes = clazzService.findCurrentClazzesByBlockAndSemesterAndYearAndStudentId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzes, "Lấy danh sách lớp học hiện tại cho sinh viên thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    //Lớp học được chọn để đổi ca
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @GetMapping("/clazz-to-change")
+    public ResponseEntity<Response> findClazzToChangeShiftById(@RequestParam("clazzId") Integer clazzId){
+        try {
+            Map<String, Object> clazz = clazzService.findClazzToChangeShiftById(clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazz, "Lấy lớp đã chọn để đổi môn học thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    //Danh sách các lớp học có môn muốn đổi và ca được chọn
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @GetMapping("/clazzes-to-change")
+    public ResponseEntity<Response> findClazzesToChangShiftBySubjectIdAndShift(@RequestParam("subjectId") Integer subjectId,
+                                                                               @RequestParam("shift") Integer shift){
+        try {
+            List<Map<String, Object>> clazzes = clazzService.findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(subjectId, shift);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzes, "Lấy danh sách lớp học muốn đổi thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+
 }
 
