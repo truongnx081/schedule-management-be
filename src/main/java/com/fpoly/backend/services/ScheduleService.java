@@ -28,4 +28,8 @@ public interface ScheduleService {
     List<ScheduleDTO> getAll();
     void importStudySchedule(MultipartFile file);
 
+    List<Map<String, Object>> getAllSchedulesByAdmin();
+
+
+    List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year);
 }
