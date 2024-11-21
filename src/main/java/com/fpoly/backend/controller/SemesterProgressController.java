@@ -11,13 +11,27 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/semesterprogresses")
 @Validated
 public class SemesterProgressController {
+
     @Autowired
     SemesterProgressService semesterProgressService;
+
+    @GetMapping("/getAllSP")
+    public ResponseEntity<Response> getAllSemesterProgress() {
+        try {
+            List<Map<String, Object>> getAllSP = semesterProgressService.getAllSemesterProgress();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllSP, "Lấy danh sách thành công Semester Progress thành công !", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
 
     // create semesterProgresses
     @PostMapping("/createSP")

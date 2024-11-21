@@ -55,4 +55,34 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
 
     @Query ("SELECT s.date FROM Schedule s WHERE s.clazz.id = :clazzId ORDER BY s.date ASC")
     List<LocalDate> findDateByClazzId(@Param("clazzId") Integer clazzId);
+
+    @Query("SELECT sch.date as date_schedule, sch.clazz.code as clazz_code, clz.instructor.code as instructor_code, " +
+            "sif.id as shift_id, rom.name as room_name, sub.name as subject_name, sub.code as subject_code," +
+            "spe.name as specialization_name " +
+            "FROM Schedule sch " +
+            "JOIN sch.clazz clz " +
+            "JOIN clz.shift sif " +
+            "JOIN clz.room rom " +
+            "JOIN clz.instructor ins " +
+            "JOIN clz.subject sub " +
+            "JOIN sub.specialization spe " +
+            "JOIN clz.block blk " +
+            "JOIN clz.semester ses " +
+            "JOIN clz.year yrs")
+    List<Map<String, Object>> getAllScheduleByAdmin();
+    @Query("SELECT sch.date as date_schedule, sch.clazz.code as clazz_code, clz.instructor.code as instructor_code, " +
+            "sif.id as shift_id, rom.name as room_name, sub.name as subject_name, sub.code as subject_code," +
+            "spe.name as specialization_name " +
+            "FROM Schedule sch " +
+            "JOIN sch.clazz clz " +
+            "JOIN clz.shift sif " +
+            "JOIN clz.room rom " +
+            "JOIN clz.instructor ins " +
+            "JOIN clz.subject sub " +
+            "JOIN sub.specialization spe " +
+            "JOIN clz.block blk " +
+            "JOIN clz.semester ses " +
+            "JOIN clz.year yrs " +
+            "WHERE  blk.block = :block and ses.semester = :semester and yrs.year = :year")
+    List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year);
 }

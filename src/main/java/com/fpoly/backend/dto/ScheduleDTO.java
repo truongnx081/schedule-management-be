@@ -16,9 +16,13 @@ import java.util.Date;
 public class ScheduleDTO {
     private Integer id;
 
-    private LocalDate date;
-
     private Integer clazzId;
-
+    private LocalDate date;
+    private String clazzCode;
+    private String instructorCode;
+    private Integer shiftId;
+    private String roomName;
+    private String subjectName;
+    private String subjectCode;
     boolean status;
 }

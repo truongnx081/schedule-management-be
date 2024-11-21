@@ -83,11 +83,25 @@ public class ScheduleController {
     }
 
     // Lấy danh sách tất cả lịch học
-    @GetMapping
+    @GetMapping("/admin")
     public ResponseEntity<Response> getAll(){
         try {
-            List<ScheduleDTO> scheduleDTOS = scheduleService.getAll();
-            return ResponseEntity.ok(new Response(LocalDateTime.now(), scheduleDTOS, "Lấy danh sách tất cả lịch học thành công", HttpStatus.OK.value()));
+            List<Map<String, Object>> getAllSchedulesByAdmin = scheduleService.getAllSchedulesByAdmin();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllSchedulesByAdmin, "Lấy danh sách tất cả lịch học thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    // Lấy danh sách tất cả lịch học
+    @GetMapping("/getByBlockSemesterYear/admin")
+    public ResponseEntity<Response> getAllByBlockAndSemesterAndYear(@RequestParam Integer block,
+                                                                    @RequestParam String semester,
+                                                                    @RequestParam Integer year
+    ){
+        try {
+            List<Map<String, Object>> getAllSchedulesByAdmin = scheduleService.getAllSchedulesByBlockSemesterYearByAdmin(block, semester, year);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllSchedulesByAdmin, "Lấy danh sách tất cả lịch học theo block semester year thành công", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
