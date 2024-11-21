@@ -175,4 +175,21 @@ public class StudentController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    // Cập nhật avatar
+    @PutMapping("/update-image/{id}")
+    public ResponseEntity<Response> updateImage(@RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                                @PathVariable Integer id){
+        try {
+            studentService.updateImage(id, avatar);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                null,
+                    "Cập nhật hình đại diện thành công",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

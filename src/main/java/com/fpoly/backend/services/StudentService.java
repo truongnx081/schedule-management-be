@@ -32,4 +32,5 @@ public interface StudentService {
     public List<StudentDTO> importExcelFile(MultipartFile file);
 
     public List<StudentDTO> getStudentsByInstructorId();
+    void updateImage(Integer id, MultipartFile avatar);
 }
