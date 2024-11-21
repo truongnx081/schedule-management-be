@@ -1,6 +1,9 @@
 package com.fpoly.backend.services.impl;
 
+import com.fpoly.backend.dto.InstructorDTO;
 import com.fpoly.backend.entities.Instructor;
+import com.fpoly.backend.entities.Student;
+import com.fpoly.backend.mapper.InstructorMapper;
 import com.fpoly.backend.repository.InstructorRepository;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.InstructorService;
@@ -20,6 +23,8 @@ public class InstructorServiceImpl implements InstructorService {
 
     @Autowired
     IdentifyUserAccessService identifyUserAccessService;
+    @Autowired
+    private InstructorMapper instructorMapper;
 
     @Override
     public Instructor findById(Integer id) {
@@ -30,6 +35,12 @@ public class InstructorServiceImpl implements InstructorService {
     public List<Map<String, Object>> getAllTeachingScheduleByInstructor(LocalDate startDate, LocalDate endDate) {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
         return instructorRepository.getAllTeachingScheduleByInstructor(instructorId, startDate, endDate);
+    }
+
+    @Override
+    public InstructorDTO getInstructorInfor() {
+        Instructor instructor = identifyUserAccessService.getInstructor();
+        return instructorMapper.toDTO(instructor);
     }
 
 }

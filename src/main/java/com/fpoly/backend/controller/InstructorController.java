@@ -38,4 +38,19 @@ public class InstructorController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    // Get instructor information
+    @GetMapping("/instructorInfor")
+    public ResponseEntity<Response> getInstructorInfor() {
+        try {
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    instructorService.getInstructorInfor(),
+                    "Get instructor Infor Succesful",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }
