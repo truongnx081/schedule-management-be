@@ -83,7 +83,11 @@ public class SecurityConfig {
             "/api/semesterprogresses/createSP",
             "/api/semesterprogresses/updateSP",
             "/api/semesterprogresses/deleteSP",
-            "/api/examschedules/admin"
+            "/api/examschedules/admin",
+            "/api/semesterprogresses/getAllSP",
+            "/api/schedules/admin",
+            "/api/schedules/getByBlockSemesterYear/admin",
+
 
     };
     @Bean

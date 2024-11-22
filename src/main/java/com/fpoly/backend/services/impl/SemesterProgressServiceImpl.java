@@ -18,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class SemesterProgressServiceImpl implements SemesterProgressService {
@@ -115,5 +118,10 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
     public SemesterProgress findActivedProgressTrue() {
         return semesterProgressRepository.findByIsActive(true).orElseThrow(()->
                 new RuntimeException("SemesterProgress is true not found"));
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllSemesterProgress() {
+        return semesterProgressRepository.getAllSemesterProgress();
     }
 }

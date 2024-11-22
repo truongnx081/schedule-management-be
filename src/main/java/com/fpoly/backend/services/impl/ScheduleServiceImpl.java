@@ -132,4 +132,14 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getAllSchedulesByAdmin() {
+        return scheduleRepository.getAllScheduleByAdmin();
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year) {
+        return scheduleRepository.getAllSchedulesByBlockSemesterYearByAdmin(block, semester, year);
+    }
 }

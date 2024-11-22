@@ -19,7 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -275,6 +279,21 @@ public class StudentServiceImpl implements StudentService {
     public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId) {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
         return studentRepository.findStudentByClazzId(clazzId, instructorId);
+    }
+
+    @Override
+    public void updateImage(Integer id, MultipartFile avatar) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Student not found"));
+
+        // Nếu có file hình ảnh mới, cập nhật hình ảnh trên Cloudinary và lưu id hình
+        if (avatar != null && !avatar.isEmpty()) {
+            FileUpload.assertAllowed(avatar, FileUpload.IMAGE_PATTERN);
+            final String fileName= FileUpload.getFileName(avatar.getOriginalFilename());
+            final CloudinaryResponse response = cloudinaryService.uploadFile(avatar, fileName);
+            student.setAvatar(response.getPublicId());
+        }
+        studentRepository.save(student);
     }
 
 
