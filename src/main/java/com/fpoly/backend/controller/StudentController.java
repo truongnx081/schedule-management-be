@@ -4,6 +4,7 @@ import com.fpoly.backend.dto.Response;
 import com.fpoly.backend.dto.StudentDTO;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.services.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,14 @@ public class StudentController {
     //Student update student information
     @PutMapping("/updateStudentByStudent")
     public ResponseEntity<Response> updateStudentByStudent(
-            @RequestPart("request") StudentDTO request,
+            @RequestPart("request") @Valid StudentDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
+
         try {
+            System.out.println("Received Request: " + request);
+            if (file != null) {
+                System.out.println("Received File: " + file.getOriginalFilename());
+            }
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
                     studentService.updateStudentByStudent(request, file),
@@ -162,17 +168,19 @@ public class StudentController {
     }
 
     @GetMapping("/getStudentsByInstructorIdAndClazzId")
-    public ResponseEntity<Response> getStudentsByInstructorId() {
+    public ResponseEntity<Response> getStudentsByInstructorIdAndClazzId(
+            @RequestParam(required = false) Integer clazzId) {
 
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
-                    studentService.getStudentsByInstructorId(),
-                    "Get All Student successfully",
+                    studentService.getStudentsByClazzId(clazzId),
+                    "Get All Students successfully",
                     HttpStatus.OK.value())
             );
         } catch (AppUnCheckedException e) {
-            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+            return ResponseEntity.status(e.getStatus())
+                    .body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
 
@@ -192,4 +200,5 @@ public class StudentController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
 }
