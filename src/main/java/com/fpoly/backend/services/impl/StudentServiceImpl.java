@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -271,13 +272,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentDTO> getStudentsByInstructorId() {
+    public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId) {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
-
-        List<StudyIn> studyIns = studyInRepository.findByClazz_Instructor_Id(instructorId);
-        return studyIns.stream()
-                .map(studyIn -> studentMapper.toDTO(studyIn.getStudent())).collect(Collectors.toList());
+        return studentRepository.findStudentByClazzId(clazzId, instructorId);
     }
+
+
 
 
     private String getCellStringValue(Cell cell) {

@@ -50,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .subject(email)
                 .issuer("truongnx")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope",role)
                 .build();

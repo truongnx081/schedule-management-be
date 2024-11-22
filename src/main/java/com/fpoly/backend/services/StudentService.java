@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface StudentService {
@@ -27,9 +28,9 @@ public interface StudentService {
 
     public void uploadStudentImages(String folderPath, List<Student> students);
 
-    public List<StudentDTO> getAllStudentByCourseAndMajor( String course, Integer majorId);
+    public List<StudentDTO> getAllStudentByCourseAndMajor(String course, Integer majorId);
 
     public List<StudentDTO> importExcelFile(MultipartFile file);
 
-    public List<StudentDTO> getStudentsByInstructorId();
+    public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId);
 }
