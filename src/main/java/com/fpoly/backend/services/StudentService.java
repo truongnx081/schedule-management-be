@@ -33,7 +33,6 @@ public interface StudentService {
     public List<StudentDTO> importExcelFile(MultipartFile file);
 
     public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId);
-    public List<StudentDTO> getStudentsByInstructorId();
     void updateImage(Integer id, MultipartFile avatar);
 
 }
