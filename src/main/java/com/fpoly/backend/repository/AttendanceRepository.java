@@ -17,9 +17,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     public Optional<Attendance> findByStudentIdAndScheduleId(Integer studentId, Integer scheduleId);
 
-    @Query("SELECT a.student.id as studentCode, " +
+    @Query("SELECT a.student.id as studentId, " +
+            "a.student.code as studentCode, " +
             "CONCAT(a.student.lastName, ' ', a.student.firstName) as fullName, " +
-            "a.student.avatar as imgStudent," +
+            "a.student.avatar as avatar," +
             "a.present as isPresent " +
             "FROM Attendance a " +
             "JOIN a.schedule s " +

@@ -244,7 +244,7 @@ public class StudentServiceImpl implements StudentService {
                     }
 
                     if (row.getCell(10).getCellType() == CellType.NUMERIC) {
-                        student.setCourse(String.valueOf((int) row.getCell(10).getNumericCellValue()));
+                        student.setCourse(String.valueOf((double) row.getCell(10).getNumericCellValue()));
                     } else {
                         student.setCourse(getCellStringValue(row.getCell(10)));
                     }
