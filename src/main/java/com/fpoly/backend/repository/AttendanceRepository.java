@@ -23,10 +23,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             "a.present as isPresent " +
             "FROM Attendance a " +
             "JOIN a.schedule s " +
-            "WHERE s.date = :date AND s.clazz.id = :clazzId")
-    List<Map<String, Object>> findStudentIdsByDateAndClazzId(
+            "WHERE s.clazz.id = :clazzId " +
+            "AND s.id =:scheduleId")
+    List<Map<String, Object>> findStudentIdsByScheduleIdAndClazzId(
             @Param("clazzId") Integer clazzId,
-            @Param("date") LocalDate date);
+            @Param("scheduleId") Integer scheduleId);
 
 
 
