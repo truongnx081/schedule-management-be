@@ -49,9 +49,9 @@ public class AttendanceController {
     @GetMapping("/attendedByClazzId")
     public ResponseEntity<Response> getAttendanceByClazzId(
             @RequestParam("clazzId") Integer clazzId,
-            @RequestParam("date") LocalDate date) {
+            @RequestParam("scheduleId") Integer scheduleId) {
         try {
-            List<Map<String, Object>> list = attendanceService.getAttendanceByClazzId(clazzId,date);
+            List<Map<String, Object>> list = attendanceService.getAttendanceByClazzId(clazzId,scheduleId);
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
                     list,

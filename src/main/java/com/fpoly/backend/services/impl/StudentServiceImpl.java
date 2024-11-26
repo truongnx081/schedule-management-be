@@ -181,6 +181,7 @@ public class StudentServiceImpl implements StudentService {
 
     public List<StudentDTO> importExcelFile(MultipartFile file) {
         List<StudentDTO> studentsDTO = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
 
         try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -189,19 +190,20 @@ public class StudentServiceImpl implements StudentService {
                 Row row = sheet.getRow(i);
                 if (row != null) {
                     Student student = new Student();
-                    
-                    String studentCode;
+                    StringBuilder rowErrorMessages = new StringBuilder();
+
+                    String studentCode = null;
                     if (row.getCell(1).getCellType() == CellType.STRING) {
                         studentCode = row.getCell(1).getStringCellValue();
                     } else if (row.getCell(1).getCellType() == CellType.NUMERIC) {
                         studentCode = String.valueOf((int) row.getCell(1).getNumericCellValue());
                     } else {
-                        throw new RuntimeException("Invalid code format in row " + (i + 1));
+                        rowErrorMessages.append("Invalid code format; ");
                     }
 
                     Optional<Student> existingStudent = studentRepository.findByCode(studentCode);
                     if (existingStudent.isPresent()) {
-                        System.out.println("Student existed: " + studentCode);
+                        rowErrorMessages.append("Student already exists; ");
                         continue;
                     }
                     student.setCode(studentCode);
@@ -210,9 +212,14 @@ public class StudentServiceImpl implements StudentService {
                     student.setLastName(getCellStringValue(row.getCell(3)));
 
                     if (row.getCell(4).getCellType() == CellType.NUMERIC) {
-                        student.setBirthday(row.getCell(4).getLocalDateTimeCellValue().toLocalDate());
+                        LocalDate birthday = row.getCell(4).getLocalDateTimeCellValue().toLocalDate();
+                        if (birthday.isAfter(LocalDate.now().minusYears(17))) {
+                            rowErrorMessages.append("Student must be at least 17 years old; ");
+                        } else {
+                            student.setBirthday(birthday);
+                        }
                     } else {
-                        student.setBirthday(LocalDate.now());
+                        rowErrorMessages.append("Invalid date format for birthday; ");
                     }
 
                     String genderStr = getCellStringValue(row.getCell(5));
@@ -221,7 +228,7 @@ public class StudentServiceImpl implements StudentService {
                     } else if ("Nữ".equalsIgnoreCase(genderStr)) {
                         student.setGender(false);
                     } else {
-                        throw new RuntimeException("Gender not existed:: " + genderStr);
+                        rowErrorMessages.append("Invalid gender value; ");
                     }
 
                     student.setAddress(getCellStringValue(row.getCell(6)));
@@ -229,6 +236,14 @@ public class StudentServiceImpl implements StudentService {
                     student.setPhone(getCellStringValue(row.getCell(8)));
                     student.setDescription(getCellStringValue(row.getCell(9)));
                     student.setAvatar(null);
+
+                    if (!isValidEmail(student.getEmail())) {
+                        rowErrorMessages.append("Invalid email format; ");
+                    }
+
+                    if (!isValidPhone(student.getPhone())) {
+                        rowErrorMessages.append("Invalid phone number; ");
+                    }
 
                     if (row.getCell(10).getCellType() == CellType.NUMERIC) {
                         student.setCourse(String.valueOf((double) row.getCell(10).getNumericCellValue()));
@@ -241,21 +256,21 @@ public class StudentServiceImpl implements StudentService {
                     if (major != null) {
                         student.setMajor(major);
                     } else {
-                        throw new RuntimeException("Major not existed:: " + majorName);
+                        rowErrorMessages.append("Major not found: " + majorName + "; ");
                     }
 
                     String semesterValue = getCellStringValue(row.getCell(12));
                     Semester semester = semesterRepository.findById(semesterValue)
-                            .orElseThrow(() -> new RuntimeException("Semester not existed:: " + semesterValue));
+                            .orElseThrow(() -> new AppUnCheckedException("Semester not found: " + semesterValue, HttpStatus.BAD_REQUEST));
                     student.setSemester(semester);
 
                     if (row.getCell(13).getCellType() == CellType.NUMERIC) {
                         Integer yearValue = (int) row.getCell(13).getNumericCellValue();
                         Year year = yearRepository.findByYear(yearValue)
-                                .orElseThrow(() -> new RuntimeException("Year not existed: " + yearValue));
+                                .orElseThrow(() -> new AppUnCheckedException("Year not found: " + yearValue, HttpStatus.BAD_REQUEST));
                         student.setYear(year);
                     } else {
-                        throw new RuntimeException("Year not existed: " + getCellStringValue(row.getCell(1)));
+                        rowErrorMessages.append("Invalid year format; ");
                     }
 
                     String educationProgramName = getCellStringValue(row.getCell(14));
@@ -263,7 +278,12 @@ public class StudentServiceImpl implements StudentService {
                     if (educationProgram != null) {
                         student.setEducationProgram(educationProgram);
                     } else {
-                        throw new RuntimeException("EducationProgram not existed: " + educationProgramName);
+                        rowErrorMessages.append("EducationProgram not found: " + educationProgramName + "; ");
+                    }
+
+                    if (rowErrorMessages.length() > 0) {
+                        errorMessages.add("Row " + (i + 1) + ": " + rowErrorMessages.toString());
+                        continue;
                     }
 
                     studentRepository.save(student);
@@ -271,10 +291,22 @@ public class StudentServiceImpl implements StudentService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error import Excel: " + e.getMessage());
+            throw new AppUnCheckedException("Error import Excel: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (!errorMessages.isEmpty()) {
+            throw new AppUnCheckedException("Import failed with the following errors: " + String.join(", ", errorMessages), HttpStatus.BAD_REQUEST);
         }
 
         return studentsDTO;
+    }
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+
+    private boolean isValidPhone(String phone) {
+        return phone != null && phone.matches("^0\\d{9}$");
     }
 
     @Override

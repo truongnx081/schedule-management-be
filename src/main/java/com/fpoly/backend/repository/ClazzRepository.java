@@ -29,7 +29,8 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
     boolean existsByIdAndInstructorId(Integer clazzId, Integer instructorId);
 
     @Query("SELECT c.id as id," +
-            "c.code as code," +
+            "c.code as code, " +
+            "c.subject.code as subjectCode,     " +
             "c.subject.name as subject_name," +
             "c.instructor.firstName as instructor_first_name," +
             "c.instructor.lastName as instrutor_last_name, " +

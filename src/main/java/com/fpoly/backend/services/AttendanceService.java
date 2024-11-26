@@ -13,7 +13,7 @@ public interface AttendanceService {
 
     public List<AttendanceDTO> markAttendance(List<AttendanceDTO> request);
 
-    List<Map<String,Object>> getAttendanceByClazzId(Integer clazzId, LocalDate date);
+    List<Map<String,Object>> getAttendanceByClazzId(Integer clazzId, Integer scheduleId);
 
     public List<AttendanceDTO> updateAttendance(List<AttendanceDTO> attendanceDTOs) ;
 }

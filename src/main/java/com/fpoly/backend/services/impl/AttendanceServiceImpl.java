@@ -62,8 +62,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<Map<String,Object>> getAttendanceByClazzId(Integer clazzId, LocalDate date){
-        return attendanceRepository.findStudentIdsByDateAndClazzId(clazzId,date);
+    public List<Map<String,Object>> getAttendanceByClazzId(Integer clazzId, Integer scheduleId){
+        return attendanceRepository.findStudentIdsByScheduleIdAndClazzId(clazzId,scheduleId);
     }
 
     @Override
