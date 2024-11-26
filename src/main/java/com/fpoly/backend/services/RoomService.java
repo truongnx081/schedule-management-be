@@ -13,4 +13,6 @@ public interface RoomService {
     Room findById(Integer id);
 
     public List<Map<String,Object>> getAvailableRooms(Integer buildingId, LocalDate date);
+
+    List<RoomDTO> getAllRoomByAdminArea();
 }

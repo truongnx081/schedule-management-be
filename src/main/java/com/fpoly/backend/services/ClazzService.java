@@ -22,7 +22,6 @@ public interface ClazzService {
 
     List<ClazzDTO> getClazzsByInstructorId();
 
-
     List<Map<String, Object>> findClazzesForRegisterByBlockAndSemesterAndYearAndStudentId();
 
     List<Map<String, Object>> findCurrentClazzesByBlockAndSemesterAndYearAndStudentId();
@@ -32,5 +31,6 @@ public interface ClazzService {
     List<Map<String, Object>> findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(Integer subjectId, Integer shift);
 
     List<Map<String, Object>> findClazzesByInstructorIdAndBlockAndSemesterAndYear(Integer block, String semester, Integer year);
+    List<Map<String, Object>> findAllClazzsByBlockAndSemesterAndYear(Integer block, String semester, Integer year);
 
 }

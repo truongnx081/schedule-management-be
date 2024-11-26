@@ -80,12 +80,11 @@ public class StudentController {
     @PutMapping("/updateStudentByAdmin")
     public ResponseEntity<Response> updateStudentByAdmin(
             @RequestParam Integer studentId,
-            @RequestPart("student") StudentDTO request,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart("student") StudentDTO request) {
         try {
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
-                    studentService.updateStudentByAdmin(studentId, request, file),
+                    studentService.updateStudentByAdmin(studentId, request),
                     "Update student successfully",
                     HttpStatus.OK.value())
             );
@@ -114,7 +113,7 @@ public class StudentController {
     }
 
     //Admin delete student
-    @DeleteMapping("deleteStudent")
+    @DeleteMapping("/deleteStudent")
     public ResponseEntity<Response> deleteStudent(@RequestParam Integer id) {
         try {
             return ResponseEntity.ok(new Response(

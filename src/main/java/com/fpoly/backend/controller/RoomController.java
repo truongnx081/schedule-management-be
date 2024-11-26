@@ -44,4 +44,19 @@ public class RoomController {
         }
 
     }
+
+    // Lấy tất cả phòng học theo khu vực của admin
+    @GetMapping
+    public ResponseEntity<Response> getAllRoomByAdminArea(){
+        try{
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    roomService.getAllRoomByAdminArea(),
+                    "Lấy tất cả phòng học theo khu vực của admin thành công",
+                    HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+
+    }
 }

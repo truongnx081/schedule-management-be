@@ -22,7 +22,7 @@ public interface StudentService {
 
     public StudentDTO updateStudentByStudent(StudentDTO request, MultipartFile file);
 
-    StudentDTO updateStudentByAdmin(Integer studentId, StudentDTO request, MultipartFile file);
+    StudentDTO updateStudentByAdmin(Integer studentId, StudentDTO request);
 
     public StudentDTO deleteStudentById(Integer studentId);
 

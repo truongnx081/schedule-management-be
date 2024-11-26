@@ -38,5 +38,5 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-
+    List<Instructor> findAllBySpecializationId(Integer specializationId);
 }

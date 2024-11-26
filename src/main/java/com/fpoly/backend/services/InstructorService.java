@@ -15,4 +15,5 @@ public interface InstructorService {
 
     public List<Map<String, Object>> getAllTeachingScheduleByInstructor(LocalDate startDate, LocalDate endDate);
     InstructorDTO getInstructorInfor();
+    List<InstructorDTO> getAllInstructorBySpecialization(Integer specializationId);
 }

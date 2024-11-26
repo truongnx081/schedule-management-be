@@ -8,6 +8,7 @@ import com.fpoly.backend.mapper.StudentMapper;
 import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.CloudinaryService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
+import com.fpoly.backend.services.SemesterProgressService;
 import com.fpoly.backend.services.StudentService;
 import com.fpoly.backend.until.FileUpload;
 import jakarta.persistence.EntityNotFoundException;
@@ -45,6 +46,7 @@ public class StudentServiceImpl implements StudentService {
     YearRepository yearRepository;
     SemesterRepository semesterRepository;
     StudyInRepository studyInRepository;
+    private final SemesterProgressService semesterProgressService;
 
     @Override
     public Student findById(Integer id) {
@@ -65,11 +67,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO createStudent(StudentDTO request, MultipartFile file) {
+        SemesterProgress semesterProgress = semesterProgressService.findActivedProgressTrue();
+
         if (studentRepository.existsByCode(request.getCode())) {
-            throw new AppUnCheckedException("Code existed", HttpStatus.CONFLICT);
+            throw new AppUnCheckedException("Mã sinh viên này đã tồn tại", HttpStatus.CONFLICT);
         }
         if (studentRepository.existsByEmail(request.getEmail())) {
-            throw new AppUnCheckedException("Email existed", HttpStatus.CONFLICT);
+            throw new AppUnCheckedException("Email này đã tồn tại", HttpStatus.CONFLICT);
         }
 
         String adminCode = identifyUserAccessService.getAdmin().getCode();
@@ -82,23 +86,27 @@ public class StudentServiceImpl implements StudentService {
         }
         student.setCreatedBy(adminCode);
         student.setEducationProgram(educationProgramRepository.findById(request.getEducationProgramId()).orElseThrow(() ->
-                new AppUnCheckedException("Education Program not found", HttpStatus.NOT_FOUND)
+                new AppUnCheckedException("Không tìm thấy chương trình đào tạo", HttpStatus.NOT_FOUND)
         ));
 
-        Semester semester = semesterRepository.findById(request.getSemester()).orElseThrow(() ->
-                new AppUnCheckedException("Semester not found", HttpStatus.NOT_FOUND)
-        );
-        student.setSemester(semester);
-
-        Year year = yearRepository.findById(request.getYear()).orElseThrow(() ->
-                new AppUnCheckedException("Year not found", HttpStatus.NOT_FOUND)
-        );
-        student.setYear(year);
+//        Semester semester = semesterRepository.findById(request.getSemester()).orElseThrow(() ->
+//                new AppUnCheckedException("Không tìm thấy học kỳ", HttpStatus.NOT_FOUND)
+//        );
+//        student.setSemester(semester);
+//
+//        Year year = yearRepository.findById(request.getYear()).orElseThrow(() ->
+//                new AppUnCheckedException("Không tìm thấy năm học", HttpStatus.NOT_FOUND)
+//        );
+//        student.setYear(year);
 
         Major major = majorRepository.findById(request.getMajorId()).orElseThrow(() ->
-                new AppUnCheckedException("Major not found", HttpStatus.NOT_FOUND)
+                new AppUnCheckedException("Không tìm thấy chuyên ngành", HttpStatus.NOT_FOUND)
         );
         student.setMajor(major);
+        student.setId(null);
+        student.setSemester(semesterProgress.getSemester());
+        student.setYear(semesterProgress.getYear());
+
         return studentMapper.toDTO(studentRepository.save(student));
     }
 
@@ -120,25 +128,19 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public StudentDTO updateStudentByAdmin(Integer studentId, StudentDTO request, MultipartFile file) {
-        if (studentRepository.existsByCode(request.getCode())) {
-            throw new AppUnCheckedException("Code existed", HttpStatus.CONFLICT);
-        }
-        if (studentRepository.existsByEmail(request.getEmail())) {
-            throw new AppUnCheckedException("Email existed", HttpStatus.CONFLICT);
-        }
+    public StudentDTO updateStudentByAdmin(Integer studentId, StudentDTO request) {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(()-> new RuntimeException("Student not found"));
 
-        studentMapper.updateStudent(student,request);
+        studentMapper.updateStudentByAdmin(student,request);
 
-        if(file!=null||!file.isEmpty()){
-            FileUpload.assertAllowed(file, FileUpload.IMAGE_PATTERN);
-            final String fileName= FileUpload.getFileName(file.getOriginalFilename());
-            final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
-            student.setAvatar(response.getPublicId());
-        }
+//        if(file!=null||!file.isEmpty()){
+//            FileUpload.assertAllowed(file, FileUpload.IMAGE_PATTERN);
+//            final String fileName= FileUpload.getFileName(file.getOriginalFilename());
+//            final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+//            student.setAvatar(response.getPublicId());
+//        }
         String adminCode = identifyUserAccessService.getAdmin().getCode();
         student.setUpdatedBy(adminCode);
 
@@ -229,7 +231,7 @@ public class StudentServiceImpl implements StudentService {
                     student.setAvatar(null);
 
                     if (row.getCell(10).getCellType() == CellType.NUMERIC) {
-                        student.setCourse(String.valueOf((int) row.getCell(10).getNumericCellValue()));
+                        student.setCourse(String.valueOf((double) row.getCell(10).getNumericCellValue()));
                     } else {
                         student.setCourse(getCellStringValue(row.getCell(10)));
                     }

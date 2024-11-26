@@ -25,26 +25,5 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     List<Map<String, Object>> findAvailableRooms(@Param("buildingId") Integer buildingId,
                                                  @Param("date") LocalDate date);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    List<Room> findAllByBuildingAreaId(Integer AreaId);
 }

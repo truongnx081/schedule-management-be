@@ -19,4 +19,6 @@ public class RoomDTO {
     private Boolean status;
 
     private Integer buildingId;
+
+    private String buildingName;
 }

@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 public abstract class RoomMapper {
 
     @Mapping(source = "building.id", target = "buildingId")
+    @Mapping(target = "buildingName", source = "building.name")
     public abstract RoomDTO toDTO (Room room);
 
     @Mapping(target = "building", ignore = true)

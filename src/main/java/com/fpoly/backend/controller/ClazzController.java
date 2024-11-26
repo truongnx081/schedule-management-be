@@ -160,6 +160,19 @@ public class ClazzController {
         }
     }
 
-
+    // Lấy danh sách lớp học theo block, semester và year cho admin
+    @GetMapping("/for-admin")
+    public ResponseEntity<Response> findAllClazzsByBlockAndSemesterAndYear(
+            @RequestParam("block") Integer block,
+            @RequestParam("semester") String semester,
+            @RequestParam("year") Integer year
+    ){
+        try {
+            List<Map<String, Object>> clazzs = clazzService.findAllClazzsByBlockAndSemesterAndYear(block,semester,year);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzs, "Lấy danh sách lớp học theo block, semester và year cho admin thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }
 

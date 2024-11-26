@@ -43,4 +43,10 @@ public class InstructorServiceImpl implements InstructorService {
         return instructorMapper.toDTO(instructor);
     }
 
+    @Override
+    public List<InstructorDTO> getAllInstructorBySpecialization(Integer specializationId) {
+        return instructorRepository.findAllBySpecializationId(specializationId).stream()
+                .map(instructorMapper::toDTO).toList();
+    }
+
 }

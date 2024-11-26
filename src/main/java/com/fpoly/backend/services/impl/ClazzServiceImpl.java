@@ -365,4 +365,57 @@ public class ClazzServiceImpl implements ClazzService {
 
         return clazzes;
     }
+
+//    @Override
+//    public List<Map<String, Object>> findAllClazzsByBlockAndSemesterAndYear(Integer block, String semester, Integer year) {
+//        return clazzRepository.findAllClazzsByBlockAndSemesterAndYear(block,semester,year);
+//    }
+
+@Override
+    public List<Map<String, Object>> findAllClazzsByBlockAndSemesterAndYear(
+            Integer block, String semester, Integer year) {
+    // Ánh xạ các ngày trong tuần sang số
+    Map<String, Integer> dayToNumber = Map.of(
+            "Monday", 2,
+            "Tuesday", 3,
+            "Wednesday", 4,
+            "Thursday", 5,
+            "Friday", 6,
+            "Saturday", 7,
+            "Sunday", 8
+    );
+    List<Map<String, Object>> rawResults = clazzRepository.findAllClazzsByBlockAndSemesterAndYear(block, semester, year);
+
+    Map<String, Map<String, Object>> clazzMap = new HashMap<>();
+
+    for (Map<String, Object> row : rawResults) {
+        String clazzId = row.get("id").toString(); // Lấy id của lớp
+        String weekday = row.get("weekday").toString(); // Lấy ngày trong tuần
+
+        // Ánh xạ weekday sang số
+        Integer weekdayNumber = dayToNumber.get(weekday);
+
+        if (!clazzMap.containsKey(clazzId)) {
+            // Tạo bản ghi mới nếu chưa tồn tại trong map
+            Map<String, Object> clazzData = new HashMap<>(row); // Sao chép dữ liệu ban đầu
+            clazzData.put("weekdays", new ArrayList<>()); // Tạo danh sách ngày trong tuần
+            clazzMap.put(clazzId, clazzData);
+        }
+
+        // Thêm ngày đã được chuyển đổi thành số vào danh sách weekdays
+        ((List<Integer>) clazzMap.get(clazzId).get("weekdays")).add(weekdayNumber);
+
+    }
+
+    // Biến danh sách ngày thành chuỗi phân cách bởi dấu phẩy
+    return clazzMap.values().stream().map(clazz -> {
+        List<Integer> weekdays = (List<Integer>) clazz.get("weekdays");
+        clazz.put("weekdays", weekdays.stream()
+                .sorted() // Sắp xếp tăng dần
+                .map(String::valueOf) // Chuyển Integer sang String
+                .collect(Collectors.joining(", "))); // Ghép thành chuỗi
+        return clazz;
+    }).collect(Collectors.toList());
+    }
+
 }

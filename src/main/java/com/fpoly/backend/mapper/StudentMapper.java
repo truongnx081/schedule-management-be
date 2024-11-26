@@ -37,4 +37,12 @@ public abstract class StudentMapper {
     @Mapping(target = "course", ignore = true)
     public abstract void updateStudent(@MappingTarget Student student, StudentDTO request);
 
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "course", ignore = true)
+    @Mapping(target = "code", ignore = true)
+    @Mapping(target = "educationProgram", ignore = true)
+    @Mapping(target = "semester", ignore = true)
+    @Mapping(target = "year", ignore = true)
+    public abstract void updateStudentByAdmin(@MappingTarget Student student, StudentDTO request);
+
 }

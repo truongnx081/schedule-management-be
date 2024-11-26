@@ -53,4 +53,19 @@ public class InstructorController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    // Lấy tất cả giảng viên theo bộ môn
+    @GetMapping
+    public ResponseEntity<Response> getAllInstructorBySpecialization(@RequestParam Integer specializationId) {
+        try {
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    instructorService.getAllInstructorBySpecialization(specializationId),
+                    "Lấy tất cả giảng viên theo bộ môn thành công",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

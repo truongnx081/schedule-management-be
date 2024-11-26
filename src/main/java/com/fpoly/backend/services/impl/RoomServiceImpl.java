@@ -1,8 +1,12 @@
 package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.RoomDTO;
+import com.fpoly.backend.entities.Admin;
 import com.fpoly.backend.entities.Room;
+import com.fpoly.backend.mapper.RoomMapper;
+import com.fpoly.backend.mapper.RoomMapperImpl;
 import com.fpoly.backend.repository.RoomRepository;
+import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,10 @@ import java.util.Map;
 public class RoomServiceImpl implements RoomService {
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    private IdentifyUserAccessService identifyUserAccessService;
+    @Autowired
+    private RoomMapper roomMapper;
 
     @Override
     public Room findById(Integer id) {
@@ -27,5 +35,13 @@ public class RoomServiceImpl implements RoomService {
     public List<Map<String,Object>> getAvailableRooms(Integer buildingId, LocalDate date) {
         return roomRepository.findAvailableRooms(buildingId, date);
 
+    }
+
+    @Override
+    public List<RoomDTO> getAllRoomByAdminArea() {
+        Admin admin = identifyUserAccessService.getAdmin();
+        return roomRepository.findAllByBuildingAreaId(admin.getArea().getId())
+                .stream()
+                .map(roomMapper::toDTO).toList();
     }
 }

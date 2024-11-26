@@ -113,4 +113,18 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
                                                                                   @Param("block") Integer block,
                                                                                   @Param("semester") String semester,
                                                                                   @Param("year") Integer year);
+
+    @Query("SELECT c.id AS id, c.code AS code, c.onlineLink AS onlineLink, c.quantity AS quantity, " +
+            "c.block.block AS block, c.semester.semester AS semester, c.year.year AS year, " +
+            "c.subject.code AS subjectCode, c.subject.name AS subjectName, c.instructor.code AS instructorCode, " +
+            "c.shift.id AS shiftId, c.room.name AS roomName, c.room.id AS roomId, c.room.building.name AS building, " +
+            "w.day AS weekday " +
+            "FROM StudyDay sd " +
+            "JOIN sd.clazz c " +
+            "JOIN sd.weekDay w " +
+            "WHERE c.block.block = :block AND c.semester.semester = :semester AND c.year.year = :year")
+    List<Map<String,Object>> findAllClazzsByBlockAndSemesterAndYear(@Param("block") Integer block,
+                                                                    @Param("semester") String semester,
+                                                                    @Param("year") Integer year);
+
 }
