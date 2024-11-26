@@ -42,7 +42,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${jwt.signerKey}")
     private String SIGNER_KEY;
 
-    @Override
     public String generateToken(String email, String role) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -66,24 +65,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    @Override
+
     public String generateRoleStudent(Student student) {
         return generateToken(student.getEmail(),"ROLE_STUDENT");
     }
 
-    @Override
+
     public String generateRoleInstructor(Instructor instructor) {
         return generateToken(instructor.getSchoolEmail(),"ROLE_INSTRUCTOR");
     }
 
-    @Override
+
     public String generateRoleAdmin(Admin admin) {
 
         System.out.println("Token created for admin: " + admin.getEmail());
         return generateToken(admin.getEmail(),"ROLE_ADMIN");
     }
 
-    @Override
+
     public AuthenticationResponse authenticationAndGenerateToken(AuthenticationRequest request) {
         String email = request.getEmail();
 
@@ -106,7 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    @Override
+
     public AuthenticationResponse createAuthResponse(String token) {
         return AuthenticationResponse.builder()
                 .token(token)
@@ -114,7 +113,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
     public SignedJWT verifyToken(String token) throws ParseException, JOSEException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -134,7 +132,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
-    @Override
     public void logout(Logout request) throws ParseException, JOSEException {
         var signToken=verifyToken(request.getToken());
         String jit=signToken.getJWTClaimsSet().getJWTID();
@@ -148,7 +145,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         invalidateTokenRepository.save(invalidateToken);
     }
 
-    @Override
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token =request.getToken();
         boolean isValid = true;
@@ -163,7 +159,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
     public AuthenticationResponse refreshToken(Refresh request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
