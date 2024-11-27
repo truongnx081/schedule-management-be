@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject,Integer> {
@@ -63,4 +64,6 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
 
     @Query("SELECT s.id FROM Subject s JOIN Clazz c WHERE c.id = :clazzId")
     Integer findSubjectByClazzId (@Param("clazzId") Integer clazzId);
+
+    Optional<Subject> findByCode(String code);
 }

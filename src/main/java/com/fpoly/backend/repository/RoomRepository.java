@@ -1,6 +1,5 @@
 package com.fpoly.backend.repository;
 
-import com.fpoly.backend.dto.RoomDTO;
 import com.fpoly.backend.entities.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room,Integer> {
@@ -26,4 +26,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
                                                  @Param("date") LocalDate date);
 
     List<Room> findAllByBuildingAreaId(Integer AreaId);
+
+    Optional<Room> findByName(String name);
 }

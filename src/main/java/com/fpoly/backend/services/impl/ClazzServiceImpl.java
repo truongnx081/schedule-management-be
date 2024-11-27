@@ -45,10 +45,15 @@ public class ClazzServiceImpl implements ClazzService {
     WeekDayRepository weekDayRepository;
     ScheduleRepository scheduleRepository;
     SemesterProgressService semesterProgressService;
+    StudyDayRepository studyDayRepository;
 
     @Override
     public ClazzDTO create(ClazzDTO request) {
         Clazz clazz =  clazzMapper.toEntity(request);
+
+        if(clazzRepository.existsByCode(request.getCode())){
+            throw new RuntimeException("Mã lớp học này đã tồn tại");
+        }
         // Tìm block
         Block block = blockRepository.findById(request.getBlock()).orElseThrow(() ->
                 new RuntimeException("Block not found"));
@@ -70,19 +75,47 @@ public class ClazzServiceImpl implements ClazzService {
         Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(() ->
                 new RuntimeException("Shift not found"));
         // Tìm room
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() ->
-                new RuntimeException("Room not found"));
+        if(!(request.getRoomId() == 0)){
+            Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() ->
+                    new RuntimeException("Room not found"));
+            clazz.setRoom(room);
+        }
 
+        clazz.setId(null);
         clazz.setBlock(block);
         clazz.setSemester(semester);
         clazz.setYear(year);
         clazz.setSubject(subject);
         clazz.setInstructor(instructor);
         clazz.setAdmin(admin);
+        clazz.setCreatedBy(admin.getCode());
         clazz.setShift(shift);
-        clazz.setRoom(room);
 
-        return clazzMapper.toDTO(clazzRepository.save(clazz));
+        // Lưu clazz
+        Clazz clazz1 = clazzRepository.save(clazz);
+
+        // Chuyển đổi ngày học trong tuần
+        if(request.getWeekdays().equals("2, 4, 6"))
+            request.setWeekdays("1,3,5");
+        else if(request.getWeekdays().equals("3, 5, 7"))
+            request.setWeekdays("2,4,6");
+
+        // Tách chuỗi thành mảng
+        String[] weekdays = request.getWeekdays().split(",");
+
+        // tạo weekdays theo clazz
+        for (String weekday : weekdays) {
+            WeekDay weekDay = new WeekDay();
+            weekDay.setId(Integer.parseInt(weekday.trim()));
+
+            StudyDay studyDay = new StudyDay();
+            studyDay.setClazz(clazz1);
+            studyDay.setWeekDay(weekDay);
+
+            studyDayRepository.save(studyDay);
+        }
+
+        return clazzMapper.toDTO(clazz1);
     }
 
     @Override
@@ -112,8 +145,11 @@ public class ClazzServiceImpl implements ClazzService {
         Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(() ->
                 new RuntimeException("Shift not found"));
         // Tìm room
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() ->
-                new RuntimeException("Room not found"));
+        if(!(request.getRoomId() == 0)){
+            Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() ->
+                    new RuntimeException("Room not found"));
+            clazz.setRoom(room);
+        }
 
         clazz.setBlock(block);
         clazz.setSemester(semester);
@@ -121,10 +157,42 @@ public class ClazzServiceImpl implements ClazzService {
         clazz.setSubject(subject);
         clazz.setInstructor(instructor);
         clazz.setAdmin(admin);
+        clazz.setUpdatedBy(admin.getCode());
         clazz.setShift(shift);
-        clazz.setRoom(room);
 
-        return clazzMapper.toDTO(clazzRepository.save(clazz));
+        // Lưu clazz
+        Clazz clazz1 = clazzRepository.save(clazz);
+
+        // Chuyển đổi ngày học trong tuần
+        if(request.getWeekdays().equals("2, 4, 6"))
+            request.setWeekdays("1,3,5");
+        else if(request.getWeekdays().equals("3, 5, 7"))
+            request.setWeekdays("2,4,6");
+
+        // Tách chuỗi thành mảng
+        String[] weekdays = request.getWeekdays().split(",");
+        List<StudyDay> studyDays = studyDayRepository.findAllByClazz(clazz1);
+        WeekDay weekDay = new WeekDay();
+
+        // Ngày 1
+        weekDay.setId(Integer.parseInt(weekdays[0].trim()));
+        studyDays.get(0).setClazz(clazz1);
+        studyDays.get(0).setWeekDay(weekDay);
+        studyDayRepository.save(studyDays.get(0));
+
+        // Ngày 2
+        weekDay.setId(Integer.parseInt(weekdays[1].trim()));
+        studyDays.get(1).setClazz(clazz1);
+        studyDays.get(1).setWeekDay(weekDay);
+        studyDayRepository.save(studyDays.get(1));
+
+        // Ngày 3
+        weekDay.setId(Integer.parseInt(weekdays[2].trim()));
+        studyDays.get(2).setClazz(clazz1);
+        studyDays.get(2).setWeekDay(weekDay);
+        studyDayRepository.save(studyDays.get(2));
+
+        return clazzMapper.toDTO(clazz1);
     }
 
     @Override
@@ -159,8 +227,9 @@ public class ClazzServiceImpl implements ClazzService {
     @Override
     public void importClazz(MultipartFile file) {
         try {
-            List<Clazz> clazzList = excelUtility.excelToClazzList(file.getInputStream());
-            clazzRepository.saveAll(clazzList);
+//            List<Clazz> clazzList = excelUtility.excelToClazzList(file.getInputStream());
+            excelUtility.excelToClazzList(file.getInputStream());
+//            clazzRepository.saveAll(clazzList);
         } catch (IOException ex) {
             throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
         }

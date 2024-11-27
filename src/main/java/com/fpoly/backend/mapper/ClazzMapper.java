@@ -17,6 +17,7 @@ public abstract class ClazzMapper {
     @Mapping(source = "admin.id", target = "adminId")
     @Mapping(source = "shift.id", target = "shiftId")
     @Mapping(source = "room.id", target = "roomId")
+    @Mapping(target = "weekdays", ignore = true)
     public abstract ClazzDTO toDTO (Clazz clazz);
 
     @Mapping(target = "block", ignore = true)
@@ -27,6 +28,7 @@ public abstract class ClazzMapper {
     @Mapping(target = "admin", ignore = true)
     @Mapping(target = "shift", ignore = true)
     @Mapping(target = "room", ignore = true)
+    @Mapping(target = "code", ignore = true)
     public abstract  void updateClazz(@MappingTarget Clazz clazz, ClazzDTO request);
 
 

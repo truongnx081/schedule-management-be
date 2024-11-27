@@ -93,7 +93,6 @@ public class ClazzController {
     }
 
     // Import clazz by excel
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/excel/upload")
     ResponseEntity<Response> uploadFileExcel(@RequestParam("file") MultipartFile file){
 

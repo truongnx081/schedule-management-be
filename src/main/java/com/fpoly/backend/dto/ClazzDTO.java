@@ -38,4 +38,6 @@ public class ClazzDTO {
 
     private Integer head;
 
+    private String weekdays;
+
 }

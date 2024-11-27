@@ -1,6 +1,5 @@
 package com.fpoly.backend.repository;
 
-import com.fpoly.backend.dto.ShiftDTO;
 import com.fpoly.backend.entities.Instructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +38,6 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
             @Param("endDate") LocalDate endDate);
 
     List<Instructor> findAllBySpecializationId(Integer specializationId);
+
+    Optional<Instructor> findByCode(String code);
 }

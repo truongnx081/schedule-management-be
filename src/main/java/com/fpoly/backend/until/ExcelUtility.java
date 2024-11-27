@@ -1,8 +1,6 @@
 package com.fpoly.backend.until;
 
-import com.fpoly.backend.entities.Clazz;
-import com.fpoly.backend.entities.ExamSchedule;
-import com.fpoly.backend.entities.Schedule;
+import com.fpoly.backend.entities.*;
 import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import lombok.AccessLevel;
@@ -21,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -38,6 +37,8 @@ public class ExcelUtility {
      ClazzRepository clazzRepository;
 
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    private final StudyDayRepository studyDayRepository;
+    private final WeekDayRepository weekDayRepository;
 
 
 //    static String[] HEADERs = { "ID", "Student Name", "Email", "Mobile No." };
@@ -49,10 +50,10 @@ public class ExcelUtility {
     }
 
     // Import excel data clazz
-    public List<Clazz> excelToClazzList(InputStream is) {
+    public void  excelToClazzList(InputStream is) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
-            Sheet sheet = workbook.getSheet("clazz");
+            Sheet sheet = workbook.getSheet("DSLH");
             Iterator<Row> rows = sheet.iterator();
             List<Clazz> clazzList = new ArrayList<Clazz>();
             int rowNumber = 0;
@@ -69,55 +70,67 @@ public class ExcelUtility {
                 while (cellsInRow.hasNext()) {
                     Cell currentCell = cellsInRow.next();
                     switch (cellIdx) {
-                        case 0:
+                        case 1:
                             clazz.setCode(currentCell.getStringCellValue());
                             break;
-                        case 1:
+                        case 2:
                             clazz.setOnlineLink(currentCell.getStringCellValue());
                             break;
-                        case 2:
+                        case 3:
                             clazz.setQuantity((int)currentCell.getNumericCellValue());
                             break;
-                        case 3:
+                        case 4:
                             clazz.setBlock(blockRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
                                     new RuntimeException("Block not found")));
                             break;
-                        case 4:
+                        case 5:
                             clazz.setSemester(semesterRepository.findById(currentCell.getStringCellValue()).orElseThrow(() ->
                                     new RuntimeException("Semester not found")));
                             break;
-                        case 5:
+                        case 6:
                             clazz.setYear(yearRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
                                     new RuntimeException("Year not found")));
                             break;
-                        case 6:
-                            clazz.setSubject(subjectRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
+                        case 7:
+                            clazz.setSubject(subjectRepository.findByCode(currentCell.getStringCellValue()).orElseThrow(() ->
                                     new RuntimeException("Subject not found")));
                             break;
-                        case 7:
-                            clazz.setInstructor(instructorRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
-                                    new RuntimeException("Instructor not found")));
-                            break;
                         case 8:
-                            clazz.setAdmin(identifyUserAccessService.getAdmin());
+                            clazz.setInstructor(instructorRepository.findByCode(currentCell.getStringCellValue()).orElseThrow(() ->
+                                    new RuntimeException("Instructor not found")));
                             break;
                         case 9:
                             clazz.setShift(shiftRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
                                     new RuntimeException("Shift not found")));
                             break;
                         case 10:
-                            clazz.setRoom(roomRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
-                                    new RuntimeException("Room not found")));
+                            if(!currentCell.getStringCellValue().isEmpty()){
+                                clazz.setRoom(roomRepository.findByName(currentCell.getStringCellValue()).orElseThrow(() ->
+                                        new RuntimeException("Room not found")));
+                            }
+                            else
+                                clazz.setRoom(null);
+                            break;
+                        case 11:
+                            // Lấy chuỗi ngày học trong tuần từ Excel
+                            String weekdayString = currentCell.getStringCellValue();
+
+                            // Chuyển đổi chuỗi ngày học thành danh sách WeekDay
+                            List<WeekDay> weekDays = parseWeekDays(weekdayString);
+
+                            // Lưu clazz và ngày học vào database
+                            saveStudyDays(clazz, weekDays);
                             break;
                         default:
                             break;
                     }
                     cellIdx++;
                 }
-                clazzList.add(clazz);
+//                    clazz.setAdmin(identifyUserAccessService.getAdmin());
+//                clazzList.add(clazz);
             }
             workbook.close();
-            return clazzList;
+//            return clazzList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }
@@ -216,5 +229,58 @@ public class ExcelUtility {
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }
+    }
+
+    private Clazz ensureClazzExists(Clazz clazz) {
+        // Kiểm tra clazz dựa trên một tiêu chí xác định (ví dụ: id hoặc mã lớp)
+//        Optional<Clazz> existingClazz = clazzRepository.findById(clazz.getId());
+//        if (existingClazz.isPresent()) {
+//            return existingClazz.get(); // Nếu đã tồn tại, trả về đối tượng từ DB
+//        }
+        // Nếu chưa tồn tại, lưu clazz vào DB và trả về đối tượng đã lưu
+        clazz.setAdmin(identifyUserAccessService.getAdmin());
+        return clazzRepository.save(clazz);
+    }
+
+    private void saveStudyDays(Clazz clazz, List<WeekDay> weekDays) {
+        // Đảm bảo clazz đã tồn tại trong database
+        Clazz persistedClazz = ensureClazzExists(clazz);
+
+        // Tạo danh sách StudyDay và liên kết với clazz đã lưu
+        List<StudyDay> studyDays = new ArrayList<>();
+        for (WeekDay weekDay : weekDays) {
+            StudyDay studyDay = new StudyDay();
+            studyDay.setClazz(persistedClazz);
+            studyDay.setWeekDay(weekDay);
+            studyDays.add(studyDay);
+        }
+
+        // Lưu danh sách StudyDay vào database
+        studyDayRepository.saveAll(studyDays);
+    }
+
+    private List<WeekDay> parseWeekDays(String weekdayString) {
+        if (weekdayString == null || weekdayString.isEmpty()) {
+            throw new IllegalArgumentException("Weekday string is null or empty");
+        }
+
+        // Chuyển đổi chuỗi nếu cần
+        if (weekdayString.equals("2, 4, 6")) {
+            weekdayString = "1,3,5";
+        } else if (weekdayString.equals("3, 5, 7")) {
+            weekdayString = "2,4,6";
+        }
+
+        // Tách chuỗi và tạo danh sách WeekDay
+        String[] weekdays = weekdayString.split(",");
+        List<WeekDay> weekDayList = new ArrayList<>();
+        for (String wd : weekdays) {
+            System.out.println("111111111111111"+ wd);
+            WeekDay weekDay = weekDayRepository.findById(Integer.parseInt(wd.trim())).orElseThrow(()
+            -> new RuntimeException("Ngày học này không tồn tại"));
+//            weekDay.setId(Integer.parseInt(wd.trim())); // Trim để loại bỏ khoảng trắng
+            weekDayList.add(weekDay);
+        }
+        return weekDayList;
     }
 }
