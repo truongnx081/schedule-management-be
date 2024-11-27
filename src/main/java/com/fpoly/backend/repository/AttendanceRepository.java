@@ -15,6 +15,9 @@ import java.util.Optional;
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
     List<Attendance> findAllByStudent(Student student);
 
+    boolean existsByScheduleIdAndStudentId(Integer scheduleId, Integer studentId);
+
+
     public Optional<Attendance> findByStudentIdAndScheduleId(Integer studentId, Integer scheduleId);
 
     @Query("SELECT a.student.id as studentId, " +

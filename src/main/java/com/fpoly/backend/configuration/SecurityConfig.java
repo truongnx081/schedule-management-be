@@ -33,7 +33,7 @@ public class SecurityConfig {
             "/api/students/updateStudentByStudent",
             "/api/clazzs/getAllClazzByStudent/*",
             "/api/clazzs/registerClazz/*",
-            "/api/studyResult//learningProgressByStudent",
+            "/api/studyResult/learningProgressByStudent",
             "/api/notes/countNoteByMonth",
             "/api/notes/getNoteByMonth",
             "/api/notes/getNoteByDay",
