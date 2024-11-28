@@ -40,4 +40,6 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
     List<Instructor> findAllBySpecializationId(Integer specializationId);
 
     Optional<Instructor> findByCode(String code);
+
+    boolean existsByCode(String code);
 }

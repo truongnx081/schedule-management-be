@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class InstructorDTO {
 
     private boolean gender;
 
-    private Date birthday;
+    private LocalDate birthday;
 
     private String phone;
 

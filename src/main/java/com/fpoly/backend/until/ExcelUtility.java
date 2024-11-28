@@ -6,16 +6,15 @@ import com.fpoly.backend.services.IdentifyUserAccessService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +38,7 @@ public class ExcelUtility {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private final StudyDayRepository studyDayRepository;
     private final WeekDayRepository weekDayRepository;
+    private final SpecializationRepository specializationRepository;
 
 
 //    static String[] HEADERs = { "ID", "Student Name", "Email", "Mobile No." };
@@ -282,5 +282,87 @@ public class ExcelUtility {
             weekDayList.add(weekDay);
         }
         return weekDayList;
+    }
+
+    // Import excel data instructor
+    public List<Instructor> excelToInstructorList(InputStream is) {
+        try {
+            Workbook workbook = new XSSFWorkbook(is);
+            Sheet sheet = workbook.getSheet("DSGV");
+            Iterator<Row> rows = sheet.iterator();
+            List<Instructor> instructorsList = new ArrayList<Instructor>();
+            int rowNumber = 0;
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                // skip header
+                if (rowNumber == 0) {
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                Instructor instructor = new Instructor();
+                int cellIdx = 0;
+                while (cellsInRow.hasNext()) {
+                    Cell currentCell = cellsInRow.next();
+                    switch (cellIdx) {
+                        case 1:
+                            if(instructorRepository.existsByCode(currentCell.getStringCellValue())){
+                                throw new RuntimeException(String.format("Mã giảng viên %s đã tồn tại", currentCell.getStringCellValue()));
+                            }
+                            else
+                                instructor.setCode(currentCell.getStringCellValue());
+                            break;
+                        case 2:
+                            instructor.setLastName(currentCell.getStringCellValue());
+                            break;
+                        case 3:
+                            instructor.setFirstName(currentCell.getStringCellValue());
+                            break;
+                        case 4:
+                            instructor.setGender(currentCell.getStringCellValue().equals("Nam"));
+                            break;
+                        case 5:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                instructor.setBirthday(currentCell.getLocalDateTimeCellValue().toLocalDate());
+                            else if (currentCell.getCellType() == CellType.STRING) { // là kiểu chuỗi
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate birthDate = LocalDate.parse(dateString, dateTimeFormatter);
+                                instructor.setBirthday(birthDate);
+                            }
+                            break;
+                        case 6:
+                            instructor.setPhone(currentCell.getStringCellValue());
+                            break;
+                        case 7:
+                            instructor.setSchoolEmail(currentCell.getStringCellValue());
+                            break;
+                        case 8:
+                            instructor.setPrivateEmail(currentCell.getStringCellValue());
+                            break;
+                        case 9:
+                            instructor.setAddress(currentCell.getStringCellValue());
+                            break;
+                        case 10:
+                            Specialization specialization =specializationRepository.findByName(currentCell.getStringCellValue())
+                                            .orElseThrow(()-> new RuntimeException(String.format("Bộ môn %s không tồn tại", currentCell.getStringCellValue().toUpperCase())));
+                            instructor.setSpecialization(specialization);
+                            break;
+                        case 11:
+                            instructor.setDescription(currentCell.getStringCellValue());
+                            break;
+                        default:
+                            break;
+                    }
+                    cellIdx++;
+                }
+                instructor.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+                instructorsList.add(instructor);
+            }
+            workbook.close();
+            return instructorsList;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
+        }
     }
 }
