@@ -118,6 +118,7 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
     @Query("SELECT c.id AS id, c.code AS code, c.onlineLink AS onlineLink, c.quantity AS quantity, " +
             "c.block.block AS block, c.semester.semester AS semester, c.year.year AS year, c.subject.id AS subjectId, " +
             "c.subject.code AS subjectCode, c.subject.name AS subjectName, c.instructor.code AS instructorCode, c.instructor.id AS instructorId, " +
+            "c.instructor.lastName AS instructorLastName, c.instructor.firstName AS instructorFirstName, " +
             "c.shift.id AS shiftId, c.room.name AS roomName, c.room.id AS roomId, c.room.building.name AS building, " +
             "w.day AS weekday " +
             "FROM StudyDay sd " +
