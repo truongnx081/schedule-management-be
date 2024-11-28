@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/api/notes/updateNote",
             "/api/notes/deleteNote",
             "/api/schedules/getSchedules",
-            "/api/examSchedules/getExamSchedules"
+            "/api/examSchedules/getExamSchedules",
+            "/api/studyins/register-clazz"
 
     };
 

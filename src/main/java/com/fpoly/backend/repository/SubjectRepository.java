@@ -63,4 +63,18 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
 
     @Query("SELECT s.id FROM Subject s JOIN Clazz c WHERE c.id = :clazzId")
     Integer findSubjectByClazzId (@Param("clazzId") Integer clazzId);
+
+    @Query("SELECT s.required.id " +
+            "FROM Clazz c " +
+            "JOIN c.subject s " +
+            "WHERE c.id = :clazzId")
+    Integer findRequiredIdByClazzId (@Param("clazzId") Integer clazzId);
+
+    @Query("SELECT s.id " +
+            "FROM StudyResult sr " +
+            "JOIN sr.studyIn si " +
+            "JOIN si.clazz.subject s " +
+            "JOIN si.student st " +
+            "WHERE st.id = :studentId")
+    List<Integer> findStudiedSubjectsIdByStudentId(@Param("studentId") Integer studentId);
 }

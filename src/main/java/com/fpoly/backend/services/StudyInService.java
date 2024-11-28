@@ -20,7 +20,8 @@ public interface StudyInService {
 
     StudyInDTO updateStudyIn(Integer studyInId, StudyInDTO studyInDTO);
 
-    StudyInDTO createStudyIn2(Integer clazzId);
+//    StudyInDTO createStudyIn2(Integer clazzId);
+//
+//    StudyInDTO updateStudyIn2(Integer studyInId, Integer newClazzId);
 
-    StudyInDTO updateStudyIn2(Integer studyInId, Integer newClazzId);
 }
