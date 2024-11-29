@@ -196,5 +196,11 @@ public class StudyResultServiceImpl implements StudyResultService {
         return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
     }
 
+    @Override
+    public List<Map<String, Object>> getAllMarkDetail(Integer clazzId, Integer subjectId) {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        return studyResultRepository.getAllMarkDetail(clazzId,subjectId, studentId);
+    }
+
 
 }

@@ -74,7 +74,17 @@ public class StudyResultController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
-
+    // Laays bangr diem chi tiet tuwf lop hoc da ton tai trong study result
+    @GetMapping("/getMarkDetail")
+    public ResponseEntity<Response> getAllMarkDetail(@RequestParam Integer clazzId, @RequestParam Integer subjectId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.getAllMarkDetail(clazzId, subjectId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy thành công các cột điểm theo clazzId và studentId thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
     // tạo bảng điểm cho sinh viên
     @PostMapping("/create")
     public ResponseEntity<Response> createStudyResult(@RequestParam Integer studentId, @RequestBody StudyResultDTO studyResultDTO) {
