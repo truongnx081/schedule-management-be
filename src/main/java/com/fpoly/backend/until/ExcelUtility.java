@@ -39,6 +39,7 @@ public class ExcelUtility {
     private final StudyDayRepository studyDayRepository;
     private final WeekDayRepository weekDayRepository;
     private final SpecializationRepository specializationRepository;
+    private final AreaRepository areaRepository;
 
 
 //    static String[] HEADERs = { "ID", "Student Name", "Email", "Mobile No." };
@@ -361,6 +362,68 @@ public class ExcelUtility {
             }
             workbook.close();
             return instructorsList;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
+        }
+    }
+
+    // Import excel data event
+    public List<Event> excelToEventList(InputStream is) {
+        try {
+            Workbook workbook = new XSSFWorkbook(is);
+            Sheet sheet = workbook.getSheet("DSSK");
+            Iterator<Row> rows = sheet.iterator();
+            List<Event> eventList = new ArrayList<Event>();
+            int rowNumber = 0;
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                // skip header
+                if (rowNumber == 0) {
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                Event event = new Event();
+                int cellIdx = 0;
+                while (cellsInRow.hasNext()) {
+                    Cell currentCell = cellsInRow.next();
+                    switch (cellIdx) {
+                        case 1:
+                            event.setName(currentCell.getStringCellValue());
+                            break;
+                        case 2:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                event.setDate(currentCell.getLocalDateTimeCellValue().toLocalDate());
+                            else if (currentCell.getCellType() == CellType.STRING) { // là kiểu chuỗi
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate date = LocalDate.parse(dateString, dateTimeFormatter);
+                                event.setDate(date);
+                            }
+                            break;
+                        case 3:
+                            event.setPlace(currentCell.getStringCellValue());
+                            break;
+                        case 4:
+                            event.setContent(currentCell.getStringCellValue());
+                            break;
+
+                        case 5:
+                            Area area =areaRepository.findByName(currentCell.getStringCellValue())
+                                    .orElseThrow(()-> new RuntimeException(String.format("Khu vực %s không tồn tại", currentCell.getStringCellValue().toUpperCase())));
+                            event.setArea(area);
+                            break;
+                        default:
+                            break;
+                    }
+                    cellIdx++;
+                }
+                event.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+                event.setAdmin(identifyUserAccessService.getAdmin());
+                eventList.add(event);
+            }
+            workbook.close();
+            return eventList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }

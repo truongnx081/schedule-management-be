@@ -15,6 +15,7 @@ public abstract class EventMapper {
 
     @Mapping(target = "area", ignore = true)
     @Mapping(target = "admin",ignore = true)
+    @Mapping(target = "image",ignore = true)
     public abstract  void updateEvent(@MappingTarget Event event, EventDTO request);
 
 

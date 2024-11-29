@@ -1,10 +1,9 @@
 package com.fpoly.backend.mapper;
 
 import com.fpoly.backend.dto.AreaDTO;
+import com.fpoly.backend.entities.Area;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-
-import java.awt.geom.Area;
 
 @Mapper(componentModel = "spring")
 public abstract class AreaMapper {

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class EventDTO {
 
     private String name;
 
-    private Date date;
+    private LocalDate date;
 
     private String place;
 

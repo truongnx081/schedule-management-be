@@ -25,7 +25,8 @@ public class SecurityConfig {
             "api/sendemail",
             "/api/subjects/getAllSubject",
             "/api/subjects/getAllSubjectBySpecializationId",
-            "/api/subjects/getSubjectDetail"
+            "/api/subjects/getSubjectDetail",
+            "api/events",
 
     };
     private final String[] STUDENT_ENDPOINTS={
@@ -42,12 +43,11 @@ public class SecurityConfig {
             "/api/notes/deleteNote",
             "/api/schedules/getSchedules",
             "/api/examSchedules/getExamSchedules"
-
     };
 
-    private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={
-            "api/events",
-    };
+//    private final String[] STUDENT_INSTRUCTOR_ENDPOINTS={
+//            "api/events",
+//    };
     private final String[] INSTRUCTOR_ENDPOINTS={
         "/api/shifts",
             "/api/instructors/getAllTeachingSchedule",
@@ -99,7 +99,7 @@ public class SecurityConfig {
                                 .requestMatchers(STUDENT_ENDPOINTS).hasRole("STUDENT")
                                 .requestMatchers(INSTRUCTOR_ENDPOINTS).hasRole("INSTRUCTOR")
                                 .requestMatchers(ADMIN_ENDPOINTS).hasRole("ADMIN")
-                                .requestMatchers(STUDENT_INSTRUCTOR_ENDPOINTS).hasAnyRole("INSTRUCTOR","STUDENT")
+//                                .requestMatchers(STUDENT_INSTRUCTOR_ENDPOINTS).hasAnyRole("INSTRUCTOR","STUDENT","ADMIN")
                                 .anyRequest().authenticated()
 
 //                                .anyRequest().permitAll()
