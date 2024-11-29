@@ -74,7 +74,7 @@ public class SemesterProgressController {
     @GetMapping("/current-progress")
     public ResponseEntity<Response> getCurrentProgress (){
         try{
-            String currentProgress = semesterProgressService.findCurrentProgress();
+            Map<String,String> currentProgress = semesterProgressService.findCurrentProgress();
             return ResponseEntity.ok(new Response(LocalDateTime.now(), currentProgress, "Semester Progress đã được xóa thành công!", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
