@@ -20,5 +20,5 @@ public interface SemesterProgressService {
 
     List<Map<String, Object>> getAllSemesterProgress();
 
-    String findCurrentProgress();
+    Map<String,String> findCurrentProgress();
 }

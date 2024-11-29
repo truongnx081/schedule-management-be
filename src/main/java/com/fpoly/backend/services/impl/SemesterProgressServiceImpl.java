@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +128,7 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
     }
 
     @Override
-    public String findCurrentProgress() {
+    public Map<String,String> findCurrentProgress() {
         Date currentDate = new Date();
         SemesterProgress activedSemesterProgress = semesterProgressRepository.findActivedProgress();
         Date createDateStart = activedSemesterProgress.getCreateDateStart();
@@ -138,27 +139,34 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         Date firstPartDateEnd = activedSemesterProgress.getFirstPartEnd();
         Date secondPartDateStart = activedSemesterProgress.getSecondPartStart();
         Date secondPartDateEnd = activedSemesterProgress.getSecondPartEnd();
+        HashMap<String,String> result = new HashMap<>();
 
         if (currentDate.compareTo(createDateStart) < 0){
-            return "block-not-begin";
+            result.put("currentProgress", "block-not-begin");
+            return result;
         }
 
         if(currentDate.compareTo(createDateStart) >= 0 && currentDate.compareTo(createDateEnd) <= 0){
-            return "create";
+            result.put("currentProgress", "create");
+            return result;
         }
 
         if (currentDate.compareTo(prepaireDateStart) >= 0 && currentDate.compareTo(prepaireDateEnd) <= 0){
-            return "prepaire";
+            result.put("currentProgress", "prepaire");
+            return result;
         }
 
         if (currentDate.compareTo(firstPartDateStart) >= 0 && currentDate.compareTo(firstPartDateEnd) <= 0){
-            return "first-part";
+            result.put("currentProgress", "first-part");
+            return result;
         }
 
         if (currentDate.compareTo(secondPartDateStart) >= 0 && currentDate.compareTo(secondPartDateEnd) <= 0){
-            return "second-part";
+            result.put("currentProgress", "second-part");
+            return result;
         }
 
-        return "block-end";
+        result.put("currentProgress", "block-ended");
+        return result;
     }
 }
