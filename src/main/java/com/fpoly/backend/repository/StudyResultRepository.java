@@ -11,7 +11,7 @@ import java.util.Map;
 
 public interface StudyResultRepository extends JpaRepository<StudyResult,Integer> {
     @Query("SELECT clz.id as clazz_id, clz.code as clazz_code, sub.code as subject_code, sub.name as subject_name, sub.credits as subject_credits, " +
-            "clz.block.block as block, clz.semester.semester as semester, clz.year.year as year, " +
+            "clz.block.block as block, clz.semester.semester as semester, clz.year.year as year, sub.id as subject_id,  " +
             "SUM(str.marked * str.percentage)/100 as marked_avg   " +
             "FROM StudyResult str " +
             "JOIN str.studyIn sti " +
@@ -19,7 +19,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "JOIN sti.student stu " +
             "JOIN clz.subject sub " +
             "WHERE stu.id = :studentId " +
-            "GROUP BY clz.id, clz.code, sub.code, sub.name, sub.credits, clz.block.block , clz.semester.semester , clz.year.year  " +
+            "GROUP BY clz.id, clz.code, sub.code, sub.name, sub.credits, clz.block.block , clz.semester.semester , clz.year.year, sub.id  " +
             "order by  clz.id" )
     List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
 
@@ -57,4 +57,19 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
 
 
     boolean existsByMarkColumnIdAndStudyInId(Integer markColumnId, Integer studyInId);
+
+    @Query("SELECT  " +
+                  "mcs.name AS markColumnName, " +
+                  "srs.marked AS mark, srs.percentage AS percentage " +
+                  "FROM StudyResult srs " +
+                  "JOIN srs.studyIn sis " +
+                  "JOIN srs.markColumn mcs " +
+                  "JOIN sis.clazz czs " +
+                  "JOIN sis.student std " +
+                  "JOIN czs.subject sus " +
+                  "JOIN czs.instructor ins " +
+                  "WHERE czs.id = :clazzId AND sus.id = :subjectId AND std.id = :studentId")
+    List<Map<String, Object>> getAllMarkDetail(@Param("clazzId")Integer clazzId,
+                                               @Param("subjectId")Integer subjectId,
+                                               @Param("studentId")Integer studentId);
 }

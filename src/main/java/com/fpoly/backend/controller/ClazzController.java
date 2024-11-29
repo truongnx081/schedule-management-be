@@ -111,15 +111,30 @@ public class ClazzController {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(LocalDateTime.now(), null, message, HttpStatus.BAD_REQUEST.value()));
     }
 
-    @GetMapping("/getClazzsByInstructorId")
-    public ResponseEntity<Response> getClazzsByInstructorId(){
+    @GetMapping("/getClazzesByInstructor")
+    public ResponseEntity<Response> getClazzesByInstructor(
+            @RequestParam Integer block,
+            @RequestParam String semester,
+            @RequestParam Integer year) {
         try {
-            List<ClazzDTO> clazzs = clazzService.getClazzsByInstructorId();
-            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzs, "Lấy danh sách lớp học thành công", HttpStatus.OK.value()));
-        } catch (AppUnCheckedException e){
-            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+            List<Map<String, Object>> clazzes = clazzService.findClazzesByInstructorIdAndBlockAndSemesterAndYear(block, semester, year);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    clazzes,
+                    "Lấy danh sách lớp học thành công",
+                    HttpStatus.OK.value()
+            ));
+        } catch (AppUnCheckedException e) {
+            // Handle application-specific exceptions and return an error response
+            return ResponseEntity.status(e.getStatus()).body(new Response(
+                    LocalDateTime.now(),
+                    null,
+                    e.getMessage(),
+                    e.getStatus().value()
+            ));
         }
     }
+
 
 
     //Lớp học hiện tại
