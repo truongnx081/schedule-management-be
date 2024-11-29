@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -123,5 +124,41 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
     @Override
     public List<Map<String, Object>> getAllSemesterProgress() {
         return semesterProgressRepository.getAllSemesterProgress();
+    }
+
+    @Override
+    public String findCurrentProgress() {
+        Date currentDate = new Date();
+        SemesterProgress activedSemesterProgress = semesterProgressRepository.findActivedProgress();
+        Date createDateStart = activedSemesterProgress.getCreateDateStart();
+        Date createDateEnd = activedSemesterProgress.getCreateDateEnd();
+        Date prepaireDateStart = activedSemesterProgress.getRepaireDateStart();
+        Date prepaireDateEnd = activedSemesterProgress.getRepaireDateEnd();
+        Date firstPartDateStart = activedSemesterProgress.getFirstPartStart();
+        Date firstPartDateEnd = activedSemesterProgress.getFirstPartEnd();
+        Date secondPartDateStart = activedSemesterProgress.getSecondPartStart();
+        Date secondPartDateEnd = activedSemesterProgress.getSecondPartEnd();
+
+        if (currentDate.compareTo(createDateStart) < 0){
+            return "block-not-begin";
+        }
+
+        if(currentDate.compareTo(createDateStart) >= 0 && currentDate.compareTo(createDateEnd) <= 0){
+            return "create";
+        }
+
+        if (currentDate.compareTo(prepaireDateStart) >= 0 && currentDate.compareTo(prepaireDateEnd) <= 0){
+            return "prepaire";
+        }
+
+        if (currentDate.compareTo(firstPartDateStart) >= 0 && currentDate.compareTo(firstPartDateEnd) <= 0){
+            return "first-part";
+        }
+
+        if (currentDate.compareTo(secondPartDateStart) >= 0 && currentDate.compareTo(secondPartDateEnd) <= 0){
+            return "second-part";
+        }
+
+        return "block-end";
     }
 }
