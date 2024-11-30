@@ -276,7 +276,6 @@ public class ExcelUtility {
         String[] weekdays = weekdayString.split(",");
         List<WeekDay> weekDayList = new ArrayList<>();
         for (String wd : weekdays) {
-            System.out.println("111111111111111"+ wd);
             WeekDay weekDay = weekDayRepository.findById(Integer.parseInt(wd.trim())).orElseThrow(()
             -> new RuntimeException("Ngày học này không tồn tại"));
 //            weekDay.setId(Integer.parseInt(wd.trim())); // Trim để loại bỏ khoảng trắng
@@ -424,6 +423,82 @@ public class ExcelUtility {
             }
             workbook.close();
             return eventList;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
+        }
+    }
+
+    // Import excel data subject
+    public List<Subject> excelToSubjectList(InputStream is) {
+        try {
+            Workbook workbook = new XSSFWorkbook(is);
+            Sheet sheet = workbook.getSheet("DSMH");
+            Iterator<Row> rows = sheet.iterator();
+            List<Subject> subjectsList = new ArrayList<Subject>();
+            int rowNumber = 0;
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                // skip header
+                if (rowNumber == 0) {
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                Subject subject = new Subject();
+                int cellIdx = 0;
+                while (cellsInRow.hasNext()) {
+                    Cell currentCell = cellsInRow.next();
+                    switch (cellIdx) {
+                        case 1:
+                            if(subjectRepository.existsByCode(currentCell.getStringCellValue())){
+                                throw new RuntimeException(String.format("Môn học %s đã tồn tại", currentCell.getStringCellValue()));
+                            }
+                            else
+                                subject.setCode(currentCell.getStringCellValue());
+                            break;
+                        case 2:
+                            subject.setName(currentCell.getStringCellValue());
+                            break;
+                        case 3:
+                            subject.setCredits((int)currentCell.getNumericCellValue());
+                            break;
+                        case 4:
+                            subject.setTotal_hours((int)currentCell.getNumericCellValue());
+                            break;
+                        case 5:
+                            Specialization specialization =specializationRepository.findByName(currentCell.getStringCellValue())
+                                    .orElseThrow(()-> new RuntimeException(String.format("Bộ môn %s không tồn tại", currentCell.getStringCellValue().toUpperCase())));
+                            subject.setSpecialization(specialization);
+                            break;
+                        case 6:
+                            if(currentCell.getStringCellValue().isEmpty()){
+                                subject.setRequired(null);
+                            }
+                            else {
+                                Subject subjectRequired =subjectRepository.findByCode(currentCell.getStringCellValue())
+                                        .orElseThrow(()-> new RuntimeException(String.format("Môn học %s không tồn tại", currentCell.getStringCellValue().toUpperCase())));
+                                subject.setRequired(subjectRequired);
+                            }
+                            break;
+                        case 7:
+                            subject.setMission(currentCell.getStringCellValue());
+                            break;
+                        case 8:
+                            subject.setNote(currentCell.getStringCellValue());
+                            break;
+                        case 9:
+                            subject.setDescription(currentCell.getStringCellValue());
+                            break;
+                        default:
+                            break;
+                    }
+                    cellIdx++;
+                }
+                subject.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+                subjectsList.add(subject);
+            }
+            workbook.close();
+            return subjectsList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }

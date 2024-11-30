@@ -1,17 +1,17 @@
 package com.fpoly.backend.controller;
 
 import com.fpoly.backend.dto.Response;
+import com.fpoly.backend.dto.SubjectDTO;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.services.SubjectService;
+import com.fpoly.backend.until.ExcelUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -74,4 +74,65 @@ public class SubjectController {
         }
     }
 
+    // Thêm mới môn học
+    @PostMapping
+    public ResponseEntity<Response> create(@RequestBody SubjectDTO request){
+        try {
+            return ResponseEntity.ok(
+                    new Response(LocalDateTime.now(),
+                            subjectService.create(request),
+                            "Thêm mới môn học thành công",
+                            HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    // Cập nhật môn học
+    @PutMapping
+    public ResponseEntity<Response> create(@RequestBody SubjectDTO request,
+                                           @RequestParam Integer subjectId){
+        try {
+            return ResponseEntity.ok(
+                    new Response(LocalDateTime.now(),
+                            subjectService.update(request, subjectId),
+                            "Cập nhật môn học thành công",
+                            HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    // Xóa môn học
+    @DeleteMapping
+    public ResponseEntity<Response> delete(@RequestParam Integer subjectId){
+        try {
+            subjectService.delete(subjectId);
+            return ResponseEntity.ok(
+                    new Response(LocalDateTime.now(),
+                            null,
+                            "Xóa môn học thành công",
+                            HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    // Import subject by excel
+    @PostMapping("/excel/upload")
+    ResponseEntity<Response> uploadFileExcel(@RequestParam("file") MultipartFile file){
+        String message = "";
+        if (ExcelUtility.hasExcelFormat(file)) {
+            try {
+                subjectService.importSubject(file);
+                message = "The Excel file is uploaded: " + file.getOriginalFilename();
+                return ResponseEntity.ok(new Response(LocalDateTime.now(), null, message, HttpStatus.OK.value()));
+            } catch (Exception exp) {
+                message = "The Excel file is not upload: " + file.getOriginalFilename() + "!";
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(LocalDateTime.now(), null, exp.getMessage(), HttpStatus.EXPECTATION_FAILED.value()));
+            }
+        }
+        message = "Please upload an excel file!";
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new Response(LocalDateTime.now(), null, message, HttpStatus.BAD_REQUEST.value()));
+    }
 }

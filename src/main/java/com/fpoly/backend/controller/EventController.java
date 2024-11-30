@@ -111,7 +111,6 @@ public class EventController {
     // Import instructor by excel
     @PostMapping("/excel/upload")
     ResponseEntity<Response> uploadFileExcel(@RequestParam("file") MultipartFile file){
-
         String message = "";
         if (ExcelUtility.hasExcelFormat(file)) {
             try {

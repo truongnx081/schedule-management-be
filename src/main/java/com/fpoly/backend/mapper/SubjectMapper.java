@@ -19,5 +19,6 @@ public abstract class SubjectMapper {
 
     @Mapping(target = "required", ignore = true)
     @Mapping(target = "specialization", ignore = true)
+    @Mapping(target = "code", ignore = true)
     public abstract void updateSubject(@MappingTarget Subject subject, SubjectDTO request);
 }
