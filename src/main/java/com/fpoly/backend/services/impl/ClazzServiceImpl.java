@@ -67,8 +67,11 @@ public class ClazzServiceImpl implements ClazzService {
         Subject subject = subjectRepository.findById(request.getSubjectId()).orElseThrow(() ->
                 new RuntimeException("Subject not found"));
         // Tìm instructor
-        Instructor instructor = instructorRepository.findById(request.getInstructorId()).orElseThrow(() ->
-                new RuntimeException("Instructor not found"));
+        if(request.getInstructorId() != 0){
+            Instructor instructor = instructorRepository.findById(request.getInstructorId()).orElseThrow(() ->
+                    new RuntimeException("Giảng viên này đã tồn tại"));
+            clazz.setInstructor(instructor);
+        }
         // Tìm admin
         Admin admin = identifyUserAccessService.getAdmin();
         // Tìm shift
@@ -86,7 +89,6 @@ public class ClazzServiceImpl implements ClazzService {
         clazz.setSemester(semester);
         clazz.setYear(year);
         clazz.setSubject(subject);
-        clazz.setInstructor(instructor);
         clazz.setAdmin(admin);
         clazz.setCreatedBy(admin.getCode());
         clazz.setShift(shift);

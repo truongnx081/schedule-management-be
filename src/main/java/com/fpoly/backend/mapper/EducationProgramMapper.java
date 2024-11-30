@@ -17,7 +17,7 @@ public abstract class EducationProgramMapper {
     @Mapping(target = "semester", ignore = true)
     @Mapping(target = "year", ignore = true)
     @Mapping(target = "privateMajor", ignore = true)
-    public abstract  void updateEducationProgram(@MappingTarget EducationProgram educationProgram, EducationProgramMapper request);
+    public abstract  void updateEducationProgram(@MappingTarget EducationProgram educationProgram, EducationProgramDTO request);
 
 
     @Mapping(target = "semester", ignore = true)

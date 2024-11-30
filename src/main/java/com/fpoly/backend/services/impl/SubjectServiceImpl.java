@@ -34,4 +34,9 @@ public class SubjectServiceImpl implements SubjectService {
     public List<Map<String, Object>> getSubjectDetail(Integer subjectId) {
         return subjectRepository.getSubjectDetailById(subjectId);
     }
+
+    @Override
+    public List<Map<String, Object>> findAllSubjectByEducationProgramId(Integer educationProgramId) {
+        return subjectRepository.findAllSubjectByEducationProgramId(educationProgramId);
+    }
 }

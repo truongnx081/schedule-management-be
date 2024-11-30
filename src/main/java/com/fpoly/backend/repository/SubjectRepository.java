@@ -66,4 +66,11 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
     Integer findSubjectByClazzId (@Param("clazzId") Integer clazzId);
 
     Optional<Subject> findByCode(String code);
+
+    @Query("SELECT s.id as id, s.name as name " +
+            "FROM ApplyFor a " +
+            "JOIN a.subject s " +
+            "JOIN a.educationProgram e " +
+            "WHERE e.id =:educationProgramId")
+    List<Map<String, Object>> findAllSubjectByEducationProgramId(@Param("educationProgramId") Integer educationProgramId);
 }

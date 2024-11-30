@@ -60,4 +60,18 @@ public class SubjectController {
         }
     }
 
+    // Lấy danh sách môn học của chương trình học
+    @GetMapping
+    public ResponseEntity<Response> getAllSubjectByEducationProgramId(@RequestParam Integer educationProgramId){
+        try {
+            return ResponseEntity.ok(
+                    new Response(LocalDateTime.now(),
+                            subjectService.findAllSubjectByEducationProgramId(educationProgramId),
+                            "Lấy danh sách môn học của chương trình học thành công",
+                            HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
 }
