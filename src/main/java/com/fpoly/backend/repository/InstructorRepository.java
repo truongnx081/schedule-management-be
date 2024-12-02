@@ -31,7 +31,8 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
             "JOIN c.schedules s " +
             "JOIN c.shift sh " +
             "WHERE i.id = :instructorId " +
-            "AND s.date BETWEEN :startDate AND :endDate")
+            "AND s.date BETWEEN :startDate AND :endDate " +
+            "AND s.status=true ")
     List<Map<String, Object>> getAllTeachingScheduleByInstructor(
             @Param("instructorId") Integer instructorId,
             @Param("startDate") LocalDate startDate,
