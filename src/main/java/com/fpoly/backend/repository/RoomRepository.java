@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room,Integer> {
-
     @Query("SELECT r.id AS roomId, r.name AS roomName " +
             "FROM Room r " +
             "LEFT JOIN Schedule sch ON sch.clazz.room.id = r.id AND sch.date = :date " +
