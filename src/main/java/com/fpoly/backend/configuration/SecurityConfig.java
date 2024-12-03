@@ -51,10 +51,10 @@ public class SecurityConfig {
     private final String[] INSTRUCTOR_ENDPOINTS={
         "/api/shifts",
             "/api/instructors/getAllTeachingSchedule",
-            "/api/shifts/available",
+            "/api/shifts/getAllShiftAvailable",
             "/api/schedules/getSchedules",
             "/api/schedules/getscheduleStatusFalse",
-            "/api/rooms/available",
+            "/api/rooms/getAllShiftAvailable",
             "/api/retakeschedules/createRetakeSchedule",
             "/api/students/getStudentsByInstructorIdAndClazzId",
             "api/clazzs/getClazzsByInstructorId",

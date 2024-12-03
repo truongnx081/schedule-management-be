@@ -29,8 +29,8 @@ public class RoomController {
     RoomService roomService;
 
     //Get All room available
-    @GetMapping("/available")
-    public ResponseEntity<Response> getAllBlock(@RequestParam Integer buildingId,
+    @GetMapping("/getAllRoomAvailable")
+    public ResponseEntity<Response> getAllRoomAvailable(@RequestParam Integer buildingId,
                                                 @RequestParam LocalDate date){
         try{
             List<Map<String,Object>> availableRooms = roomService.getAvailableRooms(buildingId, date);

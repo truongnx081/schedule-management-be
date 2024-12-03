@@ -41,8 +41,8 @@ public class ShiftController {
     }
 
     //Get all shift available
-    @GetMapping("/available")
-    public ResponseEntity<Response> getAvailableShifts(
+    @GetMapping("/getAllShiftAvailable")
+    public ResponseEntity<Response> getAllShiftAvailable(
             @RequestParam("clazzId") Integer clazzId,
             @RequestParam("date") LocalDate date
     )
