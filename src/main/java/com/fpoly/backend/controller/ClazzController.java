@@ -83,7 +83,7 @@ public class ClazzController {
 
     // Lấy danh sách lớp học theo block, semester và year
     @GetMapping("/clazzs-for-register")
-    public ResponseEntity<Response> findClazzsByBlockAndSemesterAndYear(){
+    public ResponseEntity<Response> getClazzsByBlockAndSemesterAndYear(){
         try {
             List<Map<String, Object>> clazzs = clazzService.findClazzesForRegisterByBlockAndSemesterAndYearAndStudentId();
             return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzs, "Lấy danh sách lớp học theo block, semester và year thành công", HttpStatus.OK.value()));
@@ -140,7 +140,7 @@ public class ClazzController {
     //Lớp học hiện tại
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @GetMapping("/current-clazzes")
-    public ResponseEntity<Response> findClazzesByBlockAndSemesterAndYearAndStudentId(){
+    public ResponseEntity<Response> getClazzesByBlockAndSemesterAndYearAndStudentId(){
         try {
             List<Map<String, Object>> clazzes = clazzService.findCurrentClazzesByBlockAndSemesterAndYearAndStudentId();
             return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzes, "Lấy danh sách lớp học hiện tại cho sinh viên thành công", HttpStatus.OK.value()));
@@ -152,7 +152,7 @@ public class ClazzController {
     //Lớp học được chọn để đổi ca
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @GetMapping("/clazz-to-change")
-    public ResponseEntity<Response> findClazzToChangeShiftById(@RequestParam("clazzId") Integer clazzId){
+    public ResponseEntity<Response> getClazzToChangeShiftById(@RequestParam("clazzId") Integer clazzId){
         try {
             Map<String, Object> clazz = clazzService.findClazzToChangeShiftById(clazzId);
             return ResponseEntity.ok(new Response(LocalDateTime.now(), clazz, "Lấy lớp đã chọn để đổi môn học thành công", HttpStatus.OK.value()));
@@ -164,7 +164,7 @@ public class ClazzController {
     //Danh sách các lớp học có môn muốn đổi và ca được chọn
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @GetMapping("/clazzes-to-change")
-    public ResponseEntity<Response> findClazzesToChangShiftBySubjectIdAndShift(@RequestParam("subjectId") Integer subjectId,
+    public ResponseEntity<Response> getClazzesToChangShiftBySubjectIdAndShift(@RequestParam("subjectId") Integer subjectId,
                                                                                @RequestParam("shift") Integer shift){
         try {
             List<Map<String, Object>> clazzes = clazzService.findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(subjectId, shift);
@@ -176,7 +176,7 @@ public class ClazzController {
 
     // Lấy danh sách lớp học theo block, semester và year cho admin
     @GetMapping("/for-admin")
-    public ResponseEntity<Response> findAllClazzsByBlockAndSemesterAndYear(
+    public ResponseEntity<Response> getAllClazzsByBlockAndSemesterAndYear(
             @RequestParam("block") Integer block,
             @RequestParam("semester") String semester,
             @RequestParam("year") Integer year
