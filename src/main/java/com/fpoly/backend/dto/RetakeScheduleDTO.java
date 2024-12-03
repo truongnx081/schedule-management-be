@@ -22,5 +22,7 @@ public class RetakeScheduleDTO {
 
     private Integer shiftId;
 
+    private String roomName;
+
 
 }

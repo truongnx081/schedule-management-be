@@ -5,6 +5,7 @@ import com.fpoly.backend.dto.RoomDTO;
 import com.fpoly.backend.dto.ShiftDTO;
 import com.fpoly.backend.entities.Instructor;
 import com.fpoly.backend.entities.RetakeSchedule;
+import com.fpoly.backend.entities.Room;
 import com.fpoly.backend.entities.Student;
 import com.fpoly.backend.mapper.RetakeScheduleMapper;
 import com.fpoly.backend.repository.*;
@@ -50,8 +51,9 @@ public class RetakeScheduleServiceImpl implements RetakeScheduleService {
         retakeSchedule.setSchedule(scheduleRepository.findById(dto.getScheduleId())
                 .orElseThrow(() -> new IllegalArgumentException("Schedule not found")));
 
-        retakeSchedule.setRoom(roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Room not found")));
+        Room room = roomRepository.findByName(dto.getRoomName())
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        retakeSchedule.setRoom(room);
 
         retakeSchedule = retakeScheduleRepository.save(retakeSchedule);
 
