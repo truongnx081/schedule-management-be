@@ -101,9 +101,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Map<String, Object>> getClazzsByScheduleStatus() {
+    public List<Map<String, Object>> getScheduleByScheduleStatus() {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
-        return scheduleRepository.getClazzsByScheduleStatus(instructorId);
+        return scheduleRepository.getScheduleByScheduleStatus(instructorId);
     }
 
     public void delete(Integer id) {
