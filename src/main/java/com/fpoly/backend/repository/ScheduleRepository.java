@@ -33,10 +33,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
             "JOIN c.studyIns si " +
             "JOIN si.student stu " +
             "WHERE stu.id = :studentId " +
-            "AND s.date BETWEEN :startDate AND :endDate " +
+            "AND s.date BETWEEN :startDate AND :endDate AND s.status = true " +
             "GROUP BY s.date, r.name, subj.code, subj.name, c.code, i.code, sh.id, sh.startTime, sh.endTime " +
             "ORDER BY s.date ASC")
-    List<Map<String, Object>> getScheduleByDateRange(Integer studentId, LocalDate startDate, LocalDate endDate);
+    List<Map<String, Object>> getScheduleByDateRange(@Param("studentId") Integer studentId,
+                                                     @Param("startDate") LocalDate startDate,
+                                                     @Param("endDate")LocalDate endDate);
 
     @Query("SELECT " +
             "c.id as clazzId, " +
