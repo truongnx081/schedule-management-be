@@ -19,7 +19,7 @@ public interface ScheduleService {
 
     ScheduleDTO putScheduleStatus(ScheduleDTO request, Integer scheduleId);
 
-    List<Map<String,Object>>getClazzsByScheduleStatus();
+    List<Map<String,Object>>getScheduleByScheduleStatus();
 
     ScheduleDTO create(ScheduleDTO request);
     ScheduleDTO update(ScheduleDTO request, Integer id);

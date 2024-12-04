@@ -40,18 +40,22 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
 
     @Query("SELECT " +
             "c.id as clazzId, " +
+            "sc.id as scheduleId, " +
             "c.code as clazzCode, " +
             "c.subject.code as codeSubject, " +
             "c.subject.name as subjectName, " +
             "sc.date as date, " +
             "c.room.name as roomName, " +
-            "c.shift.id as shiftId "+
+            "c.shift.id as shiftId, " +
+            "CASE WHEN rs.id IS NOT NULL THEN true ELSE false END as isRetake " +
             "FROM Clazz c " +
             "JOIN c.instructor i " +
             "JOIN c.schedules sc " +
+            "LEFT JOIN RetakeSchedule rs ON rs.schedule.id = sc.id " +
             "WHERE i.id = :instructorId " +
             "AND sc.status = false")
-    List<Map<String, Object>> getClazzsByScheduleStatus(@Param("instructorId") Integer instructorId);
+    List<Map<String, Object>> getScheduleByScheduleStatus(@Param("instructorId") Integer instructorId);
+
 
     @Query ("SELECT s.date FROM Schedule s WHERE s.clazz.id = :clazzId ORDER BY s.date ASC")
     List<LocalDate> findDateByClazzId(@Param("clazzId") Integer clazzId);

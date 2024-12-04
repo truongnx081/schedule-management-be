@@ -62,9 +62,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/getscheduleStatusFalse")
-    public ResponseEntity<Response> getClazzsByScheduleStatus() {
+    public ResponseEntity<Response> getScheduleByScheduleStatus() {
         try {
-            List<Map<String, Object>> clazzs = scheduleService.getClazzsByScheduleStatus();
+            List<Map<String, Object>> clazzs = scheduleService.getScheduleByScheduleStatus();
             return ResponseEntity.ok(new Response(
                     LocalDateTime.now(),
                     clazzs,
