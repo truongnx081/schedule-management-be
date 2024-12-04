@@ -17,6 +17,7 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
             " s.credits as credits, s.total_hours as total_hours, s.specialization.id as specializationId, " +
             "s.mission as mission, s.note as note, s.description as description , s.required.name as required, s.required.id as requiredId " +
             "FROM Subject s " +
+            "LEFT JOIN s.required r " +
             "WHERE s.specialization.id = :specializationId " )
     List<Map<String, Object>> getAllSubjectBySpecializationId(@Param("specializationId") Integer specializationId);
 

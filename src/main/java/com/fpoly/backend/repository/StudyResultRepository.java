@@ -10,17 +10,40 @@ import java.util.Map;
 
 
 public interface StudyResultRepository extends JpaRepository<StudyResult,Integer> {
-    @Query("SELECT clz.id as clazz_id, clz.code as clazz_code, sub.code as subject_code, sub.name as subject_name, sub.credits as subject_credits, " +
-            "clz.block.block as block, clz.semester.semester as semester, clz.year.year as year, sub.id as subject_id,  " +
-            "SUM(str.marked * str.percentage)/100 as marked_avg   " +
-            "FROM StudyResult str " +
-            "JOIN str.studyIn sti " +
-            "JOIN sti.clazz clz " +
-            "JOIN sti.student stu " +
-            "JOIN clz.subject sub " +
-            "WHERE stu.id = :studentId " +
-            "GROUP BY clz.id, clz.code, sub.code, sub.name, sub.credits, clz.block.block , clz.semester.semester , clz.year.year, sub.id  " +
-            "order by  clz.id" )
+    @Query("SELECT " +
+            "    s.code AS subject_code, " +
+            "    s.name AS subject_name, " +
+            "    s.credits AS credits, " +
+            "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS total_weighted_score, " +
+            "    s.id AS subject_id, " +
+            "    MAX(CASE " +
+            "        WHEN sti.student IS NOT NULL THEN cl.code " +
+            "        ELSE NULL " +
+            "    END) AS clazz_code, " +
+            "    MAX(CASE " +
+            "        WHEN sti.student IS NOT NULL THEN bl.block " +
+            "        ELSE NULL " +
+            "    END) AS block, " +
+            "    MAX(CASE " +
+            "        WHEN sti.student IS NOT NULL THEN se.semester " +
+            "        ELSE NULL " +
+            "    END) AS semester, " +
+            "    MAX(CASE " +
+            "        WHEN sti.student IS NOT NULL THEN yr.year " +
+            "        ELSE NULL " +
+            "    END) AS year " +
+            "FROM Subject s " +
+            "JOIN s.applyFors af " +
+            "JOIN af.educationProgram ep " +
+            "JOIN ep.students st " +  // Liên kết EducationProgram với Student
+            "LEFT JOIN s.clazzes cl " +
+            "LEFT JOIN cl.studyIns sti " +
+            "LEFT JOIN sti.studyResults str " +
+            "LEFT JOIN cl.block bl " +
+            "LEFT JOIN cl.semester se " +
+            "LEFT JOIN cl.year yr " +
+            "WHERE st.id = :studentId " +
+            "GROUP BY s.id, s.code, s.name, s.credits")
     List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
 
     @Query("SELECT sr.id as id, sr.marked as marked, sr.percentage as percentage, sr.studyIn.id as studyIn " +
