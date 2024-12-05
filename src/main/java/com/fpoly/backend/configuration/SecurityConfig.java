@@ -52,6 +52,7 @@ public class SecurityConfig {
         "/api/shifts",
             "/api/instructors/getAllTeachingSchedule",
             "/api/shifts/getAllShiftAvailable",
+            "/api/retakeschedules/getRetakeScheduleByInstructor",
             "/api/schedules/getSchedules",
             "/api/schedules/getscheduleStatusFalse",
             "/api/rooms/getAllRoomAvailable",
