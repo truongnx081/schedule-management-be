@@ -29,6 +29,9 @@ public class StudyInServiceImpl implements StudyInService {
     private final IdentifyUserAccessService identifyUserAccessService;
     private final ClazzRepository clazzRepository;
     private final StudentRepository studentRepository;
+    private final SemesterProgressRepository semesterProgressRepository;
+    private final WeekDayRepository weekDayRepository;
+    private final SubjectRepository subjectRepository;
 
     @Override
     public List<StudyInDTO> findAllByBlockAndSemesterAnhYear() {
@@ -68,4 +71,128 @@ public class StudyInServiceImpl implements StudyInService {
         }
         return studyInRepository.getAllMarkAverageStudentsByClazzId(clazzId);
     }
+
+    @Override
+    public StudyInDTO create(Integer clazzId) {
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Lớp học không tồn tại", HttpStatus.NOT_FOUND));
+        Integer shift = clazz.getShift().getId();
+        Student student = identifyUserAccessService.getStudent();
+        Integer studentId = student.getId();
+
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+
+        //Kiểm tra môn học trước
+        Subject requiredSubject = clazz.getSubject().getRequired();
+        if (requiredSubject != null) {
+            Integer requiredSubjectId = requiredSubject.getId();
+            List<Integer> studiedSubjectsId = subjectRepository.findStudiedSubjectByStudentId(studentId);
+            boolean studiedFlag = false;
+            for (Integer studiedSubjectId : studiedSubjectsId) {
+                if (studiedSubjectId.equals(requiredSubjectId)) {
+                    studiedFlag = true;
+                    break;
+                }
+            }
+            if (!studiedFlag) {
+                throw new AppUnCheckedException("Bạn chưa học môn học trước là: "
+                        + requiredSubject.getCode() + " - "
+                        + requiredSubject.getName()
+                        , HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        //Kiểm tra số lượng
+        Integer amout = studyInRepository.countStudentByClazzId(clazz.getId());
+        if(amout >= clazz.getQuantity()){
+            throw new AppUnCheckedException("Không thể đăng ký môn học do đã đủ số lượng", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+
+        // Kiểm tra ca trùng
+        List<Integer> dulicatedShiftClazzesId =
+                clazzRepository.findClazzesIdByShiftAndStudentIdAndBlockAndSemesterAndYear(
+                                                shift, studentId, block, semester, year);
+        List<Integer> weekDays = weekDayRepository.findWeekDayIdByClazzId(clazz.getId());
+
+
+        if (!dulicatedShiftClazzesId.isEmpty()){
+            for (Integer dulicatedShiftClazzId : dulicatedShiftClazzesId){
+                List<Integer> duplicatedClazzWeekDays = weekDayRepository.findWeekDayIdByClazzId(dulicatedShiftClazzId);
+                for (Integer duplicatedClazzWeekDay : duplicatedClazzWeekDays){
+                    for (Integer weekDay : weekDays){
+                        if (weekDay.equals(duplicatedClazzWeekDay)){
+                            Clazz duplicatedShiftClazz = clazzRepository.findById(dulicatedShiftClazzId).get();
+                            throw new AppUnCheckedException("Không thể đăng ký môn học do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + "ca: "
+                                                            + duplicatedShiftClazz.getShift().getId(), HttpStatus.NOT_ACCEPTABLE);
+                        }
+                    }
+                }
+            }
+        }
+
+        StudyIn studyIn = new StudyIn();
+        studyIn.setStudent(student);
+        studyIn.setClazz(clazz);
+        studyInRepository.save(studyIn);
+
+        return studyInMapper.toDTO(studyIn);
+    }
+
+
+    @Override
+    public StudyInDTO update(Integer oldClazzId, Integer newClazzId) {
+        Clazz oldClazz = clazzRepository.findById(oldClazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Lớp học không tồn tại", HttpStatus.NOT_FOUND));
+        Clazz newClazz = clazzRepository.findById(newClazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Lớp học không tồn tại", HttpStatus.NOT_FOUND));
+
+        Integer newShift = newClazz.getShift().getId();
+        Student student = identifyUserAccessService.getStudent();
+        Integer studentId = student.getId();
+
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+
+
+        Integer amout = studyInRepository.countStudentByClazzId(newClazz.getId());
+        if(amout >= newClazz.getQuantity()){
+            throw new AppUnCheckedException("Không thể đăng ký môn học do đã đủ số lượng", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+
+
+        List<Integer> dulicatedShiftClazzesId =
+                clazzRepository.findClazzesIdByShiftAndStudentIdAndBlockAndSemesterAndYear(
+                        newShift, studentId, block, semester, year);
+        List<Integer> weekDays = weekDayRepository.findWeekDayIdByClazzId(newClazz.getId());
+
+
+        if (!dulicatedShiftClazzesId.isEmpty()){
+            for (Integer dulicatedShiftClazzId : dulicatedShiftClazzesId){
+                List<Integer> duplicatedClazzWeekDays = weekDayRepository.findWeekDayIdByClazzId(dulicatedShiftClazzId);
+                for (Integer duplicatedClazzWeekDay : duplicatedClazzWeekDays){
+                    for (Integer weekDay : weekDays){
+                        if (weekDay.equals(duplicatedClazzWeekDay)){
+                            Clazz duplicatedShiftClazz = clazzRepository.findById(dulicatedShiftClazzId).get();
+                            throw new AppUnCheckedException("Không thể đăng ký môn học do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + "ca: "
+                                    + duplicatedShiftClazz.getShift().getId(), HttpStatus.NOT_ACCEPTABLE);
+                        }
+                    }
+                }
+            }
+        }
+
+        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, oldClazzId);
+        studyIn.setStudent(student);
+        studyIn.setClazz(newClazz);
+        studyInRepository.save(studyIn);
+
+        return studyInMapper.toDTO(studyIn);
+    }
+
 }
