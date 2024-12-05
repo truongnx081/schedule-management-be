@@ -40,7 +40,18 @@ public class ScheduleController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
-
+    @GetMapping("/getSchedulesFromRetakeSchedules")
+    public ResponseEntity<Response> getSchedulesFromRetakeSchedulesStudentIdAndStartdateAndEnddate(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        try {
+            List<Map<String, Object>> scheduleByDateRange = scheduleService.getSchedulesFromRetakeSchedules(startDate, endDate);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),scheduleByDateRange , "Đã lấy thành công các môn học theo id =  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
     //Cancel schedule
     @PutMapping("/cancelSchedule")
     public ResponseEntity<Response> updateScheduleStatus(
