@@ -164,7 +164,7 @@ public class ClazzController {
     //Danh sách các lớp học có môn muốn đổi và ca được chọn
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @GetMapping("/clazzes-to-change")
-    public ResponseEntity<Response> getClazzesToChangShiftBySubjectIdAndShift(@RequestParam("subjectId") Integer subjectId,
+    public ResponseEntity<Response> getClazzesToChangeShiftBySubjectIdAndShift(@RequestParam("subjectId") Integer subjectId,
                                                                                @RequestParam("shift") Integer shift){
         try {
             List<Map<String, Object>> clazzes = clazzService.findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(subjectId, shift);

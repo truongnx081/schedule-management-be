@@ -16,8 +16,10 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
     @Query("SELECT s.id as id, s.code as code, s.name as name," +
             " s.credits as credits, s.total_hours as total_hours, s.specialization.id as specializationId, " +
             "s.mission as mission, s.note as note, s.description as description , s.required.name as required, s.required.id as requiredId " +
+
             "FROM Subject s " +
             "LEFT JOIN s.required r " +
+
             "WHERE s.specialization.id = :specializationId " )
     List<Map<String, Object>> getAllSubjectBySpecializationId(@Param("specializationId") Integer specializationId);
 
@@ -56,7 +58,10 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
     @Query("SELECT c.subject.id " +
             "FROM Clazz c " +
             "JOIN c.studyIns si " +
-            "WHERE c.block.block = :block AND c.semester.semester = :semester AND c.year.year = :year AND si.student.id = :studentId")
+            "WHERE c.block.block = :block " +
+            "AND c.semester.semester = :semester " +
+            "AND c.year.year = :year " +
+            "AND si.student.id = :studentId")
     List<Integer> findRegistedSubjectsIdByStudentIdAndBlockAndSemesterAndYear(
             @Param("studentId") Integer studentId,
             @Param("block") Integer block,
@@ -76,4 +81,15 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
     List<Map<String, Object>> findAllSubjectByEducationProgramId(@Param("educationProgramId") Integer educationProgramId);
 
     boolean existsByCode(String code);
+
+    @Query("SELECT c.subject.id " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns si " +
+            "LEFT JOIN si.studyResults sr " +
+            "WHERE si.student.id = :studentId " +
+            "GROUP BY c.subject.id " +
+            "HAVING COALESCE(SUM(sr.marked * sr.percentage) / 100, NULL) IS NOT NULL")
+    List<Integer> findStudiedSubjectByStudentId(@Param("studentId") Integer studentId);
+
+
 }

@@ -43,4 +43,25 @@ public class StudyInController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<Response> create(@RequestParam("clazzId") Integer clazzId){
+        try {
+            StudyInDTO createdStudyIn = studyInService.create(clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),createdStudyIn , "Đăng ký lớp học thành công!", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @PutMapping("/change-clazz")
+    public ResponseEntity<Response> update(@RequestParam("oldClazzId") Integer oldClazzId, @RequestParam("newClazzId") Integer newClazzId){
+        try {
+            StudyInDTO createdStudyIn = studyInService.update(oldClazzId,newClazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),createdStudyIn , "Đổi lớp học thành công!", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
 }

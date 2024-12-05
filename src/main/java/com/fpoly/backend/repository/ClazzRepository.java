@@ -128,4 +128,19 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
     List<Map<String,Object>> findAllClazzsByBlockAndSemesterAndYear(@Param("block") Integer block,
                                                                     @Param("semester") String semester,
                                                                     @Param("year") Integer year);
+
+    @Query("SELECT c.id " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE c.shift.id = :shift " +
+            "AND si.student.id = :studentId " +
+            "AND c.block.block = :block " +
+            "AND c.semester.semester = :semester " +
+            "AND c.year.year = :year")
+    List<Integer> findClazzesIdByShiftAndStudentIdAndBlockAndSemesterAndYear(
+                                                                    @Param("shift") Integer shift,
+                                                                    @Param("studentId") Integer studentId,
+                                                                    @Param("block") Integer block,
+                                                                    @Param("semester") String semester,
+                                                                    @Param("year") Integer year);
 }
