@@ -14,4 +14,5 @@ import java.util.Map;
 public interface RetakeScheduleService {
 
     public RetakeScheduleDTO createRetakeSchedule(RetakeScheduleDTO dto);
+    List<Map<String, Object>> getRetakeScheduleByInstructor(LocalDate startDate, LocalDate endDate);
 }
