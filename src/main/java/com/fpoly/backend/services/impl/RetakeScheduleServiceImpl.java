@@ -63,4 +63,10 @@ public class RetakeScheduleServiceImpl implements RetakeScheduleService {
 
         return retakeScheduleMapper.toDTO(retakeSchedule);
     }
+
+    @Override
+    public  List<Map<String, Object>> getRetakeScheduleByInstructor(LocalDate startDate, LocalDate endDate) {
+        Integer instructorId =identifyUserAccessService.getInstructor().getId();
+        return retakeScheduleRepository.getRetakeScheduleByInstructor(instructorId,startDate,endDate);
+    }
 }

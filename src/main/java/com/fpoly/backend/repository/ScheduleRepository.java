@@ -42,18 +42,22 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
 
     @Query("SELECT " +
             "c.id as clazzId, " +
+            "sc.id as scheduleId, " +
             "c.code as clazzCode, " +
             "c.subject.code as codeSubject, " +
             "c.subject.name as subjectName, " +
             "sc.date as date, " +
             "c.room.name as roomName, " +
-            "c.shift.id as shiftId "+
+            "c.shift.id as shiftId, " +
+            "CASE WHEN rs.id IS NOT NULL THEN true ELSE false END as isRetake " +
             "FROM Clazz c " +
             "JOIN c.instructor i " +
             "JOIN c.schedules sc " +
+            "LEFT JOIN RetakeSchedule rs ON rs.schedule.id = sc.id " +
             "WHERE i.id = :instructorId " +
             "AND sc.status = false")
-    List<Map<String, Object>> getClazzsByScheduleStatus(@Param("instructorId") Integer instructorId);
+    List<Map<String, Object>> getScheduleByScheduleStatus(@Param("instructorId") Integer instructorId);
+
 
     @Query ("SELECT s.date FROM Schedule s WHERE s.clazz.id = :clazzId ORDER BY s.date ASC")
     List<LocalDate> findDateByClazzId(@Param("clazzId") Integer clazzId);
@@ -87,4 +91,31 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
             "JOIN clz.year yrs " +
             "WHERE  blk.block = :block and ses.semester = :semester and yrs.year = :year")
     List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year);
+    @Query("SELECT re.date AS studyDate, " +
+            "re.room.name AS roomName, " +
+            "subj.code AS subjectCode, " +
+            "subj.name AS subjectName, " +
+            "c.code AS clazzCode, " +
+            "i.code AS instructorCode, " +
+            "re.shift.id AS shiftId, " +
+            "re.shift.startTime AS start_time, " +
+            "re.shift.endTime AS end_time " +
+            "FROM RetakeSchedule re " +
+            "JOIN re.schedule s " +
+            "JOIN s.clazz c " +
+            "JOIN c.room r " +
+            "JOIN c.subject subj " +
+            "JOIN c.instructor i " +
+            "JOIN c.shift sh " +
+            "JOIN c.studyDays stday " +
+            "JOIN stday.weekDay wd " +
+            "JOIN c.studyIns si " +
+            "JOIN si.student stu " +
+            "WHERE stu.id = :studentId " +
+            "AND re.date BETWEEN :startDate AND :endDate " +
+            "GROUP BY re.date, re.room.name, subj.code, subj.name, c.code, i.code, re.shift.id, re.shift.startTime, re.shift.endTime " +
+            "ORDER BY re.date ASC")
+    List<Map<String, Object>> getScheduleFromRetakeSchedulesByDateRange(@Param("studentId") Integer studentId,
+                                                                        @Param("startDate") LocalDate startDate,
+                                                                        @Param("endDate")LocalDate endDate);
 }

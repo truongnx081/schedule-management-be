@@ -45,4 +45,27 @@ public class RetakeScheduleController {
         }
     }
 
+    @GetMapping("/getRetakeScheduleByInstructor")
+    public ResponseEntity<Response> getRetakeScheduleByInstructor(
+            @RequestParam("startDate") LocalDate startDate,
+            @RequestParam("endDate") LocalDate endDate
+    ) {
+        try {
+
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    retakeScheduleService.getRetakeScheduleByInstructor(startDate,endDate),
+                    "Get Retake schedule successfully",
+                    HttpStatus.CREATED.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(
+                    LocalDateTime.now(),
+                    null,
+                    e.getMessage(),
+                    e.getStatus().value())
+            );
+        }
+    }
+
 }

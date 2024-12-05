@@ -19,7 +19,7 @@ public interface ScheduleService {
 
     ScheduleDTO putScheduleStatus(ScheduleDTO request, Integer scheduleId);
 
-    List<Map<String,Object>>getClazzsByScheduleStatus();
+    List<Map<String,Object>>getScheduleByScheduleStatus();
 
     ScheduleDTO create(ScheduleDTO request);
     ScheduleDTO update(ScheduleDTO request, Integer id);
@@ -32,4 +32,6 @@ public interface ScheduleService {
 
 
     List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year);
+
+    List<Map<String, Object>> getSchedulesFromRetakeSchedules(LocalDate startDate, LocalDate endDate);
 }
