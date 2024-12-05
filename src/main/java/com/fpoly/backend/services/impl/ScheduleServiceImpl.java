@@ -142,4 +142,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year) {
         return scheduleRepository.getAllSchedulesByBlockSemesterYearByAdmin(block, semester, year);
     }
+
+    @Override
+    public List<Map<String, Object>> getSchedulesFromRetakeSchedules(LocalDate startDate, LocalDate endDate) {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        return scheduleRepository.getScheduleFromRetakeSchedulesByDateRange(studentId, startDate, endDate);
+    }
 }

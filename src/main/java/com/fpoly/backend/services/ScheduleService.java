@@ -32,4 +32,6 @@ public interface ScheduleService {
 
 
     List<Map<String, Object>> getAllSchedulesByBlockSemesterYearByAdmin(Integer block, String semester, Integer year);
+
+    List<Map<String, Object>> getSchedulesFromRetakeSchedules(LocalDate startDate, LocalDate endDate);
 }
