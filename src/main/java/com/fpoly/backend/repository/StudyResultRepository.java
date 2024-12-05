@@ -17,21 +17,21 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS mark_average, " +
             "    s.id AS subject_id, " +
             "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(cl.code, '') " + // COALESCE thay cho null để tránh VARBINARY
-            "        ELSE '' " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(cl.code, null) " + // COALESCE thay cho null để tránh VARBINARY
+            "        ELSE null " +
             "    END) AS clazz_code, " +
             "MAX(CASE WHEN sti.clazz.id IS NOT NULL THEN CAST(cl.id AS INTEGER) ELSE NULL END) AS clazz_id, "+
             "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(bl.block, '') " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE '' " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(bl.block, null) " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE null " +
             "    END) AS block, " +
             "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(se.semester, '') " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE '' " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(se.semester, null) " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE null " +
             "    END) AS semester, " +
             "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, 0) " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE 0 " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, null) " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE null " +
             "    END) AS year " +
 
             "FROM Subject s " +
