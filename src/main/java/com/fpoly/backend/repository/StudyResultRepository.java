@@ -14,28 +14,30 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "    s.code AS subject_code, " +
             "    s.name AS subject_name, " +
             "    s.credits AS credits, " +
-            "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS total_weighted_score, " +
+            "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS mark_average, " +
             "    s.id AS subject_id, " +
             "    MAX(CASE " +
-            "        WHEN sti.student IS NOT NULL THEN cl.code " +
-            "        ELSE NULL " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(cl.code, '') " + // COALESCE thay cho null để tránh VARBINARY
+            "        ELSE '' " +
             "    END) AS clazz_code, " +
+            "MAX(CASE WHEN sti.clazz.id IS NOT NULL THEN CAST(cl.id AS INTEGER) ELSE NULL END) AS clazz_id, "+
             "    MAX(CASE " +
-            "        WHEN sti.student IS NOT NULL THEN bl.block " +
-            "        ELSE NULL " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(bl.block, '') " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE '' " +
             "    END) AS block, " +
             "    MAX(CASE " +
-            "        WHEN sti.student IS NOT NULL THEN se.semester " +
-            "        ELSE NULL " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(se.semester, '') " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE '' " +
             "    END) AS semester, " +
             "    MAX(CASE " +
-            "        WHEN sti.student IS NOT NULL THEN yr.year " +
-            "        ELSE NULL " +
+            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, 0) " + // COALESCE để đảm bảo kiểu so sánh
+            "        ELSE 0 " +
             "    END) AS year " +
+
             "FROM Subject s " +
             "JOIN s.applyFors af " +
             "JOIN af.educationProgram ep " +
-            "JOIN ep.students st " +  // Liên kết EducationProgram với Student
+            "JOIN ep.students st " +
             "LEFT JOIN s.clazzes cl " +
             "LEFT JOIN cl.studyIns sti " +
             "LEFT JOIN sti.studyResults str " +
@@ -45,6 +47,11 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "WHERE st.id = :studentId " +
             "GROUP BY s.id, s.code, s.name, s.credits")
     List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
+
+
+
+
+
 
     @Query("SELECT sr.id as id, sr.marked as marked, sr.percentage as percentage, sr.studyIn.id as studyIn " +
             "FROM StudyResult sr JOIN sr.studyIn s " +
