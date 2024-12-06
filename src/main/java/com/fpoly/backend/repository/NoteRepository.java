@@ -30,8 +30,8 @@ public interface NoteRepository extends JpaRepository<Note,Integer> {
             "AND FUNCTION('YEAR', n.date) = :year")
     List<Map<String, Object>> getAllNoteByMonthYear(@Param("studentId") Integer studentId,
                                                     @Param("month") int month, @Param("year") int year);
-    @Query("SELECT n.date as date_note, n.content as content_note, " +
-            "n.location as location_note, n.noteTime as time_note, n.noteType.name as name_note_type " +
+    @Query("SELECT n.id as note_id, n.date as date_note, n.content as content_note, " +
+            "n.location as location_note, n.noteTime as time_note, n.noteType.name as name_note_type, n.noteType.id as note_type_id " +
             "FROM Note n JOIN n.noteType nt " +
             "WHERE n.student.id = :studentId " +
             "AND FUNCTION('DAY', n.date) = :day " +
