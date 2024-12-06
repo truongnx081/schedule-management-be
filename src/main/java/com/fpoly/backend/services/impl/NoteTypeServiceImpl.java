@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class NoteTypeServiceImpl implements NoteTypeService {
@@ -17,5 +20,10 @@ public class NoteTypeServiceImpl implements NoteTypeService {
     @Override
     public NoteType findById(Integer id) {
         return noteTypeRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllNotType() {
+        return noteTypeRepository.getAllNoteType();
     }
 }
