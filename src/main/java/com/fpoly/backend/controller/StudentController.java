@@ -168,7 +168,7 @@ public class StudentController {
 
     @GetMapping("/getStudentsByInstructorIdAndClazzId")
     public ResponseEntity<Response> getStudentsByInstructorIdAndClazzId(
-            @RequestParam(required = false) Integer clazzId) {
+            @RequestParam("clazzId") Integer clazzId) {
 
         try {
             return ResponseEntity.ok(new Response(

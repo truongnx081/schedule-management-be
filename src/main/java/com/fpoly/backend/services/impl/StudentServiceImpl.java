@@ -312,6 +312,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId) {
         Integer instructorId = identifyUserAccessService.getInstructor().getId();
+        System.out.println(studentRepository.findStudentByClazzId(clazzId, instructorId).toString());
         return studentRepository.findStudentByClazzId(clazzId, instructorId);
     }
 
