@@ -33,19 +33,18 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, null) " + // COALESCE để đảm bảo kiểu so sánh
             "        ELSE null " +
             "    END) AS year " +
-
             "FROM Subject s " +
             "JOIN s.applyFors af " +
             "JOIN af.educationProgram ep " +
             "JOIN ep.students st " +
             "LEFT JOIN s.clazzes cl " +
-            "LEFT JOIN cl.studyIns sti " +
+            "JOIN cl.studyIns sti " +
             "LEFT JOIN sti.studyResults str " +
             "LEFT JOIN cl.block bl " +
             "LEFT JOIN cl.semester se " +
             "LEFT JOIN cl.year yr " +
             "WHERE st.id = :studentId " +
-            "GROUP BY s.id, s.code, s.name, s.credits")
+            "GROUP BY s.id, s.code, s.name, s.credits, sti.id ")
     List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
 
 
