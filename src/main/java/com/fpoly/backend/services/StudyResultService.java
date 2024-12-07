@@ -25,4 +25,8 @@ public interface StudyResultService {
     StudyResultDTO updateStudyResult(Integer studyResultId, StudyResultDTO studyResultDTO);
 
     List<Map<String, Object>> getAllMarkDetail(Integer clazzId, Integer subjectId);
+
+    List<Map<String, Object>>getMarkByClazzId(Integer clazzId);
+
+
 }
