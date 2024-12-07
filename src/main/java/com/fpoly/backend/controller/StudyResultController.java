@@ -106,4 +106,16 @@ public class StudyResultController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+
+    //Lấy danh sách điểm của lớp
+    @GetMapping("/getMarkByClazzId")
+    public ResponseEntity<Response> getMarkByClazzId(@RequestParam Integer clazzId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.getMarkByClazzId(clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy điểm thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
 }

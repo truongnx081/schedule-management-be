@@ -17,11 +17,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -201,6 +200,40 @@ public class StudyResultServiceImpl implements StudyResultService {
         Integer studentId = identifyUserAccessService.getStudent().getId();
         return studyResultRepository.getAllMarkDetail(clazzId,subjectId, studentId);
     }
+
+    @Override
+    public List<Map<String, Object>> getMarkByClazzId(Integer clazzId) {
+        List<Map<String, Object>> rawData = studyResultRepository.getMarkByClazzId(clazzId);
+
+        // Sử dụng LinkedHashMap để giữ thứ tự và nhóm theo studentId
+        Map<Integer, Map<String, Object>> result = new LinkedHashMap<>();
+
+        // Duyệt qua dữ liệu để nhóm theo sinh viên
+        for (Map<String, Object> row : rawData) {
+            Integer studentId = (Integer) row.get("studentId");
+            String markName = (String) row.get("markName");
+            Object studentMark = row.get("studentMark");
+
+            // Nếu sinh viên chưa có trong kết quả, tạo mới mục cho sinh viên đó
+            result.putIfAbsent(studentId, new LinkedHashMap<String, Object>() {{
+                put("studentId", studentId);
+                put("studentCode", row.get("studentCode"));
+                put("studentFullName", row.get("studentFullName"));
+                put("marks", new ArrayList<Map<String, Object>>());
+            }});
+
+            // Nếu có điểm, thêm vào danh sách marks của sinh viên
+            if (studentMark != null) {
+                List<Map<String, Object>> marks = (List<Map<String, Object>>) result.get(studentId).get("marks");
+                marks.add(Map.of(
+                        "markName", markName,
+                        "studentMark", studentMark
+                ));
+            }
+        }
+        return new ArrayList<>(result.values());
+    }
+
 
 
 }

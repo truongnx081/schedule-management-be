@@ -101,4 +101,22 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
     List<Map<String, Object>> getAllMarkDetail(@Param("clazzId")Integer clazzId,
                                                @Param("subjectId")Integer subjectId,
                                                @Param("studentId")Integer studentId);
+
+
+    @Query("SELECT s.student.id as studentId, " +
+            "s.student.code as studentCode, " +
+            "CONCAT(s.student.lastName, ' ', s.student.firstName) as studentFullName, " +
+            "sr.marked as studentMark, " +
+            "mc.name as markName " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns s " +
+            "LEFT JOIN s.studyResults sr " +
+            "LEFT JOIN sr.markColumn mc " +
+            "WHERE c.id = :clazzId")
+    List<Map<String, Object>> getMarkByClazzId(@Param("clazzId") Integer clazzId);
+
+
+
+
+
 }

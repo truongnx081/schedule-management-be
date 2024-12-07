@@ -69,7 +69,8 @@ public class SecurityConfig {
             "/api/studyResult/markColumn",
             "/api/studyResult/create",
             "/api/studyResult/update",
-            "/api/studyins/getAllAverage"
+            "/api/studyins/getAllAverage",
+            "/api/studyResult/getMarkByClazzId"
 
     };
     private final String[] ADMIN_ENDPOINTS={
