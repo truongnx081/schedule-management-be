@@ -331,7 +331,10 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
-
+    @Override
+    public List<Map<String, Object>> getAllStudentByCourse() {
+        return studentRepository.getAllStudentByCourse();
+    }
 
 
     private String getCellStringValue(Cell cell) {

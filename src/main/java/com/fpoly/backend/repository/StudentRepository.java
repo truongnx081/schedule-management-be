@@ -34,5 +34,6 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
             @Param("clazzId") Integer clazzId,
             @Param("instructorId") Integer instructorId);
 
-
+    @Query("SELECT st.course as course FROM Student st group by st.course order by st.course desc ")
+    List<Map<String, Object>> getAllStudentByCourse();
 }

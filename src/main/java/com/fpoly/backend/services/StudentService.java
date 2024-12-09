@@ -35,4 +35,5 @@ public interface StudentService {
     public List<Map<String, Object>> getStudentsByClazzId(Integer clazzId);
     void updateImage(Integer id, MultipartFile avatar);
 
+    List<Map<String, Object>> getAllStudentByCourse();
 }

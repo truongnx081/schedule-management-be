@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
@@ -200,4 +201,20 @@ public class StudentController {
         }
     }
 
+
+    //Admin get student information
+    @GetMapping("/course")
+    public ResponseEntity<Response> getAllCourse() {
+        try {
+            List<Map<String, Object>> getAllCourse = studentService.getAllStudentByCourse();
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    getAllCourse,
+                    "Get all course successfully",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }
