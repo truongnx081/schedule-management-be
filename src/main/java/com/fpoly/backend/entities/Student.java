@@ -47,9 +47,11 @@ public class Student extends AbstractEntity<Integer> {
     @Column(name = "avatar", columnDefinition = "VARCHAR(255)")
     private String avatar;
 
-
     @Column(name = "course", columnDefinition = "VARCHAR(255)")
     private String course;
+
+    @Column(name = "status")
+    private boolean status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "major_id")

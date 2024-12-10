@@ -44,7 +44,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "LEFT JOIN cl.semester se " +
             "LEFT JOIN cl.year yr " +
             "WHERE st.id = :studentId " +
-            "GROUP BY s.id, s.code, s.name, s.credits, sti.id ")
+            "GROUP BY s.id, s.code, s.name, s.credits ")
     List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
 
 

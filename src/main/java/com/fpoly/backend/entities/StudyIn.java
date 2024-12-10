@@ -14,6 +14,8 @@ import java.util.List;
 @Getter
 @Table(name = "study_ins")
 public class StudyIn extends AbstractEntity<Integer>{
+    @Column(name = "paid")
+    private boolean paid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clazz_id")
