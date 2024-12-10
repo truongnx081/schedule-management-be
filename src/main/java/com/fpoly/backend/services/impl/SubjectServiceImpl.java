@@ -113,7 +113,7 @@ public class SubjectServiceImpl implements SubjectService {
             List<Subject> subjectList = excelUtility.excelToSubjectList(file.getInputStream());
             subjectRepository.saveAll(subjectList);
         } catch (IOException ex) {
-            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+            throw new RuntimeException("Xuất hiện lỗi trong Excel: " + ex.getMessage());
         }
     }
 }

@@ -72,7 +72,7 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         String currentAdminCode = identifyUserAccessService.getAdmin().getCode();
 
         if (!existingSP.getCreatedBy().equals(currentAdminCode)) {
-            throw new AppUnCheckedException("Bạn không có quyền cập nhật SP này", HttpStatus.FORBIDDEN);
+            throw new AppUnCheckedException("Bạn không có quyền cập nhật tiến trình học kỳ này", HttpStatus.FORBIDDEN);
         }
 
         existingSP.setCreateDateStart(semesterProgressDTO.getCreateDateStart());
@@ -110,7 +110,7 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         String currentAdminCode = identifyUserAccessService.getAdmin().getCode();
 
         if (!existingSP.getCreatedBy().equals(currentAdminCode)) {
-            throw new AppUnCheckedException("Bạn không có quyền xóa SP này", HttpStatus.FORBIDDEN);
+            throw new AppUnCheckedException("Bạn không có quyền xóa tiến trình học kỳ này", HttpStatus.FORBIDDEN);
         }
 
         semesterProgressRepository.delete(existingSP);

@@ -52,6 +52,11 @@ public class NoteServiceImpl implements NoteService {
         return noteRepository.getAllNoteByDayMonthYear(studentId,day, month, year);
     }
 
+    @Override
+    public List<Map<String, Object>> getAllNote() {
+        Integer studentId = identifyUserAccessService.getStudent().getId();
+        return noteRepository.getAllNote(studentId);
+    }
 
     @Override
     public NoteDTO createNote(NoteDTO noteDTO) {
@@ -81,7 +86,7 @@ public class NoteServiceImpl implements NoteService {
 
         // Kiểm tra xem sinh viên hiện tại có quyền cập nhật ghi chú này không
         if (!existingNote.getStudent().getId().equals(currentStudentId)) {
-            throw new AppUnCheckedException("Bạn không có quyền cập nhật ghi chú này", HttpStatus.FORBIDDEN);
+            throw new AppUnCheckedException("Bạn không có quyền cập nhật ghi chú này!", HttpStatus.FORBIDDEN);
         }
 
         // Cập nhật các thông tin từ noteDTO vào existingNote
@@ -112,11 +117,13 @@ public class NoteServiceImpl implements NoteService {
 
         // Kiểm tra xem sinh viên hiện tại có quyền xóa ghi chú này không
         if (!existingNote.getStudent().getId().equals(currentStudentId)) {
-            throw new AppUnCheckedException("Bạn không có quyền xóa ghi chú này", HttpStatus.FORBIDDEN);
+            throw new AppUnCheckedException("Bạn không có quyền xóa ghi chú này!", HttpStatus.FORBIDDEN);
         }
 
         noteRepository.delete(existingNote);
     }
+
+
 
 
 }

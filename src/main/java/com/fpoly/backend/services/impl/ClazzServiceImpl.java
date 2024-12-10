@@ -233,7 +233,7 @@ public class ClazzServiceImpl implements ClazzService {
             excelUtility.excelToClazzList(file.getInputStream());
 //            clazzRepository.saveAll(clazzList);
         } catch (IOException ex) {
-            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+            throw new RuntimeException("Xuất hiện lỗi trong Excel: " + ex.getMessage());
         }
     }
 

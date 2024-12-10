@@ -97,7 +97,7 @@ public class InstructorServiceImpl implements InstructorService {
             List<Instructor> instructorsList = excelUtility.excelToInstructorList(file.getInputStream());
             instructorRepository.saveAll(instructorsList);
         } catch (IOException ex) {
-            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+            throw new RuntimeException("Xuất hiện lỗi trong Excel: " + ex.getMessage());
         }
     }
 
