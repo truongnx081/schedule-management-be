@@ -32,7 +32,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
             return CloudinaryResponse.builder().publicId(idOnly).build();
         } catch (final Exception e) {
-            throw new RuntimeException("Failed to upload file", e);
+            throw new RuntimeException("Lỗi khi upload file: ", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         try {
             cloudinary.uploader().destroy("student/" + publicId, Map.of());
         } catch (final Exception e) {
-            throw new RuntimeException("Failed to delete file with publicId: " + publicId, e);
+            throw new RuntimeException("Xóa không thành công với đường dẫn: " + publicId, e);
         }
     }
 }

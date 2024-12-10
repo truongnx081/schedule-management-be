@@ -129,7 +129,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             List<Schedule> schedulesList = excelUtility.excelToStudyScheduleList(file.getInputStream());
             scheduleRepository.saveAll(schedulesList);
         } catch (IOException ex) {
-            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+            throw new RuntimeException("Xuất hiện lỗi trong Excel: " + ex.getMessage());
         }
     }
 

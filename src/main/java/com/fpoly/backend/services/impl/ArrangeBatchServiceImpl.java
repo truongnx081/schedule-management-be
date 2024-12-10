@@ -46,7 +46,7 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
                 .orElseThrow(() -> new AppUnCheckedException("Clazz not found", HttpStatus.NOT_FOUND));
 
         if (!instructorId.equals(clazz.getInstructor().getId())) {
-            throw new AppUnCheckedException("Instructor does not match the class", HttpStatus.FORBIDDEN);
+            throw new AppUnCheckedException("Bạn không có quyền sắp xếp đợt thi !", HttpStatus.FORBIDDEN);
         }
 
         ArrangeBatch arrangeBatch = arrangeBatchMapper.toEntity(arrangeBatchDTO);
@@ -92,13 +92,13 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
     public void deleteArrangeBatch(Integer clazzId) {
         List<ArrangeBatch> arrangeBatches = arrangeBatchRepository.findAllByClazzId(clazzId);
         if (arrangeBatches.isEmpty()) {
-            throw new AppUnCheckedException("Không có ArrangeBatch nào cho clazzId: " + clazzId, HttpStatus.NOT_FOUND);
+            throw new AppUnCheckedException("Không có đợt thi nào với clazzId: " + clazzId, HttpStatus.NOT_FOUND);
         }
 
         String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
         for (ArrangeBatch arrangeBatch : arrangeBatches) {
             if (!arrangeBatch.getCreatedBy().equals(currentInstructorCode)) {
-                throw new AppUnCheckedException("Bạn không có quyền xóa arrange batch của clazz này!", HttpStatus.FORBIDDEN);
+                throw new AppUnCheckedException("Bạn không có quyền xóa đợt thi của lớp này!", HttpStatus.FORBIDDEN);
             }
         }
 

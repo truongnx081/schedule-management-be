@@ -36,6 +36,17 @@ public class NoteController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+    // Load tất cả note có trong dữ liệu
+    @GetMapping("/getAllNote")
+    public ResponseEntity<Response> getAllNote() {
+        try {
+            List<Map<String, Object>> getAllNote = noteService.getAllNote();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllNote, "Đã lấy thành công tất cả ghi chú với studentId hiện tại ! ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
 
     // Load note theo tháng năm
     @GetMapping("/getNoteByMonth")

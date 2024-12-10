@@ -104,7 +104,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             List<ExamSchedule> examSchedulesList = excelUtility.excelToExamScheduleList(file.getInputStream());
             examScheduleRepository.saveAll(examSchedulesList);
         } catch (IOException ex) {
-            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+            throw new RuntimeException("Xuất hiện lỗi trong Excel: " + ex.getMessage());
         }
     }
 
