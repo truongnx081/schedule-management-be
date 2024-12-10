@@ -48,6 +48,9 @@ public class Instructor extends  AbstractEntity<Integer> {
     @Column(name = "description", columnDefinition = "NVARCHAR(255)")
     private String description;
 
+    @Column(name = "status")
+    private boolean status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialization_id")
     private Specialization specialization;

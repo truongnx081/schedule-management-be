@@ -28,6 +28,9 @@ public class Event extends AbstractEntity<Integer>{
     @Column(name = "image", columnDefinition = "VARCHAR(255)")
     private String image;
 
+    @Column(name = "status")
+    private boolean status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id")
     private Area area;
