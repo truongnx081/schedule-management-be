@@ -61,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject.serialize();
         }catch (JOSEException e){
-            throw new RuntimeException("Error generating token", e);
+            throw new RuntimeException("Lỗi khi lấy token: ", e);
         }
     }
 
@@ -101,7 +101,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(()->new RuntimeException("Admin not found"));
             return createAuthResponse(generateRoleAdmin(admin));
         }else {
-            throw new RuntimeException("Email not found in any repository.");
+            throw new RuntimeException("Không tìm thấy email này trong dữ liệu!");
         }
     }
 
@@ -122,11 +122,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var verified=signedJWT.verify(verifier);
 
         if(!expiryTime.after(new Date())&&verified){
-            throw new RuntimeException("ErrorCode.UNAUTHENTICATED");
+            throw new RuntimeException("Người dùng chưa được xác thực!");
         }
 
         if(invalidateTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())){
-            throw new RuntimeException("ErrorCode.UNAUTHENTICATED");
+            throw new RuntimeException("Quá trình xác thực thất bại. Do token đã bị vô hiệu hóa! ");
         }
         return signedJWT;
 

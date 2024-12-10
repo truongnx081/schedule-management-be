@@ -4,7 +4,6 @@ import com.fpoly.backend.dto.RoomDTO;
 import com.fpoly.backend.entities.Admin;
 import com.fpoly.backend.entities.Room;
 import com.fpoly.backend.mapper.RoomMapper;
-import com.fpoly.backend.mapper.RoomMapperImpl;
 import com.fpoly.backend.repository.RoomRepository;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.RoomService;

@@ -19,4 +19,6 @@ public interface NoteService {
     NoteDTO updateNote(Integer noteId, NoteDTO noteDTO);
 
     void deleteNote(Integer id);
+
+    List<Map<String, Object>> getAllNote();
 }

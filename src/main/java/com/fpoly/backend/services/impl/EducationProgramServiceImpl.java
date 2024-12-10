@@ -70,7 +70,7 @@ public class EducationProgramServiceImpl implements EducationProgramService {
                 educationProgram.setPrivateMajor(privateMajor);
             }
             else
-                throw new RuntimeException("Vui lòng chọn chuyên ngành đào tạo");
+                throw new RuntimeException("Vui lòng chọn chuyên ngành đào tạo!");
 
             educationProgram.setId(null);
             educationProgram.setSemester(semester);
@@ -119,7 +119,7 @@ public class EducationProgramServiceImpl implements EducationProgramService {
                 educationProgram.setPrivateMajor(privateMajor);
             }
             else
-                throw new RuntimeException("Vui lòng chọn chuyên ngành đào tạo");
+                throw new RuntimeException("Vui lòng chọn chuyên ngành đào tạo!");
 
             educationProgram.setSemester(semester);
             educationProgram.setYear(year);
