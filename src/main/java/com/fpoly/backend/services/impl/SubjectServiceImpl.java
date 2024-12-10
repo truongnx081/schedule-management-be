@@ -90,7 +90,7 @@ public class SubjectServiceImpl implements SubjectService {
 
         if(request.getRequiredId() != 0){
             Subject subjectRequired = subjectRepository.findById(request.getRequiredId()).orElseThrow(()->
-                    new RuntimeException("Môn học này không tồn tại"));
+                    new RuntimeException("Môn học bắt buộc này không tồn tại"));
             subject.setRequired(subjectRequired);
         }
 

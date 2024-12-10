@@ -1,6 +1,7 @@
 package com.fpoly.backend.until;
 
 import com.fpoly.backend.entities.*;
+import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.repository.*;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import lombok.AccessLevel;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -499,6 +498,151 @@ public class ExcelUtility {
             }
             workbook.close();
             return subjectsList;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
+        }
+    }
+
+    // Import excel data semester progress
+    public List<SemesterProgress> excelToSemesterProgressList(InputStream is) {
+        try {
+            Workbook workbook = new XSSFWorkbook(is);
+            Sheet sheet = workbook.getSheet("DSTT");
+            Iterator<Row> rows = sheet.iterator();
+            List<SemesterProgress> semesterProgressList = new ArrayList<SemesterProgress>();
+            int rowNumber = 0;
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                // skip header
+                if (rowNumber == 0) {
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                SemesterProgress semesterProgress = new SemesterProgress();
+                int cellIdx = 0;
+                while (cellsInRow.hasNext()) {
+                    Cell currentCell = cellsInRow.next();
+                    switch (cellIdx) {
+                        case 1:
+                            // Nếu không có year trong db thì tạo mới year
+                            Year year = yearRepository.findById((int)currentCell.getNumericCellValue())
+                                    .orElseGet(() -> {
+                                        Year newYear = new Year();
+                                        newYear.setYear((int)currentCell.getNumericCellValue());
+                                        return yearRepository.save(newYear);
+                                    });
+
+                            semesterProgress.setYear(year);
+                            break;
+                        case 2:
+                            Semester semester = semesterRepository.findById(currentCell.getStringCellValue()).orElseThrow(() ->
+                                    new AppUnCheckedException("Semester not found", HttpStatus.NOT_FOUND));
+                            semesterProgress.setSemester(semester);
+                            break;
+                        case 3:
+                            semesterProgress.setBlock(blockRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
+                                    new AppUnCheckedException("Block not found", HttpStatus.NOT_FOUND)
+                            ));
+                            break;
+                        case 4:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setCreateDateStart(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setCreateDateStart(sqlDate);
+                            }
+                            break;
+                        case 5:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setCreateDateEnd(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setCreateDateEnd(sqlDate);
+                            }
+                            break;
+                        case 6:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setRepaireDateStart(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setRepaireDateStart(sqlDate);
+                            }
+                            break;
+                        case 7:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setRepaireDateEnd(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setRepaireDateEnd(sqlDate);
+                            }
+                            break;
+                        case 8:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setFirstPartStart(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setFirstPartStart(sqlDate);
+                            }
+                            break;
+                        case 9:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setFirstPartEnd(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setFirstPartEnd(sqlDate);
+                            }
+                            break;
+                        case 10:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setSecondPartStart(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setSecondPartStart(sqlDate);
+                            }
+                            break;
+                        case 11:
+                            if(currentCell.getCellType() == CellType.NUMERIC) // là kiểu date
+                                semesterProgress.setSecondPartEnd(currentCell.getDateCellValue());
+                            else if (currentCell.getCellType() == CellType.STRING) {
+                                String dateString = currentCell.getStringCellValue();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate localDate = LocalDate.parse(dateString, formatter);
+                                java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                                semesterProgress.setSecondPartEnd(sqlDate);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    cellIdx++;
+                }
+                semesterProgress.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+                semesterProgressList.add(semesterProgress);
+            }
+            workbook.close();
+            return semesterProgressList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }

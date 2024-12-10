@@ -1,10 +1,7 @@
 package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.SemesterProgressDTO;
-import com.fpoly.backend.entities.Block;
-import com.fpoly.backend.entities.Semester;
-import com.fpoly.backend.entities.SemesterProgress;
-import com.fpoly.backend.entities.Year;
+import com.fpoly.backend.entities.*;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.SemesterProgressMapper;
 import com.fpoly.backend.repository.BlockRepository;
@@ -13,11 +10,14 @@ import com.fpoly.backend.repository.SemesterRepository;
 import com.fpoly.backend.repository.YearRepository;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SemesterProgressService;
+import com.fpoly.backend.until.ExcelUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +44,8 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
 
     @Autowired
     YearRepository yearRepository;
+    @Autowired
+    private ExcelUtility excelUtility;
 
     @Override
     public SemesterProgressDTO createSemesterProgress(SemesterProgressDTO semesterProgressDTO) {
@@ -56,24 +58,27 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
         semesterProgress.setSemester(semesterRepository.findById(semesterProgressDTO.getSemester()).orElseThrow(() ->
                 new AppUnCheckedException("Semester not found", HttpStatus.NOT_FOUND)
         ));
-        semesterProgress.setYear(yearRepository.findById(semesterProgressDTO.getYear()).orElseThrow(() ->
-                new AppUnCheckedException("Year not found", HttpStatus.NOT_FOUND)
-        ));
+
+        // Nếu không có year trong db thì tạo mới year
+        Year year = yearRepository.findById(semesterProgressDTO.getYear())
+                .orElseGet(() -> {
+                    Year newYear = new Year();
+                    newYear.setYear(semesterProgressDTO.getYear());
+                    return yearRepository.save(newYear);
+                });
+
+        semesterProgress.setYear(year);
         return semesterProgressMapper.toDTO(semesterProgressRepository.save(semesterProgress));
     }
 
 
     @Override
     public SemesterProgressDTO updateSemesterProgress(Integer semesterProgressId, SemesterProgressDTO semesterProgressDTO) {
-        // Kiểm tra xem ghi chú có tồn tại hay không
+        // Kiểm tra xem sp có tồn tại hay không
         SemesterProgress existingSP = semesterProgressRepository.findById(semesterProgressId)
                 .orElseThrow(() -> new AppUnCheckedException("SP không tồn tại", HttpStatus.NOT_FOUND));
 
         String currentAdminCode = identifyUserAccessService.getAdmin().getCode();
-
-        if (!existingSP.getCreatedBy().equals(currentAdminCode)) {
-            throw new AppUnCheckedException("Bạn không có quyền cập nhật SP này", HttpStatus.FORBIDDEN);
-        }
 
         existingSP.setCreateDateStart(semesterProgressDTO.getCreateDateStart());
         existingSP.setCreateDateEnd(semesterProgressDTO.getCreateDateEnd());
@@ -95,8 +100,14 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
             existingSP.setSemester(semester);
         }
         if (semesterProgressDTO.getYear() != null) {
+            // Nếu không có year trong db thì tạo mới year
             Year year = yearRepository.findById(semesterProgressDTO.getYear())
-                    .orElseThrow(() -> new AppUnCheckedException("Loại năm không tồn tại", HttpStatus.NOT_FOUND));
+                    .orElseGet(() -> {
+                        Year newYear = new Year();
+                        newYear.setYear(semesterProgressDTO.getYear());
+                        return yearRepository.save(newYear);
+                    });
+
             existingSP.setYear(year);
         }
         return semesterProgressMapper.toDTO(semesterProgressRepository.save(existingSP));
@@ -168,5 +179,27 @@ public class SemesterProgressServiceImpl implements SemesterProgressService {
 
         result.put("currentProgress", "block-ended");
         return result;
+    }
+
+    @Override
+    public void updateDefaultSemesterProgress(Integer id) {
+        // update tất cả trạng thái thành false
+        semesterProgressRepository.updateAllStatusOfSemesterProgressIsFalse();
+
+        SemesterProgress semesterProgress = semesterProgressRepository.findById(id).orElseThrow(()->
+                new RuntimeException("Tiến độ học kỳ này không tìm thấy"));
+        semesterProgress.setIsActive(true);
+
+        semesterProgressRepository.save(semesterProgress);
+    }
+
+    @Override
+    public void importSemesterProgress(MultipartFile file) {
+        try {
+            List<SemesterProgress> semesterProgressesList = excelUtility.excelToSemesterProgressList(file.getInputStream());
+            semesterProgressRepository.saveAll(semesterProgressesList);
+        } catch (IOException ex) {
+            throw new RuntimeException("Excel data is failed to store: " + ex.getMessage());
+        }
     }
 }
