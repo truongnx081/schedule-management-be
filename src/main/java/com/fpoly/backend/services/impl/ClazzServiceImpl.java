@@ -51,9 +51,9 @@ public class ClazzServiceImpl implements ClazzService {
     public ClazzDTO create(ClazzDTO request) {
         Clazz clazz =  clazzMapper.toEntity(request);
 
-        if(clazzRepository.existsByCode(request.getCode())){
-            throw new RuntimeException("Mã lớp học này đã tồn tại");
-        }
+//        if(clazzRepository.existsByCode(request.getCode())){
+//            throw new RuntimeException("Mã lớp học này đã tồn tại");
+//        }
         // Tìm block
         Block block = blockRepository.findById(request.getBlock()).orElseThrow(() ->
                 new RuntimeException("Block not found"));

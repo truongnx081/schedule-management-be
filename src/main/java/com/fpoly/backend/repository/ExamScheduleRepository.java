@@ -82,10 +82,10 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
     @Query("SELECT " +
             "exm.id AS exam_id, " +
             "exm.date as exam_date, " +
-            "clz.code AS clazz_code, " +
+            "clz.code AS clazz_code, clz.id AS clazzId, " +
             "sub.code AS subject_code, " +
             "sub.name AS subject_name, " +
-            "sif.id AS shift_id, " +
+            "exm.shift.id AS shift_id, " +
             "sif.startTime AS start_time, " +
             "sif.endTime AS end_time, " +
             "ins.firstName as first_name,  " +
@@ -94,7 +94,7 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
             "bls.block AS block, " +
             "ses.semester AS semester, " +
             "yrs.year AS year, " +
-            "ros.name AS room_name, " +
+            "exm.room.name AS room_name, exm.room.id AS roomId, " +
             "bld.name AS building_name, " +
             "exm.batch AS batch_exam, " +
             "spe.id AS specialization_id " +

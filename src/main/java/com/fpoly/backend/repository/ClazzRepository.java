@@ -1,6 +1,6 @@
 package com.fpoly.backend.repository;
 
-import com.fpoly.backend.entities.Clazz;
+import com.fpoly.backend.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -143,4 +143,6 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
                                                                     @Param("block") Integer block,
                                                                     @Param("semester") String semester,
                                                                     @Param("year") Integer year);
+
+    Optional<Clazz> findByCodeAndYearAndSemesterAndBlockAndSubject(String code, Year year, Semester semester, Block block, Subject subject);
 }

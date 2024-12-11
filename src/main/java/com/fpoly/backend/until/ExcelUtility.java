@@ -140,7 +140,7 @@ public class ExcelUtility {
     public List<ExamSchedule> excelToExamScheduleList(InputStream is) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
-            Sheet sheet = workbook.getSheet("examSchedule");
+            Sheet sheet = workbook.getSheet("DSLT");
             Iterator<Row> rows = sheet.iterator();
             List<ExamSchedule> examSchedulesList = new ArrayList<ExamSchedule>();
             int rowNumber = 0;
@@ -154,32 +154,61 @@ public class ExcelUtility {
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 ExamSchedule examSchedule = new ExamSchedule();
                 int cellIdx = 0;
+                var clazzCode = "";
+                var year = 0;
+                var semester = "";
+                var block = 0;
+                var subjectCode = "";
                 while (cellsInRow.hasNext()) {
                     Cell currentCell = cellsInRow.next();
+
                     switch (cellIdx) {
-                        case 0:
+                        case 1:
                             examSchedule.setDate(currentCell.getLocalDateTimeCellValue().toLocalDate());
                             break;
-                        case 1:
-                            examSchedule.setClazz(clazzRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
-                                    new RuntimeException("Clazz not found")));
-                            break;
                         case 2:
-                            examSchedule.setBatch((int)currentCell.getNumericCellValue());
+                            clazzCode = currentCell.getStringCellValue();
                             break;
                         case 3:
-                            examSchedule.setRoom(roomRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
-                                    new RuntimeException("Room not found")));
+                            examSchedule.setBatch((int)currentCell.getNumericCellValue());
                             break;
                         case 4:
+                            examSchedule.setRoom(roomRepository.findByName(currentCell.getStringCellValue()).orElseThrow(() ->
+                                    new RuntimeException("Phòng này không tồn tại")));
+                            break;
+                        case 5:
                             examSchedule.setShift(shiftRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
                                     new RuntimeException("Shift not found")));
+                            break;
+                        case 6:
+                            year = (int)currentCell.getNumericCellValue();
+                            break;
+                        case 7:
+                            semester = currentCell.getStringCellValue();
+                            break;
+                        case 8:
+                            block = (int)currentCell.getNumericCellValue();
+                            break;
+                        case 9:
+                            subjectCode = currentCell.getStringCellValue();
                             break;
                         default:
                             break;
                     }
                     cellIdx++;
                 }
+                Year year1 = yearRepository.findByYear(year).orElseThrow(()->
+                        new RuntimeException("Năm này không tồn tại"));
+                Semester semester1 = semesterRepository.findById(semester).orElseThrow(()->
+                        new RuntimeException("Học kỳ này không tồn tại"));
+                Block block1 = blockRepository.findById(block).orElseThrow(()->
+                        new RuntimeException("Block này không tồn tại"));
+                Subject subject = subjectRepository.findByCode(subjectCode).orElseThrow(()->
+                        new RuntimeException("Môn học này không tồn tại"));
+                Clazz clazz = clazzRepository.findByCodeAndYearAndSemesterAndBlockAndSubject(clazzCode, year1, semester1, block1, subject).orElseThrow(()->
+                        new RuntimeException("Lớp học này không tồn tại"));
+
+                examSchedule.setClazz(clazz);
                 examSchedulesList.add(examSchedule);
             }
             workbook.close();

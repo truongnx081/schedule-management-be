@@ -111,7 +111,6 @@ public class ExamScheduleController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/excel/upload")
     ResponseEntity<Response> uploadFileExcel(@RequestParam("file") MultipartFile file){
-
         String message = "";
         if (ExcelUtility.hasExcelFormat(file)) {
             try {

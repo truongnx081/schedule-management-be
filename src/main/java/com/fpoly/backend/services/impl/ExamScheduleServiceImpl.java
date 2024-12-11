@@ -50,16 +50,37 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     public ExamScheduleDTO create(ExamScheduleDTO request) {
         ExamSchedule examSchedule = examScheduleMapper.toEntity(request);
 
-        Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
-                new RuntimeException("Clazz not found"));
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(()->
-                new RuntimeException("Room not found"));
-        Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(()->
-                new RuntimeException("Shift not found"));
+        if(request.getClazzId() != 0){
+            Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
+                    new RuntimeException("Lớp học này không tồn tại"));
+            examSchedule.setClazz(clazz);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn lớp học");
 
-        examSchedule.setClazz(clazz);
-        examSchedule.setRoom(room);
-        examSchedule.setShift(shift);
+        if(request.getRoomId() != 0){
+            Room room = roomRepository.findById(request.getRoomId()).orElseThrow(()->
+                    new RuntimeException("Phòng thi này không tồn tại"));
+            examSchedule.setRoom(room);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn phòng thi");
+
+        if(request.getShiftId() != 0){
+            Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(()->
+                    new RuntimeException("Ca thi này không tồn tại"));
+            examSchedule.setShift(shift);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn ca thi");
+
+        if(request.getBatch() != 0){
+            examSchedule.setBatch(request.getBatch());
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn đợt thi");
+
+        examSchedule.setId(null);
 
         return examScheduleMapper.toDTO(examScheduleRepository.save(examSchedule));
     }
@@ -71,16 +92,35 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
 
         examScheduleMapper.updateExamSchedule(examSchedule,request);
 
-        Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
-                new RuntimeException("Clazz not found"));
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(()->
-                new RuntimeException("Room not found"));
-        Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(()->
-                new RuntimeException("Shift not found"));
+        if(request.getClazzId() != 0){
+            Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
+                    new RuntimeException("Lớp học này không tồn tại"));
+            examSchedule.setClazz(clazz);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn lớp học");
 
-        examSchedule.setClazz(clazz);
-        examSchedule.setRoom(room);
-        examSchedule.setShift(shift);
+        if(request.getRoomId() != 0){
+            Room room = roomRepository.findById(request.getRoomId()).orElseThrow(()->
+                    new RuntimeException("Phòng thi này không tồn tại"));
+            examSchedule.setRoom(room);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn phòng thi");
+
+        if(request.getShiftId() != 0){
+            Shift shift = shiftRepository.findById(request.getShiftId()).orElseThrow(()->
+                    new RuntimeException("Ca thi này không tồn tại"));
+            examSchedule.setShift(shift);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn ca thi");
+
+        if(request.getBatch() != 0){
+            examSchedule.setBatch(request.getBatch());
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn đợt thi");
 
         return examScheduleMapper.toDTO(examScheduleRepository.save(examSchedule));
     }
