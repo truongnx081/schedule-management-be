@@ -49,7 +49,8 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
     List<Map<String, Object>> getAllBathByClazzInstructor(@Param("clazzId") Integer clazzId,
                                                           @Param("instructorId") Integer instructorId);
     @Query("SELECT " +
-            "exm.id AS exam_id, " +
+            "exm.id AS exam_id," +
+            "exm.date as exam_date,   " +
             "clz.code AS clazz_code, " +
             "sub.code AS subject_code, " +
             "sub.name AS subject_name, " +
@@ -80,6 +81,7 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
     List<Map<String, Object>> getAllExamScheduleOfAdmin();
     @Query("SELECT " +
             "exm.id AS exam_id, " +
+            "exm.date as exam_date, " +
             "clz.code AS clazz_code, " +
             "sub.code AS subject_code, " +
             "sub.name AS subject_name, " +
