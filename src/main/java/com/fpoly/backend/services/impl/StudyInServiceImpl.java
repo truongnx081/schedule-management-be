@@ -6,6 +6,7 @@ import com.fpoly.backend.entities.*;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.StudyInMapper;
 import com.fpoly.backend.repository.*;
+import com.fpoly.backend.services.AuthenticationService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SemesterProgressService;
 import com.fpoly.backend.services.StudyInService;
@@ -193,6 +194,13 @@ public class StudyInServiceImpl implements StudyInService {
         studyInRepository.save(studyIn);
 
         return studyInMapper.toDTO(studyIn);
+    }
+
+    @Override
+    public void delete(Integer clazzId) {
+        Student student = identifyUserAccessService.getStudent();
+        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(student.getId(),clazzId);
+        studyInRepository.delete(studyIn);
     }
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/semesters")
@@ -29,6 +30,17 @@ public class SemesterController {
         try{
             List<SemesterDTO> semesterDTOS = semesterService.getAllSemester();
             return ResponseEntity.ok(new Response(LocalDateTime.now(),semesterDTOS, "Lấy toàn bộ semester thành công", HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+
+    }
+
+    @GetMapping("get-all-semesters-with-default")
+    public ResponseEntity<Response> getAllSemestersWithDefault(){
+        try{
+            List<Map<String, Object>> semesters = semesterService.findAllSemestersWithDefault();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),semesters, "Lấy toàn bộ semester thành công", HttpStatus.OK.value()));
         }catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }

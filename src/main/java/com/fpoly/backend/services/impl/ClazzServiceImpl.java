@@ -1,13 +1,9 @@
 package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.ClazzDTO;
-import com.fpoly.backend.dto.StudyInDTO;
 import com.fpoly.backend.entities.*;
-import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.mapper.ClazzMapper;
-import com.fpoly.backend.mapper.StudyInMapper;
 import com.fpoly.backend.repository.*;
-import com.fpoly.backend.services.AuthenticationService;
 import com.fpoly.backend.services.ClazzService;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SemesterProgressService;
@@ -15,8 +11,6 @@ import com.fpoly.backend.until.ExcelUtility;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -258,11 +252,9 @@ public class ClazzServiceImpl implements ClazzService {
 
         //Tìm toàn bộ môn phải học trong CTDT
         List<Integer> allSubjects = subjectRepository.findSubjectsIdByEducationProgram(student.getEducationProgram().getId());
-        System.out.println("All: " + allSubjects.toString());
 
         //Tìm các môn đã pass
         List<Integer> passedSubjects = subjectRepository.findPassedSubjectsIdByStudentId(student.getId());
-        System.out.println("Passed: " + passedSubjects.toString());
 
         //Tìm các môn đăng ký học
         List<Integer> registedSubject = subjectRepository.findRegistedSubjectsIdByStudentIdAndBlockAndSemesterAndYear(
@@ -270,7 +262,6 @@ public class ClazzServiceImpl implements ClazzService {
                 block,
                 semester,
                 year);
-        System.out.println("Registed: " + registedSubject.toString());
 
         //So sánh nếu pass môn thì cho môn đó là null
         for (int i = 0; i < allSubjects.size(); i++){
@@ -292,7 +283,6 @@ public class ClazzServiceImpl implements ClazzService {
             }
         }
 
-        System.out.println(allSubjects.toString());
         List<Map<String, Object>> registerClazzes = new ArrayList<Map<String, Object>>();
 
         //Nếu môn đó null thì không cần tải lớp có môn đó lên nữa
@@ -335,7 +325,7 @@ public class ClazzServiceImpl implements ClazzService {
         String semester = semesterProgress.getSemester().getSemester();
         Integer year = semesterProgress.getYear().getYear();
         Student student = identifyUserAccessService.getStudent();
-        List<Map<String,Object>> clazzes = clazzRepository.findCurrentClassesByBlockAndSemesterAndYearAndStudentId(block, semester, year, student.getId());
+        List<Map<String,Object>> clazzes = clazzRepository.findCurrentClassesByBlockAndSemesterAndYearAndStudentId(block, semester, year, student.getId(), true);
 
         for (int i = 0; i < clazzes.size(); i++){
             HashMap<String, Object> clazz = new HashMap<>(clazzes.get(i));
@@ -487,6 +477,32 @@ public class ClazzServiceImpl implements ClazzService {
                 .collect(Collectors.joining(", "))); // Ghép thành chuỗi
         return clazz;
     }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> findRegistedClazzesByBlockAndSemesterAndYearAndStudentId() {
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+        Student student = identifyUserAccessService.getStudent();
+        List<Map<String,Object>> clazzes = clazzRepository.findCurrentClassesByBlockAndSemesterAndYearAndStudentId(block, semester, year, student.getId(), false);
+
+        for (int i = 0; i < clazzes.size(); i++){
+            HashMap<String, Object> clazz = new HashMap<>(clazzes.get(i));
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) clazz.get("id"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            clazz.put("study_day", studyDays);
+            clazzes.set(i,clazz);
+        }
+        return clazzes;
     }
 
 }

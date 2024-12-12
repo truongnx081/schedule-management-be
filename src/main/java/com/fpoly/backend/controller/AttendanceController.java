@@ -7,6 +7,7 @@ import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.services.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +70,44 @@ public class AttendanceController {
             List<AttendanceDTO> updatedAttendanceDTOs = attendanceService.updateAttendance(attendanceDTOs);
 
             return ResponseEntity.ok(new Response(LocalDateTime.now(), updatedAttendanceDTOs, "Cập nhật điểm danh thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/attendance-for-retake")
+    public ResponseEntity<Response> getStudentForAttendanceOfReatkeScheduleByClazzIdAndRetakeScheduleId(
+            @RequestParam("clazzId") Integer clazzId,
+            @RequestParam("retakeScheduleId") Integer retakeScheduleId) {
+        try {
+            List<Map<String, Object>> list = attendanceService.findRetakeAttendanceByClazzIdAndRetakeScheduleId(clazzId,retakeScheduleId);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    list,
+                    "Lấy danh sách diểm danh thành công",
+                    HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @PutMapping("/do-attendance-for-retake")
+    public ResponseEntity<Response> doAttendanceForRetake(
+            @RequestBody List<AttendanceDTO> attendanceDTOs) {
+        try {
+            List<AttendanceDTO> doAttendanceForRetake = attendanceService.doAttendanceForRetake(attendanceDTOs);
+
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), doAttendanceForRetake, "Cập nhật điểm danh thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("exist-retake-attendance")
+    public ResponseEntity<Response> existByRetakeAttendance(@RequestParam("retakeScheduleId") Integer retakeScheduleId) {
+        try {
+            Boolean exist = attendanceService.checkExistByRetakeScheduleId(retakeScheduleId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), exist, "Điểm danh thành công", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }

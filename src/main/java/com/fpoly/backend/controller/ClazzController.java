@@ -140,7 +140,7 @@ public class ClazzController {
     //Lớp học hiện tại
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @GetMapping("/current-clazzes")
-    public ResponseEntity<Response> getClazzesByBlockAndSemesterAndYearAndStudentId(){
+    public ResponseEntity<Response> getCurrentClazzesByBlockAndSemesterAndYearAndStudentId(){
         try {
             List<Map<String, Object>> clazzes = clazzService.findCurrentClazzesByBlockAndSemesterAndYearAndStudentId();
             return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzes, "Lấy danh sách lớp học hiện tại cho sinh viên thành công", HttpStatus.OK.value()));
@@ -188,5 +188,18 @@ public class ClazzController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @GetMapping("/registed-clazzes")
+    public ResponseEntity<Response> getRegistedClazzesByBlockAndSemesterAndYearAndStudentId(){
+        try {
+            List<Map<String, Object>> clazzes = clazzService.findRegistedClazzesByBlockAndSemesterAndYearAndStudentId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), clazzes, "Lấy danh sách lớp học đã đăng ký cho sinh viên thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+
 }
 

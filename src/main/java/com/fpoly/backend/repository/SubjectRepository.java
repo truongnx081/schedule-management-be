@@ -91,5 +91,8 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
             "HAVING COALESCE(SUM(sr.marked * sr.percentage) / 100, NULL) IS NOT NULL")
     List<Integer> findStudiedSubjectByStudentId(@Param("studentId") Integer studentId);
 
+    @Query("SELECT s.code as subject_code, s.name as subject_name, s.credits as credits FROM Subject s WHERE s.id = :id")
+    Map<String,Object> findSubjectCodeAndNameAndCreditsById(@Param("id") Integer id);
+
 
 }

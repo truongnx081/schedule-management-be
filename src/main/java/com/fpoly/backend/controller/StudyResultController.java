@@ -118,4 +118,52 @@ public class StudyResultController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+
+
+    @GetMapping("/study-history")
+    public ResponseEntity<Response> getStudyHistoryByStudentId() {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.findStudyHistoryByStudentId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy lịch sử học tập thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/mark-table")
+    public ResponseEntity<Response> getMarkTableByStudentId() {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.findMarkTableByStudentId();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy bảng điểm thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/mark-detail")
+    public ResponseEntity<Response> getMarkDetailByStudyInId(@RequestParam("studyInId") Integer studyInId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.findMarkDetailByStudyInId(studyInId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy bảng điểm thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/mark-detail-in-clazz")
+    public ResponseEntity<Response> getStudyResultByStudentIdAndClazzId(@RequestParam("studentId") Integer studentId,
+                                                                        @RequestParam("clazzId") Integer clazzId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = studyResultService.findStudyResultByStudentIdAndClazzId(studentId,clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Đã lấy bảng điểm thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
+
 }

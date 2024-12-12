@@ -33,6 +33,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("clazzId") Integer clazzId,
             @Param("scheduleId") Integer scheduleId);
 
+    @Query("SELECT a FROM Attendance a WHERE a.student.id = :studentId AND a.retakeSchedule.id = :retakeScheduleId")
+    Attendance findAttendanceByStudentIdAndRetakeScheduleId (@Param("studentId") Integer studentId,
+                                                            @Param("retakeScheduleId") Integer retakeScheduleId);
+
+    List<Attendance> findAttendancesByRetakeScheduleId(@Param("retakeScheduleId") Integer retakeScheduleId);
 
 
 }

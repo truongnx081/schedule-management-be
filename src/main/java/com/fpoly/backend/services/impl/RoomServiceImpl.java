@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +44,25 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.findAllByBuildingAreaId(admin.getArea().getId())
                 .stream()
                 .map(roomMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<Map<String, Object>> findAvailableRoomsByDateAndShift(LocalDate date, Integer shift) {
+        List<Integer> usedScheduleRooms = roomRepository.findScheduleUsedRoomsByDateAndShift(date, shift);
+        List<Integer> usedExamScheduleRomms = roomRepository.findExamScheduleUsedRoomsByDateAndShift(date, shift);
+        List<Integer> usedRetakeScheduleRooms = roomRepository.findRetakeScheduleUsedRoomsByDateAndShift(date, shift);
+
+        List<Integer> allUsedRoom = new ArrayList<Integer>();
+        allUsedRoom.addAll(usedScheduleRooms);
+        allUsedRoom.addAll(usedExamScheduleRomms);
+        allUsedRoom.addAll(usedRetakeScheduleRooms);
+
+        List<Map<String, Object>> rooms = roomRepository.findAllRoomsIdAndName();
+
+        List<Map<String, Object>> availableRooms = rooms.stream().
+                                                        filter(room -> !allUsedRoom.contains(room.get("room_id"))).
+                                                        collect(Collectors.toList());
+
+        return availableRooms;
     }
 }

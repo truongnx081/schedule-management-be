@@ -42,6 +42,8 @@ public class StudyResultServiceImpl implements StudyResultService {
     private StudyInService studyInService;
     @Autowired
     private ClazzRepository clazzRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     @Autowired
     ApplyForRepository applyForRepository;
@@ -50,6 +52,12 @@ public class StudyResultServiceImpl implements StudyResultService {
     private MarkColumnRepository markColumnRepository;
     @Autowired
     private StudyInRepository studyInRepository;
+
+    @Autowired
+    private SemesterProgressRepository semesterProgressRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Override
     public Map<String, Integer> getreportLearningProgressByStudentId() {
@@ -234,6 +242,110 @@ public class StudyResultServiceImpl implements StudyResultService {
         return new ArrayList<>(result.values());
     }
 
+    @Override
+    public List<Map<String, Object>> findStudyHistoryByStudentId() {
+        Student student = identifyUserAccessService.getStudent();
+        Integer studentId = student.getId();
+        Integer educationProgramId = student.getEducationProgram().getId();
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer currentBlock = semesterProgress.getBlock().getBlock();
+        String currentSemester = semesterProgress.getSemester().getSemester();
+        Integer currentYear = semesterProgress.getYear().getYear();
 
+        List<Integer> subjects = subjectRepository.findSubjectsIdByEducationProgram(educationProgramId);
+        List<Map<String,Object>> studyHistories = new ArrayList<Map<String,Object>>();
+
+        for (Integer subjectId : subjects){
+            Map<String,Object> studyHistory = new HashMap<>(subjectRepository.findSubjectCodeAndNameAndCreditsById(subjectId));
+            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId);
+            if (studyInsId.isEmpty()){
+                studyHistory.put("status","Chưa học");
+            } else {
+                for (Integer studyInId : studyInsId){
+                    StudyIn studyIn = studyInRepository.findById(studyInId).get();
+                    Clazz clazz = studyIn.getClazz();
+                    Integer block = clazz.getBlock().getBlock();
+                    String semester = clazz.getSemester().getSemester();
+                    Integer year = clazz.getYear().getYear();
+                    String clazzCode = clazz.getCode();
+                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId);
+                    if (block.equals(currentBlock) && semester.equals(currentSemester) && year.equals(currentYear)){
+                        studyHistory.put("status", "Đang học");
+                    } else {
+                        studyHistory.put("status", "Đã học");
+                    }
+                    studyHistory.put("clazz_code", clazzCode);
+                    studyHistory.put("block", block);
+                    studyHistory.put("semester", semester);
+                    studyHistory.put("year", year);
+                    studyHistory.put("average_mark", averageMark);
+                }
+            }
+            studyHistories.add(studyHistory);
+        }
+        return studyHistories;
+    }
+
+    @Override
+    public List<Map<String, Object>> findMarkTableByStudentId() {
+        Student student = identifyUserAccessService.getStudent();
+        Integer studentId = student.getId();
+        Integer educationProgramId = student.getEducationProgram().getId();
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer currentBlock = semesterProgress.getBlock().getBlock();
+        String currentSemester = semesterProgress.getSemester().getSemester();
+        Integer currentYear = semesterProgress.getYear().getYear();
+
+        List<Integer> subjects = subjectRepository.findSubjectsIdByEducationProgram(educationProgramId);
+        List<Map<String,Object>> studyHistories = new ArrayList<Map<String,Object>>();
+
+        for (Integer subjectId : subjects){
+            Map<String,Object> studyHistory = new HashMap<>(subjectRepository.findSubjectCodeAndNameAndCreditsById(subjectId));
+            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId);
+            if (!studyInsId.isEmpty()){
+                for (Integer studyInId : studyInsId){
+                    StudyIn studyIn = studyInRepository.findById(studyInId).get();
+                    Clazz clazz = studyIn.getClazz();
+                    Integer block = clazz.getBlock().getBlock();
+                    String semester = clazz.getSemester().getSemester();
+                    Integer year = clazz.getYear().getYear();
+                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId);
+                    if (block.equals(currentBlock) && semester.equals(currentSemester) && year.equals(currentYear)){
+                        studyHistory.put("status", "Đang học");
+                    } else {
+                        studyHistory.put("status", "Đã học");
+                    }
+                    studyHistory.put("study_in_id", studyInId);
+                    studyHistory.put("average_mark", averageMark);
+                }
+                studyHistories.add(studyHistory);
+            }
+        }
+        return studyHistories;
+    }
+
+    @Override
+    public List<Map<String, Object>> findMarkDetailByStudyInId(Integer studyInId) {
+        List<Map<String, Object>> markDetail = studyResultRepository.findAllMarkDetailByStudyInId(studyInId);
+        Map<String, Object> averageMark = new HashMap<>();
+        averageMark.put("average_mark", studyResultRepository.findAverangeMarkByStudyInId(studyInId));
+        markDetail.add(averageMark);
+        return markDetail;
+    }
+
+    @Override
+    public List<Map<String, Object>> findStudyResultByStudentIdAndClazzId(Integer studentId, Integer clazzId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy sinh viên", HttpStatus.NOT_FOUND));
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học", HttpStatus.NOT_FOUND));
+        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, clazzId);
+        if (studyIn == null){
+            throw new AppUnCheckedException("Sinh viênkhông học trong lớp này!!", HttpStatus.NOT_FOUND);
+        }
+        Integer studyInId = studyIn.getId();
+
+        return studyResultRepository.findStudyResultByStudyInId(studyInId);
+    }
 
 }

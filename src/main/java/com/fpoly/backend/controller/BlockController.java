@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/blocks")
@@ -27,6 +28,17 @@ public class BlockController {
     public ResponseEntity<Response> getAllBlock(){
         try{
             List<BlockDTO> blocks = blockService.getAllBlocks();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(),blocks, "Lấy toàn bộ block thành công", HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+
+    }
+
+    @GetMapping("/get-all-blocks-with-default")
+    public ResponseEntity<Response> getAllBlocksWithDefalut(){
+        try{
+            List<Map<String,Object>> blocks = blockService.findAllBlocksWithDefault();
             return ResponseEntity.ok(new Response(LocalDateTime.now(),blocks, "Lấy toàn bộ block thành công", HttpStatus.OK.value()));
         }catch (AppUnCheckedException e){
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));

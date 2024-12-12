@@ -55,6 +55,7 @@ public class RetakeScheduleServiceImpl implements RetakeScheduleService {
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
         retakeSchedule.setRoom(room);
 
+
         retakeSchedule = retakeScheduleRepository.save(retakeSchedule);
 
         retakeSchedule.setShift(shiftRepository.findById(dto.getShiftId())

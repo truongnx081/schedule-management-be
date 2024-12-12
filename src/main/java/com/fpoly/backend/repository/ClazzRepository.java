@@ -54,7 +54,9 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
             "c.subject.code as subject_code," +
             "c.subject.name as subject_name," +
             "sh.id as shift," +
-            "i.code as instructor_code " +
+            "i.code as instructor_code," +
+            "s.credits as credits," +
+            "c.code as clazz_code " +
             "FROM Clazz c " +
             "JOIN c.subject s " +
             "JOIN c.shift sh " +
@@ -63,12 +65,14 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
             "WHERE si.student.id = :studentId " +
             "AND c.block.block = :block " +
             "AND c.semester.semester = :semester " +
-            "AND c.year.year = :year")
+            "AND c.year.year = :year " +
+            "AND si.paid = :paid")
     List<Map<String,Object>> findCurrentClassesByBlockAndSemesterAndYearAndStudentId(
             @Param("block") Integer block,
             @Param("semester") String semester,
             @Param("year") Integer year,
-            @Param("studentId") Integer studentId);
+            @Param("studentId") Integer studentId,
+            @Param("paid") Boolean paid);
 
     @Query("SELECT c.id as clazz_id," +
             "c.code as clazz_code," +

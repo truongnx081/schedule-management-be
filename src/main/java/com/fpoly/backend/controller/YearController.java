@@ -38,4 +38,18 @@ public class YearController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    @GetMapping("/get-all-years-with-default")
+    public ResponseEntity<Response> getAllYearsWithDefault() {
+        try {
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    yearService.findAllYearsWithDefault(),
+                    "Lấy tất cả năm thành công",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

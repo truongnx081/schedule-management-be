@@ -31,7 +31,7 @@ public class RoomController {
     //Get All room available
     @GetMapping("/getAllRoomAvailable")
     public ResponseEntity<Response> getAllRoomAvailable(@RequestParam Integer buildingId,
-                                                @RequestParam LocalDate date){
+                                                         @RequestParam LocalDate date){
         try{
             List<Map<String,Object>> availableRooms = roomService.getAvailableRooms(buildingId, date);
             return ResponseEntity.ok(new Response(
@@ -59,4 +59,20 @@ public class RoomController {
         }
 
     }
+    @GetMapping("/get-available-rooms")
+    public ResponseEntity<Response> getAvailableRoomsByDateAndShift(@RequestParam("date") LocalDate date,
+                                                                    @RequestParam("shift") Integer shift){
+        try{
+            List<Map<String,Object>> availableRooms = roomService.findAvailableRoomsByDateAndShift(date, shift);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    availableRooms,
+                    "Lấy danh sách phòng trống thành công!!",
+                    HttpStatus.OK.value()));
+        }catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+
+    }
+
 }

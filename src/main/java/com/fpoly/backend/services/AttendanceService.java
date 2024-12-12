@@ -11,9 +11,15 @@ import java.util.Map;
 public interface AttendanceService {
     List<AttendanceDTO> getAttendanceByStudentId(int studentId);
 
-    public List<AttendanceDTO> markAttendance(List<AttendanceDTO> request);
+    List<AttendanceDTO> markAttendance(List<AttendanceDTO> request);
 
     List<Map<String,Object>> getAttendanceByClazzId(Integer clazzId, Integer scheduleId);
 
-    public List<AttendanceDTO> updateAttendance(List<AttendanceDTO> attendanceDTOs) ;
+    List<AttendanceDTO> updateAttendance(List<AttendanceDTO> attendanceDTOs) ;
+
+    List<Map<String,Object>> findRetakeAttendanceByClazzIdAndRetakeScheduleId(Integer clazzId, Integer retakeScheduleId);
+
+    List<AttendanceDTO> doAttendanceForRetake (List<AttendanceDTO> attendanceDTOS);
+
+    Boolean checkExistByRetakeScheduleId (Integer retakeScheduleId);
 }

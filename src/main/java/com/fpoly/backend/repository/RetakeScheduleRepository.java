@@ -1,6 +1,7 @@
 package com.fpoly.backend.repository;
 
 import com.fpoly.backend.entities.RetakeSchedule;
+import com.fpoly.backend.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,19 @@ public interface RetakeScheduleRepository extends JpaRepository<RetakeSchedule, 
             @Param("instructorId") Integer instructorId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+
+    @Query("SELECT rs " +
+            "FROM RetakeSchedule rs " +
+            "JOIN rs.schedule s " +
+            "JOIN s.clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE rs.date = :date " +
+            "AND rs.shift.id = :shift " +
+            "AND si.student.id = :studentId " +
+            "AND rs.id != :retakeScheduleId")
+    List<RetakeSchedule> findRetakeSchedulesByDateAndShiftAndStudentId (@Param("date") LocalDate date,
+                                                                        @Param("shift") Integer shift,
+                                                                        @Param("studentId") Integer studentId,
+                                                                        @Param("retakeScheduleId") Integer retakeScheduleId);
 }

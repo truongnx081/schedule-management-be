@@ -5,6 +5,7 @@ import com.fpoly.backend.entities.Student;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +37,6 @@ public interface StudentService {
     void updateImage(Integer id, MultipartFile avatar);
 
     List<Map<String, Object>> getAllStudentByCourse();
+
+    Integer findCannotPresentStudentAmountByScheduleIdAndDateAndShift(Integer schedule, LocalDate date, Integer shift);
 }

@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -217,4 +218,25 @@ public class StudentController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    @GetMapping("cannot-present")
+    public ResponseEntity<Response> getCannotPresentStudentAmountByScheduleIdAndDateAndShift
+                                                            (@RequestParam("scheduleId") Integer scheduleId,
+                                                             @RequestParam("date") LocalDate date,
+                                                             @RequestParam("shift") Integer shift){
+        try {
+            Integer amount = studentService.findCannotPresentStudentAmountByScheduleIdAndDateAndShift(scheduleId, date, shift);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    amount,
+                    "Lấy số lượng sinh viên không thể có mặt thành công",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+
+    }
+
+
 }
