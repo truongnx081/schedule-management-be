@@ -47,6 +47,9 @@ public class StudentServiceImpl implements StudentService {
     SemesterRepository semesterRepository;
     StudyInRepository studyInRepository;
     private final SemesterProgressService semesterProgressService;
+    private final ScheduleRepository scheduleRepository;
+    private final ExamScheduleRepository examScheduleRepository;
+    private final RetakeScheduleRepository retakeScheduleRepository;
 
     @Override
     public Student findById(Integer id) {
@@ -334,6 +337,23 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Map<String, Object>> getAllStudentByCourse() {
         return studentRepository.getAllStudentByCourse();
+    }
+
+    @Override
+    public Integer findCannotPresentStudentAmountByScheduleIdAndDateAndShift(Integer scheduleId, LocalDate date, Integer shift) {
+        Integer amount = 0;
+        List<Integer> students = studentRepository.findStudentsIdByScheduleId(scheduleId);
+        System.out.println(students.size());
+        for (Integer studentId : students){
+            List<Schedule> duplicatedSchedule = scheduleRepository.findSchedulesByDateAndShiftAndStudentId(date, shift, studentId);
+            List<RetakeSchedule> duplicatedRetakeSchedule = retakeScheduleRepository.findRetakeSchedulesByDateAndShiftAndStudentId(date, shift, studentId, null);
+            List<ExamSchedule> duplicatedExamSchedule = examScheduleRepository.findExamSchedulesByDateAndShiftAndStudentId(date, shift, studentId);
+
+            if(!duplicatedSchedule.isEmpty() || !duplicatedExamSchedule.isEmpty() || !duplicatedRetakeSchedule.isEmpty()){
+                amount++;
+            }
+        }
+        return amount;
     }
 
 

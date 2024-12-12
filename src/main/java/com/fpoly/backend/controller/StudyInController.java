@@ -64,4 +64,14 @@ public class StudyInController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Response> delete(@RequestParam("clazzId") Integer clazzId){
+        try {
+            studyInService.delete(clazzId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), null, "Xóa đăng ký lớp học thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
 }

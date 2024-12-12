@@ -15,4 +15,6 @@ public interface RoomService {
     public List<Map<String,Object>> getAvailableRooms(Integer buildingId, LocalDate date);
 
     List<RoomDTO> getAllRoomByAdminArea();
+
+    List<Map<String, Object>> findAvailableRoomsByDateAndShift (LocalDate date, Integer shift);
 }

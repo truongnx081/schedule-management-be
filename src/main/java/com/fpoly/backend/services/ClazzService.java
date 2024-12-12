@@ -33,4 +33,5 @@ public interface ClazzService {
     List<Map<String, Object>> findClazzesByInstructorIdAndBlockAndSemesterAndYear(Integer block, String semester, Integer year);
     List<Map<String, Object>> findAllClazzsByBlockAndSemesterAndYear(Integer block, String semester, Integer year);
 
+    List<Map<String, Object>> findRegistedClazzesByBlockAndSemesterAndYearAndStudentId();
 }

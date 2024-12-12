@@ -1,6 +1,7 @@
 package com.fpoly.backend.repository;
 
 import com.fpoly.backend.entities.ExamSchedule;
+import com.fpoly.backend.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -112,4 +113,15 @@ public interface ExamScheduleRepository extends JpaRepository<ExamSchedule,Integ
                                                                                             @Param("semester") String semester,
                                                                                             @Param("year") Integer year,
                                                                                             @Param("specializationId") Integer specializationId);
+
+    @Query("SELECT es " +
+            "FROM ExamSchedule es " +
+            "JOIN es.clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE es.date = :date " +
+            "AND es.shift.id = :shift " +
+            "AND si.student.id = :studentId")
+    List<ExamSchedule> findExamSchedulesByDateAndShiftAndStudentId (@Param("date") LocalDate date,
+                                                                    @Param("shift") Integer shift,
+                                                                    @Param("studentId") Integer studentId);
 }

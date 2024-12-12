@@ -28,5 +28,14 @@ public interface StudyResultService {
 
     List<Map<String, Object>>getMarkByClazzId(Integer clazzId);
 
+    List<Map<String, Object>> findStudyHistoryByStudentId();
+
+    List<Map<String, Object>> findMarkTableByStudentId();
+
+    List<Map<String, Object>> findMarkDetailByStudyInId(Integer studyInId);
+
+    List<Map<String, Object>> findStudyResultByStudentIdAndClazzId (Integer studentId, Integer clazzId);
+
+
 
 }

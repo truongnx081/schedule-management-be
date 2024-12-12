@@ -120,4 +120,15 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
     List<Map<String, Object>> getScheduleFromRetakeSchedulesByDateRange(@Param("studentId") Integer studentId,
                                                                         @Param("startDate") LocalDate startDate,
                                                                         @Param("endDate")LocalDate endDate);
+
+    @Query("SELECT s " +
+            "FROM Schedule s " +
+            "JOIN s.clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE s.date = :date " +
+            "AND c.shift.id = :shift " +
+            "AND si.student.id = :studentId")
+    List<Schedule> findSchedulesByDateAndShiftAndStudentId (@Param("date") LocalDate date,
+                                                            @Param("shift") Integer shift,
+                                                            @Param("studentId") Integer studentId);
 }

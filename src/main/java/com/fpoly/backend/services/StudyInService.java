@@ -20,4 +20,6 @@ public interface StudyInService {
 
     StudyInDTO update(Integer oldClazzId, Integer newClazzId);
 
+    void delete(Integer id);
+
 }

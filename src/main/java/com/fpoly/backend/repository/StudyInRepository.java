@@ -50,4 +50,8 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
     StudyIn findByStudentIdAndClazzId(@Param("studentId") Integer studentId,
                                       @Param("clazzId") Integer clazzId);
 
+    @Query("SELECT si.id FROM StudyIn si JOIN si.clazz c WHERE si.student.id = :studentId AND c.subject.id = :subjectId")
+    List<Integer> findByStudentIdAndSubjectId (@Param("studentId") Integer studentId,
+                                               @Param("subjectId") Integer subjectId);
+
 }

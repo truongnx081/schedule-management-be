@@ -36,4 +36,21 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
 
     @Query("SELECT st.course as course FROM Student st group by st.course order by st.course desc ")
     List<Map<String, Object>> getAllStudentByCourse();
+
+    @Query("SELECT s.id as studentId," +
+            "s.code as studentCode," +
+            "CONCAT(s.lastName, ' ', s.firstName) AS fullName," +
+            "s.avatar as avatar " +
+            "FROM Student s " +
+            "JOIN s.studyIns si " +
+            "WHERE si.clazz.id = :clazzId")
+    List<Map<String, Object>> findStudentForAttendanceByClazzId(@Param("clazzId") Integer ClazzId);
+
+    @Query("SELECT s.id " +
+            "FROM Student s " +
+            "JOIN s.studyIns si " +
+            "JOIN si.clazz c " +
+            "JOIN c.schedules sc " +
+            "WHERE sc.id = :scheduleId")
+    List<Integer> findStudentsIdByScheduleId (@Param("scheduleId") Integer scheduleId);
 }
