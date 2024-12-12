@@ -73,11 +73,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleDTO create(ScheduleDTO request) {
         Schedule schedule = scheduleMapper.toEntity(request);
 
-        Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
-                new RuntimeException("Clazz not found"));
+        if(request.getClazzId() != 0){
+            Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
+                    new RuntimeException("Lớp học này không tồn tại"));
+            schedule.setClazz(clazz);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn lớp học");
+
         Admin admin = identifyUserAccessService.getAdmin();
 
-        schedule.setClazz(clazz);
         schedule.setCreateAt(new Date());
         schedule.setCreatedBy(admin.getCode());
 
@@ -87,14 +92,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleDTO update(ScheduleDTO request, Integer id) {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()->
-                new RuntimeException("Schedule not found"));
+                new RuntimeException("Lịch học này không tồn tại"));
         scheduleMapper.updateSchedule(schedule, request);
 
-        Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
-                new RuntimeException("Clazz not found"));
+        if(request.getClazzId() != 0){
+            Clazz clazz = clazzRepository.findById(request.getClazzId()).orElseThrow(()->
+                    new RuntimeException("Lớp học này không tồn tại"));
+            schedule.setClazz(clazz);
+        }
+        else
+            throw new RuntimeException("Vui lòng chọn lớp học");
+
         Admin admin = identifyUserAccessService.getAdmin();
 
-        schedule.setClazz(clazz);
         schedule.setUpdatedAt(new Date());
         schedule.setUpdatedBy(admin.getCode());
         return scheduleMapper.toDTO(scheduleRepository.save(schedule));

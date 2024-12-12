@@ -209,6 +209,7 @@ public class ExcelUtility {
                         new RuntimeException("Lớp học này không tồn tại"));
 
                 examSchedule.setClazz(clazz);
+                examSchedule.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
                 examSchedulesList.add(examSchedule);
             }
             workbook.close();
@@ -222,7 +223,7 @@ public class ExcelUtility {
     public List<Schedule> excelToStudyScheduleList(InputStream is) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
-            Sheet sheet = workbook.getSheet("studySchedule");
+            Sheet sheet = workbook.getSheet("DSLH");
             Iterator<Row> rows = sheet.iterator();
             List<Schedule> schedulesList = new ArrayList<Schedule>();
             int rowNumber = 0;
@@ -236,21 +237,50 @@ public class ExcelUtility {
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Schedule schedule = new Schedule();
                 int cellIdx = 0;
+                var clazzCode = "";
+                var year = 0;
+                var semester = "";
+                var block = 0;
+                var subjectCode = "";
                 while (cellsInRow.hasNext()) {
                     Cell currentCell = cellsInRow.next();
                     switch (cellIdx) {
-                        case 0:
+                        case 1:
                             schedule.setDate(currentCell.getLocalDateTimeCellValue().toLocalDate());
                             break;
-                        case 1:
-                            schedule.setClazz(clazzRepository.findById((int)currentCell.getNumericCellValue()).orElseThrow(() ->
-                                    new RuntimeException("Clazz not found")));
+                        case 2:
+                            clazzCode = currentCell.getStringCellValue();
+                            break;
+                        case 3:
+                            year = (int)currentCell.getNumericCellValue();
+                            break;
+                        case 4:
+                            semester = currentCell.getStringCellValue();
+                            break;
+                        case 5:
+                            block = (int)currentCell.getNumericCellValue();
+                            break;
+                        case 6:
+                            subjectCode = currentCell.getStringCellValue();
                             break;
                         default:
                             break;
                     }
                     cellIdx++;
                 }
+                Year year1 = yearRepository.findByYear(year).orElseThrow(()->
+                        new RuntimeException("Năm này không tồn tại"));
+                Semester semester1 = semesterRepository.findById(semester).orElseThrow(()->
+                        new RuntimeException("Học kỳ này không tồn tại"));
+                Block block1 = blockRepository.findById(block).orElseThrow(()->
+                        new RuntimeException("Block này không tồn tại"));
+                Subject subject = subjectRepository.findByCode(subjectCode).orElseThrow(()->
+                        new RuntimeException("Môn học này không tồn tại"));
+                Clazz clazz = clazzRepository.findByCodeAndYearAndSemesterAndBlockAndSubject(clazzCode, year1, semester1, block1, subject).orElseThrow(()->
+                        new RuntimeException("Lớp học này không tồn tại"));
+
+                schedule.setClazz(clazz);
+                schedule.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
                 schedulesList.add(schedule);
             }
             workbook.close();

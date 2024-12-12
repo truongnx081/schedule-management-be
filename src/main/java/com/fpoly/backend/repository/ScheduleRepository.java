@@ -76,9 +76,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
             "JOIN clz.semester ses " +
             "JOIN clz.year yrs")
     List<Map<String, Object>> getAllScheduleByAdmin();
-    @Query("SELECT sch.date as date_schedule, sch.clazz.code as clazz_code, clz.instructor.code as instructor_code, " +
-            "sif.id as shift_id, rom.name as room_name, sub.name as subject_name, sub.code as subject_code," +
-            "spe.name as specialization_name, sch.status as status " +
+    @Query("SELECT sch.id as id, sch.date as date_schedule, sch.clazz.code as clazz_code, sch.clazz.id as clazzId, clz.instructor.code as instructor_code, " +
+            "clz.instructor.lastName as instructor_lastName, clz.instructor.firstName as instructor_firstName, sif.id as shift_id, rom.name as room_name, sub.name as subject_name, sub.code as subject_code," +
+            "spe.name as specialization_name, sch.status as status, rom.building.name as building_name, sif.startTime as start_time, sif.endTime as end_time " +
             "FROM Schedule sch " +
             "JOIN sch.clazz clz " +
             "JOIN clz.shift sif " +
