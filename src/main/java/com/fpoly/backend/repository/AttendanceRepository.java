@@ -39,5 +39,20 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     List<Attendance> findAttendancesByRetakeScheduleId(@Param("retakeScheduleId") Integer retakeScheduleId);
 
+    @Query("SELECT COUNT (a.id) " +
+            "FROM Attendance a " +
+            "JOIN a.schedule s " +
+            "WHERE a.student.id = :studentId " +
+            "AND s.clazz.id = :clazzId")
+    Integer findAbsentForScheduleByStudentIdAndClazzId (@Param("studentId") Integer studentId,
+                                                        @Param("clazzId") Integer clazzId);
+
+    @Query("SELECT COUNT (a.id) " +
+            "FROM Attendance a " +
+            "JOIN a.retakeSchedule rs " +
+            "WHERE a.student.id = :studentId " +
+            "AND rs.schedule.clazz.id = :clazzId")
+    Integer findAbsentForRetakeScheduleByStudentIdAndClazzId (@Param("studentId") Integer studentId,
+                                                              @Param("clazzId") Integer clazzId);
 
 }

@@ -26,10 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +47,7 @@ public class StudentServiceImpl implements StudentService {
     private final ScheduleRepository scheduleRepository;
     private final ExamScheduleRepository examScheduleRepository;
     private final RetakeScheduleRepository retakeScheduleRepository;
+    private final AttendanceRepository attendanceRepository;
 
     @Override
     public Student findById(Integer id) {
@@ -365,6 +363,21 @@ public class StudentServiceImpl implements StudentService {
             return String.valueOf((int) cell.getNumericCellValue());
         }
         return "";
+    }
+
+    @Override
+    public List<Map<String, Object>> findStudentWithQualifyByClazzId(Integer clazzId) {
+        List<Map<String, Object>> students = studentRepository.findStudentsWithQualifyByClazzId(clazzId);
+
+        for (int i = 0; i< students.size(); i++){
+            Map<String, Object> student = new HashMap<String, Object>(students.get(i));
+            Integer studentId = (Integer) student.get("student_id");
+            Integer absent = attendanceRepository.findAbsentForRetakeScheduleByStudentIdAndClazzId(studentId,clazzId)
+                            + attendanceRepository.findAbsentForScheduleByStudentIdAndClazzId(studentId, clazzId) ;
+
+
+        }
+        return students;
     }
 
 }

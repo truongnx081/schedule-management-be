@@ -257,7 +257,7 @@ public class StudyResultServiceImpl implements StudyResultService {
 
         for (Integer subjectId : subjects){
             Map<String,Object> studyHistory = new HashMap<>(subjectRepository.findSubjectCodeAndNameAndCreditsById(subjectId));
-            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId);
+            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId, true);
             if (studyInsId.isEmpty()){
                 studyHistory.put("status","Chưa học");
             } else {
@@ -301,7 +301,7 @@ public class StudyResultServiceImpl implements StudyResultService {
 
         for (Integer subjectId : subjects){
             Map<String,Object> studyHistory = new HashMap<>(subjectRepository.findSubjectCodeAndNameAndCreditsById(subjectId));
-            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId);
+            List<Integer> studyInsId = studyInRepository.findByStudentIdAndSubjectId(studentId,subjectId, true);
             if (!studyInsId.isEmpty()){
                 for (Integer studyInId : studyInsId){
                     StudyIn studyIn = studyInRepository.findById(studyInId).get();

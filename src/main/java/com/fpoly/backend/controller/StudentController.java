@@ -235,8 +235,22 @@ public class StudentController {
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
-
     }
+    @GetMapping("students-for-arrange-batch")
+    public ResponseEntity<Response> getStudentWithQualifiByClazzId (@RequestParam("clazzId") Integer clazzId){
+        try {
+            List<Map<String, Object>> students = studentService.findStudentWithQualifyByClazzId(clazzId);
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    students,
+                    "Lấy danh sách sinh viên xếp lịch thi thành công",
+                    HttpStatus.OK.value())
+            );
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
 
 
 }
