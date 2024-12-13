@@ -13,4 +13,6 @@ public interface ArrangeBatchService {
     ArrangeBatchDTO updateArrangeBatch(Integer arrangeBatchId, ArrangeBatchDTO arrangeBatchDTO);
 
     void deleteArrangeBatch(Integer arrangeBatchId);
+
+    List<ArrangeBatchDTO> doArrangeBatch(List<ArrangeBatchDTO> arrangeBatchDTOS);
 }
