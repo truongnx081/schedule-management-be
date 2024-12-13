@@ -107,4 +107,31 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
 
     }
 
+    @Override
+    public List<ArrangeBatchDTO> doArrangeBatch(List<ArrangeBatchDTO> arrangeBatchDTOS) {
+
+        for (ArrangeBatchDTO arrangeBatchDTO : arrangeBatchDTOS){
+            Integer clazzId = arrangeBatchDTO.getClazzId();
+            Integer studentId = arrangeBatchDTO.getStudentId();
+            Integer batch = arrangeBatchDTO.getBatch();
+            Clazz clazz = clazzRepository.findById(clazzId)
+                    .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học!!", HttpStatus.NOT_FOUND));
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy sinh viên!!", HttpStatus.NOT_FOUND));
+            ArrangeBatch arrangeBatch = arrangeBatchRepository.findArrangeBatchByStudentIdAndClazzId(studentId,clazzId);
+            if (arrangeBatch == null) {
+                arrangeBatch = new ArrangeBatch();
+            }
+            arrangeBatch.setStudent(student);
+            arrangeBatch.setClazz(clazz);
+            arrangeBatch.setBatch(batch);
+
+            arrangeBatchRepository.save(arrangeBatch);
+
+
+        }
+
+        return null;
+    }
+
 }

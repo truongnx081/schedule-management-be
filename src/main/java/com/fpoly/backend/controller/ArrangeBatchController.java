@@ -1,6 +1,7 @@
 package com.fpoly.backend.controller;
 
 import com.fpoly.backend.dto.ArrangeBatchDTO;
+import com.fpoly.backend.dto.AttendanceDTO;
 import com.fpoly.backend.dto.Response;
 import com.fpoly.backend.entities.ArrangeBatch;
 import com.fpoly.backend.exception.AppUnCheckedException;
@@ -50,6 +51,16 @@ public class ArrangeBatchController {
         try {
             arrangeBatchService.deleteArrangeBatch(clazzId);
             return ResponseEntity.ok(new Response(LocalDateTime.now(), null, "Arrange batch đã được xóa thành công!", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @PutMapping("/do-arrange-batch")
+    public ResponseEntity<Response> doArrangeBatch(@RequestBody List<ArrangeBatchDTO> arrangeBatchDTOS) {
+        try {
+            List<ArrangeBatchDTO> doArrangeBatch = arrangeBatchService.doArrangeBatch(arrangeBatchDTOS);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), doArrangeBatch, "Xếp lịch thi thành công thành công", HttpStatus.OK.value()));
         } catch (AppUnCheckedException e) {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }

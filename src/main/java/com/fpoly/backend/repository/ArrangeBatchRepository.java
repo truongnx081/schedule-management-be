@@ -15,4 +15,8 @@ public interface ArrangeBatchRepository extends JpaRepository<ArrangeBatch,Integ
     @Query("DELETE FROM ArrangeBatch ab WHERE ab.clazz.id = :clazzId")
     void deleteByClazzId(@Param("clazzId") Integer clazzId);
     List<ArrangeBatch> findAllByClazzId(Integer clazzId);
+
+    @Query("SELECT a FROM ArrangeBatch a WHERE a.student.id = :studentId AND a.clazz.id = :clazzId")
+    ArrangeBatch findArrangeBatchByStudentIdAndClazzId (@Param("studentId") Integer studentId,
+                                                        @Param("clazzId") Integer clazzId);
 }
