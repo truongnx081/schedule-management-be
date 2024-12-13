@@ -137,6 +137,7 @@ public class StudyInServiceImpl implements StudyInService {
         StudyIn studyIn = new StudyIn();
         studyIn.setStudent(student);
         studyIn.setClazz(clazz);
+        studyIn.setPaid(false);
         studyInRepository.save(studyIn);
 
         return studyInMapper.toDTO(studyIn);
