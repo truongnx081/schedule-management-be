@@ -101,8 +101,6 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
                 throw new AppUnCheckedException("Bạn không có quyền xóa đợt thi của lớp này!", HttpStatus.FORBIDDEN);
             }
         }
-
-        // Xóa tất cả ArrangeBatch liên quan đến Clazz
         arrangeBatchRepository.deleteByClazzId(clazzId);
 
     }
