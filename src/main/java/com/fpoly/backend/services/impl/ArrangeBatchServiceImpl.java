@@ -127,11 +127,9 @@ public class ArrangeBatchServiceImpl implements ArrangeBatchService {
             arrangeBatch.setBatch(batch);
 
             arrangeBatchRepository.save(arrangeBatch);
-
-
         }
 
-        return null;
+        return arrangeBatchDTOS;
     }
 
 }
