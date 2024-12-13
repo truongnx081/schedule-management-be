@@ -17,6 +17,11 @@ public class MarkColumn extends AbstractEntity<Integer>{
     @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
+    @Column(name = "final_mark")
+    private boolean finalMarks;
+
+    @Column(name = "manage_by_instructor")
+    private boolean manageByInstructor;
 
     @JsonIgnore
     @OneToMany(mappedBy = "markColumn", fetch = FetchType.LAZY)
