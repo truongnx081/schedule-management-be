@@ -53,4 +53,14 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
             "JOIN c.schedules sc " +
             "WHERE sc.id = :scheduleId")
     List<Integer> findStudentsIdByScheduleId (@Param("scheduleId") Integer scheduleId);
+
+
+    @Query("SELECT s.id as student_id," +
+            "CONCAT(s.firstName, ' ', s.lastName) as full_name," +
+            "s.code as code " +
+            "FROM Student s " +
+            "JOIN s.studyIns si " +
+            "WHERE si.clazz.id = :clazzId")
+    List<Map<String, Object>> findStudentsWithQualifyByClazzId(@Param("clazzId") Integer clazzId);
+
 }

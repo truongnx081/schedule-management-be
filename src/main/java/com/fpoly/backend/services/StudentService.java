@@ -39,4 +39,6 @@ public interface StudentService {
     List<Map<String, Object>> getAllStudentByCourse();
 
     Integer findCannotPresentStudentAmountByScheduleIdAndDateAndShift(Integer schedule, LocalDate date, Integer shift);
+
+    List<Map<String, Object>> findStudentWithQualifyByClazzId (Integer clazzId);
 }
