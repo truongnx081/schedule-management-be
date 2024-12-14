@@ -64,4 +64,31 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
             "AND rs.date = :date")
     List<Integer> findStudentShiftFromRetakeSchedule(@Param("clazzId") Integer clazzId,
                                                      @Param("date") LocalDate date);
+
+
+    @Query("SELECT c.shift.id " +
+            "FROM Clazz c " +
+            "JOIN c.schedules s " +
+            "WHERE c.instructor.id = :instructorId " +
+            "AND s.date = :date")
+    List<Integer> findBusyShitftsFromScheduleByInstructorIdAndDate(@Param("instructorId") Integer instructorId,
+                                                                   @Param("date") LocalDate date);
+
+
+    @Query("SELECT c.shift.id " +
+            "FROM Clazz c " +
+            "JOIN c.schedules s " +
+            "JOIN s.retakeSchedules rs " +
+            "WHERE c.instructor.id = :instructorId " +
+            "AND rs.date = :date")
+    List<Integer> findBusyShitftsFromRetakeScheduleByInstructorIdAndDate(@Param("instructorId") Integer instructorId,
+                                                                        @Param("date") LocalDate date);
+
+    @Query("SELECT c.shift.id " +
+            "FROM Clazz c " +
+            "JOIN c.examSchedules es " +
+            "WHERE c.instructor.id = :instructorId " +
+            "AND es.date = :date")
+    List<Integer> findBusyShitftsFromExamScheduleByInstructorIdAndDate(@Param("instructorId") Integer instructorId,
+                                                                       @Param("date") LocalDate date);
 }
