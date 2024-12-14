@@ -10,50 +10,54 @@ import java.util.Map;
 
 
 public interface StudyResultRepository extends JpaRepository<StudyResult,Integer> {
-    @Query("SELECT " +
-            "    s.code AS subject_code, " +
-            "    s.name AS subject_name, " +
-            "    s.credits AS credits, " +
-            "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS mark_average, " +
-            "    s.id AS subject_id, " +
-            "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(cl.code, null) " + // COALESCE thay cho null để tránh VARBINARY
-            "        ELSE null " +
-            "    END) AS clazz_code, " +
-            "MAX(CASE WHEN sti.clazz.id IS NOT NULL THEN CAST(cl.id AS INTEGER) ELSE NULL END) AS clazz_id, "+
-            "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(bl.block, null) " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE null " +
-            "    END) AS block, " +
-            "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(se.semester, null) " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE null " +
-            "    END) AS semester, " +
-            "    MAX(CASE " +
-            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, null) " + // COALESCE để đảm bảo kiểu so sánh
-            "        ELSE null " +
-            "    END) AS year " +
-            "FROM Subject s " +
-            "JOIN s.applyFors af " +
-            "JOIN af.educationProgram ep " +
-            "JOIN ep.students st " +
-            "LEFT JOIN s.clazzes cl " +
-            "JOIN cl.studyIns sti " +
-            "LEFT JOIN sti.studyResults str " +
-            "LEFT JOIN cl.block bl " +
-            "LEFT JOIN cl.semester se " +
-            "LEFT JOIN cl.year yr " +
-            "WHERE st.id = :studentId " +
-            "GROUP BY s.id, s.code, s.name, s.credits ")
-    List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
+
+//    @Query("SELECT " +
+//            "    s.code AS subject_code, " +
+//            "    s.name AS subject_name, " +
+//            "    s.credits AS credits, " +
+//            "    COALESCE(SUM(str.marked * str.percentage) / 100, NULL) AS mark_average, " +
+//            "    s.id AS subject_id, " +
+//            "    MAX(CASE " +
+//            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(cl.code, null) " + // COALESCE thay cho null để tránh VARBINARY
+//            "        ELSE null " +
+//            "    END) AS clazz_code, " +
+//            "MAX(CASE WHEN sti.clazz.id IS NOT NULL THEN CAST(cl.id AS INTEGER) ELSE NULL END) AS clazz_id, "+
+//            "    MAX(CASE " +
+//            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(bl.block, null) " + // COALESCE để đảm bảo kiểu so sánh
+//            "        ELSE null " +
+//            "    END) AS block, " +
+//            "    MAX(CASE " +
+//            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(se.semester, null) " + // COALESCE để đảm bảo kiểu so sánh
+//            "        ELSE null " +
+//            "    END) AS semester, " +
+//            "    MAX(CASE " +
+//            "        WHEN sti.clazz.id IS NOT NULL THEN COALESCE(yr.year, null) " + // COALESCE để đảm bảo kiểu so sánh
+//            "        ELSE null " +
+//            "    END) AS year " +
+//            "FROM Subject s " +
+//            "JOIN s.applyFors af " +
+//            "JOIN af.educationProgram ep " +
+//            "JOIN ep.students st " +
+//            "LEFT JOIN s.clazzes cl " +
+//            "JOIN cl.studyIns sti " +
+//            "LEFT JOIN sti.studyResults str " +
+//            "LEFT JOIN cl.block bl " +
+//            "LEFT JOIN cl.semester se " +
+//            "LEFT JOIN cl.year yr " +
+//            "WHERE st.id = :studentId " +
+//            "GROUP BY s.id, s.code, s.name, s.credits ")
+//    List<Map<String, Object>> getAllStudyResultByStudentId(@Param("studentId") Integer studentId);
+//
+//
 
 
 
 
-
-
-    @Query("SELECT sr.id as id, sr.marked as marked, sr.percentage as percentage, sr.studyIn.id as studyIn " +
-            "FROM StudyResult sr JOIN sr.studyIn s " +
+    @Query("SELECT sr.id as id, sr.marked as marked, sm.percentage as percentage, sr.studyIn.id as studyIn " +
+            "FROM StudyResult sr " +
+            "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
+            "JOIN sr.studyIn s " +
             "WHERE sr.studyIn.id = :studyInId")
     List<Map<String, Object>> findAllByStudyInIdOfStudent(
             @Param("studyInId") Integer studyInId
@@ -81,7 +85,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "JOIN m.subjectMarks s " +
             "WHERE st.student.id = :studentId " +
             "GROUP BY s.subject.id " +
-            "HAVING SUM(str.marked * str.percentage) / 100 >= 5")
+            "HAVING SUM(str.marked * s.percentage) / 100 >= 5")
     Integer countSubjectPassByStudent(@Param("studentId") Integer studentId);
 
 
@@ -89,7 +93,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
 
     @Query("SELECT  " +
                   "mcs.name AS markColumnName, " +
-                  "srs.marked AS mark, srs.percentage AS percentage " +
+                  "srs.marked AS mark, sms.percentage AS percentage " +
                   "FROM StudyResult srs " +
                   "JOIN srs.studyIn sis " +
                   "JOIN srs.markColumn mcs " +
@@ -97,6 +101,7 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
                   "JOIN sis.student std " +
                   "JOIN czs.subject sus " +
                   "JOIN czs.instructor ins " +
+                  "JOIN mcs.subjectMarks sms " +
                   "WHERE czs.id = :clazzId AND sus.id = :subjectId AND std.id = :studentId")
     List<Map<String, Object>> getAllMarkDetail(@Param("clazzId")Integer clazzId,
                                                @Param("subjectId")Integer subjectId,
@@ -117,14 +122,17 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
 
 
 
-    @Query("SELECT COALESCE(SUM(sr.marked * sr.percentage) / 100, NULL) AS mark_average " +
+    @Query("SELECT COALESCE(SUM(sr.marked * sm.percentage) / 100, NULL) AS mark_average " +
             "FROM StudyResult sr " +
+            "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
             "WHERE sr.studyIn.id = :studyInId")
     Double findAverangeMarkByStudyInId (@Param("studyInId") Integer studyInId);
 
-    @Query("SELECT mc.name as mark_column_name, sr.percentage as percentage, sr.marked as marked " +
+    @Query("SELECT mc.name as mark_column_name, sm.percentage as percentage, sr.marked as marked " +
             "FROM StudyResult sr " +
             "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
             "WHERE sr.studyIn.id = :studyInId")
     List<Map<String, Object>> findAllMarkDetailByStudyInId (@Param("studyInId") Integer studyInId);
 
@@ -136,6 +144,16 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "JOIN sr.markColumn mc " +
             "WHERE si.id = :studyInId")
     List<Map<String, Object>>findStudyResultByStudyInId(@Param("studyInId") Integer studyInId);
+
+
+    @Query("SELECT SUM(sr.marked * sm.percentage) " +
+            "FROM StudyResult sr " +
+            "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
+            "WHERE sr.studyIn.id = :studyInId " +
+            "AND mc.finalMarks = false " +
+            "AND mc.qualify = false")
+    Double findProgressMarkByStudyInId(@Param("studyInId") Integer studyInId);
 
 
 }

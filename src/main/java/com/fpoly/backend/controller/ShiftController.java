@@ -57,4 +57,20 @@ public class ShiftController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
         }
     }
+
+    @GetMapping("/available-shift")
+    public ResponseEntity<Response> getAvailableShiftsByInstructorIdAndDate(
+            @RequestParam("date") LocalDate date
+    )
+    {
+        try {
+            return ResponseEntity.ok(new Response(
+                    LocalDateTime.now(),
+                    shiftService.findAvailableShiftsByInstructorIdAndDate(date),
+                    "Lấy ca học trống thành công",
+                    HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

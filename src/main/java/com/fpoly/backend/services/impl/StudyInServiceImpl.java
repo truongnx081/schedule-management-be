@@ -182,7 +182,7 @@ public class StudyInServiceImpl implements StudyInService {
                     for (Integer weekDay : weekDays){
                         if (weekDay.equals(duplicatedClazzWeekDay)){
                             Clazz duplicatedShiftClazz = clazzRepository.findById(dulicatedShiftClazzId).get();
-                            throw new AppUnCheckedException("Không thể đăng ký môn học do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + "ca: "
+                            throw new AppUnCheckedException("Không thể đăng ký môn học do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + " ca: "
                                     + duplicatedShiftClazz.getShift().getId(), HttpStatus.NOT_ACCEPTABLE);
                         }
                     }
@@ -190,7 +190,9 @@ public class StudyInServiceImpl implements StudyInService {
             }
         }
 
-        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, oldClazzId);
+        Integer clazzId = oldClazzId;
+
+        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, clazzId);
         studyIn.setStudent(student);
         studyIn.setClazz(newClazz);
         studyInRepository.save(studyIn);

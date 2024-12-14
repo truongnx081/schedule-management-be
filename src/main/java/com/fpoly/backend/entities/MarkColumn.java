@@ -23,6 +23,9 @@ public class MarkColumn extends AbstractEntity<Integer>{
     @Column(name = "manage_by_instructor")
     private boolean manageByInstructor;
 
+    @Column(name = "qualify")
+    private boolean qualify;
+
     @JsonIgnore
     @OneToMany(mappedBy = "markColumn", fetch = FetchType.LAZY)
     private List<StudyResult> studyResults;

@@ -16,6 +16,14 @@ public interface SubjectMarkRepository extends JpaRepository<SubjectMark, Intege
             "sm.part as part " +
             "FROM MarkColumn mc " +
             "JOIN mc.subjectMarks sm " +
-            "WHERE sm.subject.id = :subjectId")
+            "WHERE sm.subject.id = :subjectId " +
+            "AND mc.manageByInstructor = true")
     List<Map<String, Object>> findMarkColumnBySubjectId (@Param("subjectId") Integer subjectId);
+
+    @Query("SELECT SUM(sm.percentage) " +
+            "FROM SubjectMark sm " +
+            "WHERE sm.subject.id = :subjectId " +
+            "AND sm.markColumn.finalMarks = false " +
+            "AND sm.markColumn.qualify = true")
+    Double findProgressPercentageBySubjectId(@Param("subjectId") Integer subjectId);
 }
