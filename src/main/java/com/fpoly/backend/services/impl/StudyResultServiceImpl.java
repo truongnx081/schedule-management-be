@@ -264,6 +264,7 @@ public class StudyResultServiceImpl implements StudyResultService {
             if (studyInsId.isEmpty()){
                 studyHistory.put("status","Chưa học");
             } else {
+                System.out.println(studyInsId.toString());
                 for (Integer studyInId : studyInsId){
                     StudyIn studyIn = studyInRepository.findById(studyInId).get();
                     Clazz clazz = studyIn.getClazz();
@@ -271,7 +272,9 @@ public class StudyResultServiceImpl implements StudyResultService {
                     String semester = clazz.getSemester().getSemester();
                     Integer year = clazz.getYear().getYear();
                     String clazzCode = clazz.getCode();
-                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId);
+                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId, subjectId);
+                    System.out.println(averageMark);
+                    System.out.println(studyInId);
                     if (block.equals(currentBlock) && semester.equals(currentSemester) && year.equals(currentYear)){
                         studyHistory.put("status", "Đang học");
                     } else {
@@ -312,7 +315,7 @@ public class StudyResultServiceImpl implements StudyResultService {
                     Integer block = clazz.getBlock().getBlock();
                     String semester = clazz.getSemester().getSemester();
                     Integer year = clazz.getYear().getYear();
-                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId);
+                    Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId, subjectId);
                     if (block.equals(currentBlock) && semester.equals(currentSemester) && year.equals(currentYear)){
                         studyHistory.put("status", "Đang học");
                     } else {
@@ -329,9 +332,10 @@ public class StudyResultServiceImpl implements StudyResultService {
 
     @Override
     public List<Map<String, Object>> findMarkDetailByStudyInId(Integer studyInId) {
-        List<Map<String, Object>> markDetail = studyResultRepository.findAllMarkDetailByStudyInId(studyInId);
+        Integer subjectId = subjectRepository.findSubjectIdByStudyInId(studyInId);
+        List<Map<String, Object>> markDetail = studyResultRepository.findAllMarkDetailByStudyInId(studyInId, subjectId);
         Map<String, Object> averageMark = new HashMap<>();
-        averageMark.put("average_mark", studyResultRepository.findAverangeMarkByStudyInId(studyInId));
+        averageMark.put("average_mark", studyResultRepository.findAverangeMarkByStudyInId(studyInId, subjectId));
         markDetail.add(averageMark);
         return markDetail;
     }
@@ -344,7 +348,7 @@ public class StudyResultServiceImpl implements StudyResultService {
                 .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học", HttpStatus.NOT_FOUND));
         StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, clazzId);
         if (studyIn == null){
-            throw new AppUnCheckedException("Sinh viênkhông học trong lớp này!!", HttpStatus.NOT_FOUND);
+            throw new AppUnCheckedException("Sinh viên không học trong lớp này!!", HttpStatus.NOT_FOUND);
         }
         Integer studyInId = studyIn.getId();
 

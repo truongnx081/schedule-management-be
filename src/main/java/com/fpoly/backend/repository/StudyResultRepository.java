@@ -126,15 +126,19 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "FROM StudyResult sr " +
             "JOIN sr.markColumn mc " +
             "JOIN mc.subjectMarks sm " +
-            "WHERE sr.studyIn.id = :studyInId")
-    Double findAverangeMarkByStudyInId (@Param("studyInId") Integer studyInId);
+            "WHERE sr.studyIn.id = :studyInId " +
+            "AND sm.subject.id = :subjectId")
+    Double findAverangeMarkByStudyInId (@Param("studyInId") Integer studyInId,
+                                        @Param("subjectId") Integer subjectId);
 
     @Query("SELECT mc.name as mark_column_name, sm.percentage as percentage, sr.marked as marked " +
             "FROM StudyResult sr " +
             "JOIN sr.markColumn mc " +
             "JOIN mc.subjectMarks sm " +
-            "WHERE sr.studyIn.id = :studyInId")
-    List<Map<String, Object>> findAllMarkDetailByStudyInId (@Param("studyInId") Integer studyInId);
+            "WHERE sr.studyIn.id = :studyInId " +
+            "AND sm.subject.id = :subjectId")
+    List<Map<String, Object>> findAllMarkDetailByStudyInId (@Param("studyInId") Integer studyInId,
+                                                            @Param("subjectId") Integer subjectId);
 
     @Query("SELECT mc.id as mark_column_id," +
             "mc.name as mark_column_name," +

@@ -164,7 +164,7 @@ public class StudyInServiceImpl implements StudyInService {
 
         Integer amout = studyInRepository.countStudentByClazzId(newClazz.getId());
         if(amout >= newClazz.getQuantity()){
-            throw new AppUnCheckedException("Không thể đăng ký môn học do đã đủ số lượng", HttpStatus.NOT_ACCEPTABLE);
+            throw new AppUnCheckedException("Không thể đổi lớp do lớp đã đủ số lượng", HttpStatus.NOT_ACCEPTABLE);
         }
 
 
@@ -182,7 +182,7 @@ public class StudyInServiceImpl implements StudyInService {
                     for (Integer weekDay : weekDays){
                         if (weekDay.equals(duplicatedClazzWeekDay)){
                             Clazz duplicatedShiftClazz = clazzRepository.findById(dulicatedShiftClazzId).get();
-                            throw new AppUnCheckedException("Không thể đăng ký môn học do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + " ca: "
+                            throw new AppUnCheckedException("Không thể đổi lớp do trùng ca với lớp: " + duplicatedShiftClazz.getCode() + " - ca: "
                                     + duplicatedShiftClazz.getShift().getId(), HttpStatus.NOT_ACCEPTABLE);
                         }
                     }
