@@ -98,5 +98,8 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
     @Query("SELECT s.code as subject_code, s.name as subject_name, s.credits as credits FROM Subject s WHERE s.id = :id")
     Map<String,Object> findSubjectCodeAndNameAndCreditsById(@Param("id") Integer id);
 
+    @Query("SELECT si.clazz.subject.id FROM StudyIn si WHERE si.id = :studyInId")
+    Integer findSubjectIdByStudyInId(@Param("studyInId") Integer studyInId);
+
 
 }
