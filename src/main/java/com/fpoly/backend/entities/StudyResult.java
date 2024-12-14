@@ -15,8 +15,8 @@ public class StudyResult extends AbstractEntity<Integer>{
     private Double marked;
 
 
-    @Column(name = "percentage")
-    private Double percentage;
+//    @Column(name = "percentage")
+//    private Double percentage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mark_column_id")
