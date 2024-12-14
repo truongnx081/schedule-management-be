@@ -15,4 +15,6 @@ public interface ShiftService {
 
     public List<ShiftDTO> getAvailableShifts(Integer clazzId, LocalDate date);
 
+    List<ShiftDTO> findAvailableShiftsByInstructorIdAndDate(LocalDate date);
+
 }

@@ -1,6 +1,7 @@
 package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.ShiftDTO;
+import com.fpoly.backend.entities.Instructor;
 import com.fpoly.backend.mapper.ShiftMapper;
 import com.fpoly.backend.repository.ShiftRepository;
 import com.fpoly.backend.services.IdentifyUserAccessService;
@@ -51,6 +52,28 @@ public class ShiftServiceImpl implements ShiftService {
         bookedShifts.addAll(studentShiftsFromSchedule);
         bookedShifts.addAll(studentShiftsFromExamSchedule);
         bookedShifts.addAll(studentShiftsFromRetakeSchedule);
+
+        List<ShiftDTO> allShiftsAvailable = getAllShift();
+
+        return allShiftsAvailable.stream()
+                .filter(shift -> !bookedShifts.contains(shift.getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ShiftDTO> findAvailableShiftsByInstructorIdAndDate(LocalDate date) {
+        Instructor instructor = identifyUserAccessService.getInstructor();
+        Integer instructorId = instructor.getId();
+
+        Set<Integer> bookedShifts = new HashSet<>();
+
+        List<Integer> instructorShiftsFromSchedule = shiftRepository.findBusyShitftsFromScheduleByInstructorIdAndDate(instructorId,date);
+        List<Integer> instructorShiftsFromExamSchedule = shiftRepository.findBusyShitftsFromExamScheduleByInstructorIdAndDate(instructorId,date);
+        List<Integer> instructorShiftsFromRetakeSchedule = shiftRepository.findBusyShitftsFromRetakeScheduleByInstructorIdAndDate(instructorId,date);
+
+        bookedShifts.addAll(instructorShiftsFromSchedule);
+        bookedShifts.addAll(instructorShiftsFromExamSchedule);
+        bookedShifts.addAll(instructorShiftsFromRetakeSchedule);
 
         List<ShiftDTO> allShiftsAvailable = getAllShift();
 
