@@ -1,6 +1,7 @@
 package com.fpoly.backend.services;
 
 import com.fpoly.backend.dto.StudyInDTO;
+import com.fpoly.backend.entities.Student;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,4 +23,7 @@ public interface StudyInService {
 
     void delete(Integer id);
 
+    void updateAllStudyInIsTrueByStudent();
+
+    List<Map<String, Object>> getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2();
 }

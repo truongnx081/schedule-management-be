@@ -74,4 +74,28 @@ public class StudyInController {
         }
     }
 
+    @PutMapping("/student")
+    public ResponseEntity<Response> updateAllStudyInIsTrueByStudent(){
+        try {
+            studyInService.updateAllStudyInIsTrueByStudent();
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), null, "Cập nhật trạng thái thanh toán thành công", HttpStatus.OK.value()));
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
+
+    @GetMapping("/student")
+    public ResponseEntity<Response> getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2(){
+        try {
+            List<Map<String, Object>> studyIns = studyInService.getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2();
+            return ResponseEntity.ok(
+                    new Response(LocalDateTime.now(),
+                            studyIns,
+                            "Lấy danh sách lớp học hiện tại của sinh viên theo học kỳ thành công", HttpStatus.OK.value()
+                    )
+            );
+        } catch (AppUnCheckedException e){
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
+        }
+    }
 }

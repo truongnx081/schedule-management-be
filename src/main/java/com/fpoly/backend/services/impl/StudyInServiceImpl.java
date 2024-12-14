@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -202,6 +203,41 @@ public class StudyInServiceImpl implements StudyInService {
         Student student = identifyUserAccessService.getStudent();
         StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(student.getId(),clazzId);
         studyInRepository.delete(studyIn);
+    }
+
+    @Override
+    public void updateAllStudyInIsTrueByStudent() {
+        Student student = identifyUserAccessService.getStudent();
+        studyInRepository.updateAllStudyInIsTrueByStudent(student);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2() {
+        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
+        Integer block = semesterProgress.getBlock().getBlock();
+        String semester = semesterProgress.getSemester().getSemester();
+        Integer year = semesterProgress.getYear().getYear();
+
+        Student student = identifyUserAccessService.getStudent();
+
+        List<Map<String,Object>> studyIns = studyInRepository.getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2(block,semester,year, student);
+
+        for (int i = 0; i < studyIns.size(); i++){
+            HashMap<String, Object> studyIn = new HashMap<>(studyIns.get(i));
+            List<String> weekDays = weekDayRepository.findWeekDayByClazzId((Integer) studyIn.get("classId"));
+            String studyDays = "";
+            for (int j = 0; j < weekDays.size(); j++){
+                if (j < weekDays.size() -1){
+                    studyDays += weekDays.get(j) + ", ";
+                } else {
+                    studyDays += weekDays.get(j);
+                }
+            }
+            studyIn.put("study_day", studyDays);
+            studyIns.set(i,studyIn);
+        }
+
+        return studyIns;
     }
 
 }

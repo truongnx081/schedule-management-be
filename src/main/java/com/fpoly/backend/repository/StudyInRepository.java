@@ -2,9 +2,11 @@ package com.fpoly.backend.repository;
 
 import com.fpoly.backend.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -54,5 +56,24 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
     List<Integer> findByStudentIdAndSubjectId (@Param("studentId") Integer studentId,
                                                @Param("subjectId") Integer subjectId,
                                                @Param("paid") Boolean paid);
+    @Transactional
+    @Modifying
+    @Query("UPDATE StudyIn si SET si.paid = true where si.student = :student")
+    void updateAllStudyInIsTrueByStudent(@Param("student") Student student);
 
+    @Query("SELECT sj.id as subjectId, sj.code as subjectCode, sj.name as subjectName, c.code as clazzCode, c.id as classId, sj.credits as credits," +
+            "ins.code as instructorCode, ins.firstName as firstName, ins.lastName as lastName, c.shift.id as shift " +
+            "FROM StudyIn si JOIN si.clazz c " +
+            "JOIN c.subject sj " +
+            "JOIN c.instructor ins " +
+            "WHERE c.block.block = :blockId " +
+            "AND c.semester.semester = :semesterId " +
+            "AND c.year.year = :yearId " +
+            "AND si.student = :student " )
+    List<Map<String, Object>> getAllIdOfStudyInByBlockAndSemesterAndYearOfStudent2(
+            @Param("blockId") Integer blockId,
+            @Param("semesterId") String semesterId,
+            @Param("yearId") Integer yearId,
+            @Param("student") Student student
+    );
 }
