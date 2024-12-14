@@ -93,12 +93,15 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
             "AND c.shift.id = :shift " +
             "AND c.block.block = :block " +
             "AND c.semester.semester = :semester " +
-            "AND c.year.year = :year")
-    List<Map<String,Object>> findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear(@Param("subjectId") Integer subjectId,
-                                                                                      @Param("shift") Integer shift,
-                                                                                      @Param("block") Integer block,
-                                                                                      @Param("semester") String semester,
-                                                                                      @Param("year") Integer year);
+            "AND c.year.year = :year " +
+            "AND c.id != :oldClazzId")
+    List<Map<String,Object>> findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYearAndOldClazzId
+                            (@Param("subjectId") Integer subjectId,
+                             @Param("shift") Integer shift,
+                             @Param("block") Integer block,
+                             @Param("semester") String semester,
+                             @Param("year") Integer year,
+                             @Param("oldClazzId") Integer oldClazzId);
 
     @Query("SELECT c.id as clazz_id," +
             "c.code as clazz_code," +
@@ -149,4 +152,18 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
                                                                     @Param("year") Integer year);
 
     Optional<Clazz> findByCodeAndYearAndSemesterAndBlockAndSubject(String code, Year year, Semester semester, Block block, Subject subject);
+
+    @Query("SELECT c.id " +
+            "FROM Clazz c " +
+            "JOIN c.studyIns si " +
+            "WHERE si.student.id = :studentId " +
+            "AND c.block.block = :block " +
+            "AND c.semester.semester = :semester " +
+            "AND c.year.year = :year " +
+            "AND c.subject.id = :subjectId")
+    Integer findClazzByStudentIdAndBlockAndSemesterAndYearAndSubjectId (@Param("studentId") Integer studentId,
+                                                                        @Param("block") Integer block,
+                                                                        @Param("semester") String semester,
+                                                                        @Param("year") Integer year,
+                                                                        @Param("subjectId") Integer subjectId);
 }

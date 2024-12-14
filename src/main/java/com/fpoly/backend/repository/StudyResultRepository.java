@@ -151,7 +151,8 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "JOIN sr.markColumn mc " +
             "JOIN mc.subjectMarks sm " +
             "WHERE sr.studyIn.id = :studyInId " +
-            "AND mc.finalMarks = false ")
+            "AND mc.finalMarks = false " +
+            "AND mc.qualify = false")
     Double findProgressMarkByStudyInId(@Param("studyInId") Integer studyInId);
 
 

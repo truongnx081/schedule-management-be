@@ -367,9 +367,12 @@ public class ClazzServiceImpl implements ClazzService {
         Integer block = semesterProgress.getBlock().getBlock();
         String semester = semesterProgress.getSemester().getSemester();
         Integer year = semesterProgress.getYear().getYear();
+        Student student = identifyUserAccessService.getStudent();
 
-        List<Map<String,Object>> clazzes = clazzRepository.findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYear
-                (subjectId, shift,block,semester,year);
+        Integer oldClazzId = clazzRepository.findClazzByStudentIdAndBlockAndSemesterAndYearAndSubjectId(student.getId(),block, semester, year, subjectId);
+
+        List<Map<String,Object>> clazzes = clazzRepository
+                .findClazzesBySubjectIdAndShiftAndBlockAndSemesterAndYearAndOldClazzId(subjectId, shift,block,semester,year, oldClazzId);
 
         for (int i = 0; i <clazzes.size(); i++){
             Map<String, Object> clazz = new HashMap<>(clazzes.get(i));
