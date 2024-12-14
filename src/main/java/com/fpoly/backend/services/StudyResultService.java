@@ -36,6 +36,8 @@ public interface StudyResultService {
 
     List<Map<String, Object>> findStudyResultByStudentIdAndClazzId (Integer studentId, Integer clazzId);
 
+    List<StudyResultDTO> update(Integer studentId, Integer clazzId, List<StudyResultDTO> studyResultDTOS);
+
 
 
 }

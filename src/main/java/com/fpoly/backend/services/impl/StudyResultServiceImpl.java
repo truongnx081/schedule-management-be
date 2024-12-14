@@ -59,6 +59,9 @@ public class StudyResultServiceImpl implements StudyResultService {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    SubjectMarkRepository subjectMarkRepository;
+
     @Override
     public Map<String, Integer> getreportLearningProgressByStudentId() {
         Integer studentId = identifyUserAccessService.getStudent().getId();
@@ -346,6 +349,54 @@ public class StudyResultServiceImpl implements StudyResultService {
         Integer studyInId = studyIn.getId();
 
         return studyResultRepository.findStudyResultByStudyInId(studyInId);
+    }
+
+    @Override
+    public List<StudyResultDTO> update(Integer studentId, Integer clazzId, List<StudyResultDTO> studyResultDTOS) {
+        String instructorCode = identifyUserAccessService.getInstructor().getCode();
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy sinh viên!!", HttpStatus.NOT_FOUND));
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học!!", HttpStatus.NOT_FOUND));
+
+        Subject subject = subjectRepository.findById(clazz.getSubject().getId())
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy môn học!!", HttpStatus.NOT_FOUND));
+
+        StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId, clazzId);
+
+        if (studyIn == null){
+            throw new AppUnCheckedException("Sinh viên không thuộc về lớp này!!", HttpStatus.NOT_FOUND);
+        }
+
+        for (StudyResultDTO studyResultDTO : studyResultDTOS){
+            Integer markColumnId = studyResultDTO.getMarkColumnId();
+            Double marked = studyResultDTO.getMarked();
+            SubjectMark subjectMark = subjectMarkRepository.findSubjectMarkBySubjectIdAndAndMarkColumnId(subject.getId(), markColumnId);
+            if(subjectMark == null){
+                throw new AppUnCheckedException("Môn học này không có cột điểm như vậy!!", HttpStatus.NOT_FOUND);
+            }
+            MarkColumn markColumn = markColumnRepository.findById(markColumnId)
+                    .orElseThrow(() -> new AppUnCheckedException("Không tồn tại cột điểm như vậy", HttpStatus.NOT_FOUND));
+
+            StudyResult studyResult = studyResultRepository.findByStudyInIdAndMarkColumnId(studyIn.getId(), markColumnId);
+            if (studyResult != null){
+                studyResult.setMarked(marked);
+                studyResult.setUpdatedBy(instructorCode);
+                studyResult.setUpdatedAt(new Date());
+            } else {
+                studyResult = new StudyResult();
+                studyResult.setStudyIn(studyIn);
+                studyResult.setMarkColumn(markColumn);
+                studyResult.setMarked(marked);
+                studyResult.setCreatedBy(instructorCode);
+                studyResult.setCreateAt(new Date());
+            }
+            studyResultRepository.save(studyResult);
+        }
+
+
+
+        return null;
     }
 
 }
