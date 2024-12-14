@@ -131,4 +131,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
     List<Schedule> findSchedulesByDateAndShiftAndStudentId (@Param("date") LocalDate date,
                                                             @Param("shift") Integer shift,
                                                             @Param("studentId") Integer studentId);
+
+    @Query("SELECT COUNT (s.id) " +
+            "FROM Schedule s " +
+            "WHERE  s.clazz.id = :clazzId")
+    Integer countScheduleByClazzId(@Param("clazzId") Integer clazzId);
 }

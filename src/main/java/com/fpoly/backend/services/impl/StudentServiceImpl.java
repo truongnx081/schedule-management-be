@@ -370,6 +370,9 @@ public class StudentServiceImpl implements StudentService {
         Clazz clazz = clazzRepository.findById(clazzId)
                 .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học!!", HttpStatus.NOT_FOUND));
         Integer subjectId = clazz.getSubject().getId();
+        Integer scheduleCount = scheduleRepository.countScheduleByClazzId(clazzId);
+
+        System.out.println(scheduleCount);
 
         for (int i = 0; i< students.size(); i++){
             Map<String, Object> student = new HashMap<String, Object>(students.get(i));
@@ -385,19 +388,23 @@ public class StudentServiceImpl implements StudentService {
 
             Double progressMark = studyResultRepository.findProgressMarkByStudyInId(studyIn.getId());
 
-            System.out.println("Study_in_id: " + studyIn.getId());
-
-            System.out.println("percent: " + progressMarkPercentage);
-            System.out.println("mark: " + progressMark);
-
-            if (progressMarkPercentage == null || progressMarkPercentage == 0 || progressMark == null){
-                student.put("batch", null);
-                student.put("qualify", false);
-                student.put("progress_mark","No mark found");
+            if (progressMarkPercentage == null || progressMarkPercentage == 0){
+                student.put("progress_mark","Môn học không có điểm quá trình");
+                if (absent > (scheduleCount/5)) {
+                    student.put("qualify", false);
+                    student.put("batch", null);
+                } else {
+                    student.put("qualify", true);
+                    ArrangeBatch arrangeBatch = arrangeBatchRepository.findArrangeBatchByStudentIdAndClazzId(studentId,clazzId);
+                    if (arrangeBatch != null) {
+                        student.put("batch", arrangeBatch.getBatch());
+                    }else {
+                        student.put("batch", null);
+                    }
+                }
                 student.put("absent", absent);
-                System.out.println("aaa");
             }else {
-                if (absent > 4 || ((progressMark / progressMarkPercentage) < 5)) {
+                if (absent > (scheduleCount/5) || ((progressMark / progressMarkPercentage) < 5)) {
                     student.put("batch", null);
                     student.put("qualify", false);
                     student.put("progress_mark", progressMark/progressMarkPercentage);
