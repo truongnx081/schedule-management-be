@@ -165,5 +165,18 @@ public class StudyResultController {
         }
     }
 
+    @PutMapping("/update-mark")
+    public ResponseEntity<Response> updateMarkForStudent(@RequestParam("studentId") Integer studentId,
+                                                         @RequestParam("clazzId") Integer clazzId,
+                                                         @RequestBody List<StudyResultDTO> studyResultDTOS) {
+        try {
+            List<StudyResultDTO> updateMark = studyResultService.update(studentId,clazzId, studyResultDTOS);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), updateMark, "Đã lấy bảng điểm thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
+
 
 }
