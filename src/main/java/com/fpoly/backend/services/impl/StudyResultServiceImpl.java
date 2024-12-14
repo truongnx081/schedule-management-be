@@ -72,11 +72,11 @@ public class StudyResultServiceImpl implements StudyResultService {
 
 
 
-    @Override
-    public List<Map<String, Object>> getAllStudyResultByStudentId() {
-        Integer studentId = identifyUserAccessService.getStudent().getId();
-            return studyResultRepository.getAllStudyResultByStudentId(studentId);
-    }
+//    @Override
+//    public List<Map<String, Object>> getAllStudyResultByStudentId() {
+//        Integer studentId = identifyUserAccessService.getStudent().getId();
+//            return studyResultRepository.getAllStudyResultByStudentId(studentId);
+//    }
 
     @Override
     public List<Map<String, Object>> findAllByStudyInId(Integer studyInId) {
@@ -126,88 +126,88 @@ public class StudyResultServiceImpl implements StudyResultService {
         return map;
     }
 
-    @Override
-    public List<Map<String, Object>> getAllMarkColumn(Integer clazzId, Integer studentId) {
-        // Lấy thông tin instructor đang đăng nhập
-        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+//    @Override
+//    public List<Map<String, Object>> getAllMarkColumn(Integer clazzId, Integer studentId) {
+//        // Lấy thông tin instructor đang đăng nhập
+//        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+//
+//        // Kiểm tra xem instructor có quản lý lớp này không
+//        boolean isInstructorOfClass = clazzRepository.existsByIdAndInstructorId(clazzId, instructorId);
+//        if (!isInstructorOfClass) {
+//            throw new AppUnCheckedException("Bạn không có quyền xem điểm cho lớp học này!", HttpStatus.FORBIDDEN);
+//        }
+//
+//        // Truy vấn dữ liệu điểm của sinh viên
+//        try {
+//            return studyResultRepository.getAllMarkColumn(clazzId, studentId);
+//        } catch (Exception e) {
+//            // Xử lý lỗi trong quá trình truy vấn
+//            throw new AppUnCheckedException("Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
-        // Kiểm tra xem instructor có quản lý lớp này không
-        boolean isInstructorOfClass = clazzRepository.existsByIdAndInstructorId(clazzId, instructorId);
-        if (!isInstructorOfClass) {
-            throw new AppUnCheckedException("Bạn không có quyền xem điểm cho lớp học này!", HttpStatus.FORBIDDEN);
-        }
+//    @Override
+//    public StudyResultDTO createStudyResult(Integer studentId, StudyResultDTO studyResultDTO) {
+//        String instructorCode = identifyUserAccessService.getInstructor().getCode();
+//        Integer instructorId = identifyUserAccessService.getInstructor().getId();
+//        StudyResult studyResult = studyResultMapper.toEntity(studyResultDTO);
+//        if (studyResultDTO.getMarkColumnId() == null || studyResultDTO.getStudyInId() == null) {
+//            throw new AppUnCheckedException("Dữ liệu đầu vào không hợp lệ!", HttpStatus.BAD_REQUEST);
+//        }
+//        boolean exists = studyResultRepository.existsByMarkColumnIdAndStudyInId(
+//                studyResultDTO.getMarkColumnId(),
+//                studyResultDTO.getStudyInId()
+//        );
+//        if (exists) {
+//            throw new AppUnCheckedException("Kết quả học tập cho sinh viên này đã tồn tại!", HttpStatus.CONFLICT);
+//        }
+//        MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
+//                .orElseThrow(()-> new AppUnCheckedException("Mark column không tồn tại !", HttpStatus.NOT_FOUND));
+//        studyResult.setMarkColumn(markColumn);
+//        StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
+//                .orElseThrow(()-> new AppUnCheckedException("Study in không tồn tại !", HttpStatus.NOT_FOUND));
+//        studyResult.setStudyIn(studyIn);
+//
+//        if(!instructorId.equals(studyResult.getStudyIn().getClazz().getInstructor().getId())){
+//            throw new AppUnCheckedException("Bạn không có quyền tạo kết quả học tập cho sinh viên này!", HttpStatus.FORBIDDEN);
+//        }
+//        studyResult.setCreatedBy(instructorCode);
+////        studyResult.setPercentage(studyResultDTO.getPercentage());
+//        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
+//    }
 
-        // Truy vấn dữ liệu điểm của sinh viên
-        try {
-            return studyResultRepository.getAllMarkColumn(clazzId, studentId);
-        } catch (Exception e) {
-            // Xử lý lỗi trong quá trình truy vấn
-            throw new AppUnCheckedException("Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @Override
+//    public StudyResultDTO updateStudyResult(Integer studyResultId, StudyResultDTO studyResultDTO) {
+//        String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
+//
+//        // Lấy StudyResult từ DB
+//        StudyResult studyResult = studyResultRepository.findById(studyResultId)
+//                .orElseThrow(() -> new AppUnCheckedException("Kết quả học tập không tồn tại!", HttpStatus.NOT_FOUND));
+//
+//        if (!studyResult.getCreatedBy().equals(currentInstructorCode)) {
+//            throw new AppUnCheckedException("Bạn không có quyền cập nhật kết quả học tập này!", HttpStatus.FORBIDDEN);
+//        }
+//        if (studyResultDTO.getMarkColumnId() != null) {
+//            MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
+//                    .orElseThrow(() -> new AppUnCheckedException("Mark column không tồn tại!", HttpStatus.NOT_FOUND));
+//            studyResult.setMarkColumn(markColumn);
+//        }
+//        if (studyResultDTO.getStudyInId() != null) {
+//            StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
+//                    .orElseThrow(() -> new AppUnCheckedException("Study in không tồn tại!", HttpStatus.NOT_FOUND));
+//            studyResult.setStudyIn(studyIn);
+//        }
+//        studyResult.setMarked(studyResultDTO.getMarked());
+//        studyResult.setPercentage(studyResultDTO.getPercentage());
+//        studyResult.setUpdatedBy(currentInstructorCode);
+//        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
+//    }
 
-    @Override
-    public StudyResultDTO createStudyResult(Integer studentId, StudyResultDTO studyResultDTO) {
-        String instructorCode = identifyUserAccessService.getInstructor().getCode();
-        Integer instructorId = identifyUserAccessService.getInstructor().getId();
-        StudyResult studyResult = studyResultMapper.toEntity(studyResultDTO);
-        if (studyResultDTO.getMarkColumnId() == null || studyResultDTO.getStudyInId() == null) {
-            throw new AppUnCheckedException("Dữ liệu đầu vào không hợp lệ!", HttpStatus.BAD_REQUEST);
-        }
-        boolean exists = studyResultRepository.existsByMarkColumnIdAndStudyInId(
-                studyResultDTO.getMarkColumnId(),
-                studyResultDTO.getStudyInId()
-        );
-        if (exists) {
-            throw new AppUnCheckedException("Kết quả học tập cho sinh viên này đã tồn tại!", HttpStatus.CONFLICT);
-        }
-        MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
-                .orElseThrow(()-> new AppUnCheckedException("Mark column không tồn tại !", HttpStatus.NOT_FOUND));
-        studyResult.setMarkColumn(markColumn);
-        StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
-                .orElseThrow(()-> new AppUnCheckedException("Study in không tồn tại !", HttpStatus.NOT_FOUND));
-        studyResult.setStudyIn(studyIn);
-
-        if(!instructorId.equals(studyResult.getStudyIn().getClazz().getInstructor().getId())){
-            throw new AppUnCheckedException("Bạn không có quyền tạo kết quả học tập cho sinh viên này!", HttpStatus.FORBIDDEN);
-        }
-        studyResult.setCreatedBy(instructorCode);
-        studyResult.setPercentage(studyResultDTO.getPercentage());
-        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
-    }
-
-    @Override
-    public StudyResultDTO updateStudyResult(Integer studyResultId, StudyResultDTO studyResultDTO) {
-        String currentInstructorCode = identifyUserAccessService.getInstructor().getCode();
-
-        // Lấy StudyResult từ DB
-        StudyResult studyResult = studyResultRepository.findById(studyResultId)
-                .orElseThrow(() -> new AppUnCheckedException("Kết quả học tập không tồn tại!", HttpStatus.NOT_FOUND));
-
-        if (!studyResult.getCreatedBy().equals(currentInstructorCode)) {
-            throw new AppUnCheckedException("Bạn không có quyền cập nhật kết quả học tập này!", HttpStatus.FORBIDDEN);
-        }
-        if (studyResultDTO.getMarkColumnId() != null) {
-            MarkColumn markColumn = markColumnRepository.findById(studyResultDTO.getMarkColumnId())
-                    .orElseThrow(() -> new AppUnCheckedException("Mark column không tồn tại!", HttpStatus.NOT_FOUND));
-            studyResult.setMarkColumn(markColumn);
-        }
-        if (studyResultDTO.getStudyInId() != null) {
-            StudyIn studyIn = studyInRepository.findById(studyResultDTO.getStudyInId())
-                    .orElseThrow(() -> new AppUnCheckedException("Study in không tồn tại!", HttpStatus.NOT_FOUND));
-            studyResult.setStudyIn(studyIn);
-        }
-        studyResult.setMarked(studyResultDTO.getMarked());
-        studyResult.setPercentage(studyResultDTO.getPercentage());
-        studyResult.setUpdatedBy(currentInstructorCode);
-        return studyResultMapper.toDTO(studyResultRepository.save(studyResult));
-    }
-
-    @Override
-    public List<Map<String, Object>> getAllMarkDetail(Integer clazzId, Integer subjectId) {
-        Integer studentId = identifyUserAccessService.getStudent().getId();
-        return studyResultRepository.getAllMarkDetail(clazzId,subjectId, studentId);
-    }
+//    @Override
+//    public List<Map<String, Object>> getAllMarkDetail(Integer clazzId, Integer subjectId) {
+//        Integer studentId = identifyUserAccessService.getStudent().getId();
+//        return studyResultRepository.getAllMarkDetail(clazzId,subjectId, studentId);
+//    }
 
     @Override
     public List<Map<String, Object>> getMarkByClazzId(Integer clazzId) {

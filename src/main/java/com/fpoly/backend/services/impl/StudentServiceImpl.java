@@ -20,14 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +38,16 @@ public class StudentServiceImpl implements StudentService {
     MajorRepository majorRepository;
     YearRepository yearRepository;
     SemesterRepository semesterRepository;
-    StudyInRepository studyInRepository;
     private final SemesterProgressService semesterProgressService;
     private final ScheduleRepository scheduleRepository;
     private final ExamScheduleRepository examScheduleRepository;
     private final RetakeScheduleRepository retakeScheduleRepository;
     private final AttendanceRepository attendanceRepository;
-
+    private final SubjectMarkRepository subjectMarkRepository;
+    private final ClazzRepository clazzRepository;
+    private final StudyInRepository studyInRepository;
+    private final StudyResultRepository studyResultRepository;
+    private final ArrangeBatchRepository arrangeBatchRepository;
     @Override
     public Student findById(Integer id) {
         return studentRepository.findById(id).orElse(null);
@@ -368,14 +367,55 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Map<String, Object>> findStudentWithQualifyByClazzId(Integer clazzId) {
         List<Map<String, Object>> students = studentRepository.findStudentsWithQualifyByClazzId(clazzId);
+        Clazz clazz = clazzRepository.findById(clazzId)
+                .orElseThrow(() -> new AppUnCheckedException("Không tìm thấy lớp học!!", HttpStatus.NOT_FOUND));
+        Integer subjectId = clazz.getSubject().getId();
 
         for (int i = 0; i< students.size(); i++){
             Map<String, Object> student = new HashMap<String, Object>(students.get(i));
             Integer studentId = (Integer) student.get("student_id");
+            StudyIn studyIn = studyInRepository.findByStudentIdAndClazzId(studentId,clazzId);
+            if (studyIn == null){
+                throw new AppUnCheckedException("Học sinh không học trong lớp này!!", HttpStatus.NOT_FOUND);
+            }
             Integer absent = attendanceRepository.findAbsentForRetakeScheduleByStudentIdAndClazzId(studentId,clazzId)
                             + attendanceRepository.findAbsentForScheduleByStudentIdAndClazzId(studentId, clazzId) ;
 
+            Double progressMarkPercentage = subjectMarkRepository.findProgressPercentageBySubjectId(subjectId);
 
+            Double progressMark = studyResultRepository.findProgressMarkByStudyInId(studyIn.getId());
+
+            System.out.println("Study_in_id: " + studyIn.getId());
+
+            System.out.println("percent: " + progressMarkPercentage);
+            System.out.println("mark: " + progressMark);
+
+            if (progressMarkPercentage == null || progressMarkPercentage == 0 || progressMark == null){
+                student.put("batch", null);
+                student.put("qualify", false);
+                student.put("progress_mark","No mark found");
+                student.put("absent", absent);
+                System.out.println("aaa");
+            }else {
+                if (absent > 4 || ((progressMark / progressMarkPercentage) < 5)) {
+                    student.put("batch", null);
+                    student.put("qualify", false);
+                    student.put("progress_mark", progressMark/progressMarkPercentage);
+                    student.put("absent", absent);
+                }
+                else{
+                    ArrangeBatch arrangeBatch = arrangeBatchRepository.findArrangeBatchByStudentIdAndClazzId(studentId,clazzId);
+                    if (arrangeBatch == null) {
+                        student.put("batch", null);
+                    } else {
+                        student.put("batch", arrangeBatch.getBatch());
+                    }
+                    student.put("qualify", true);
+                    student.put("progress_mark", progressMark/progressMarkPercentage);
+                    student.put("absent", absent);
+                }
+            }
+            students.set(i, student);
         }
         return students;
     }

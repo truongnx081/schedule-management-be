@@ -56,7 +56,7 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
 
 
     @Query("SELECT s.id as student_id," +
-            "CONCAT(s.firstName, ' ', s.lastName) as full_name," +
+            "CONCAT(s.lastName, ' ', s.firstName) as full_name," +
             "s.code as code " +
             "FROM Student s " +
             "JOIN s.studyIns si " +

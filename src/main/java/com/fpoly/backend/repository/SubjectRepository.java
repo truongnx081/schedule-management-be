@@ -50,9 +50,11 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
             "FROM Clazz c " +
             "JOIN c.studyIns si " +
             "JOIN si.studyResults sr " +
+            "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
             "WHERE si.student.id = :studentId " +
             "GROUP BY c.subject.id " +
-            "HAVING SUM(sr.marked * sr.percentage)/100 >= 5")
+            "HAVING SUM(sr.marked * sm.percentage)/100 >= 5")
     List<Integer> findPassedSubjectsIdByStudentId(@Param("studentId") Integer studentId);
 
     @Query("SELECT c.subject.id " +
@@ -86,9 +88,11 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer> {
             "FROM Clazz c " +
             "JOIN c.studyIns si " +
             "LEFT JOIN si.studyResults sr " +
+            "JOIN sr.markColumn mc " +
+            "JOIN mc.subjectMarks sm " +
             "WHERE si.student.id = :studentId " +
             "GROUP BY c.subject.id " +
-            "HAVING COALESCE(SUM(sr.marked * sr.percentage) / 100, NULL) IS NOT NULL")
+            "HAVING COALESCE(SUM(sr.marked * sm.percentage) / 100, NULL) IS NOT NULL")
     List<Integer> findStudiedSubjectByStudentId(@Param("studentId") Integer studentId);
 
     @Query("SELECT s.code as subject_code, s.name as subject_name, s.credits as credits FROM Subject s WHERE s.id = :id")
