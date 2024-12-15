@@ -70,12 +70,13 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
             "FROM Clazz c " +
             "JOIN c.schedules s " +
             "WHERE c.instructor.id = :instructorId " +
-            "AND s.date = :date")
+            "AND s.date = :date " +
+            "AND s.status=true ")
     List<Integer> findBusyShitftsFromScheduleByInstructorIdAndDate(@Param("instructorId") Integer instructorId,
                                                                    @Param("date") LocalDate date);
 
 
-    @Query("SELECT c.shift.id " +
+    @Query("SELECT rs.shift.id " +
             "FROM Clazz c " +
             "JOIN c.schedules s " +
             "JOIN s.retakeSchedules rs " +
