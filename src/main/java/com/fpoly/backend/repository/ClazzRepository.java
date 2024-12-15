@@ -166,4 +166,7 @@ public interface ClazzRepository extends JpaRepository<Clazz,Integer> {
                                                                         @Param("semester") String semester,
                                                                         @Param("year") Integer year,
                                                                         @Param("subjectId") Integer subjectId);
+
+    @Query("SELECT COUNT (c) FROM Clazz c WHERE c.year.year = :year")
+    Integer countClazzByYear(@Param("year") Integer year);
 }

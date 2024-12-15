@@ -78,4 +78,7 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
             @Param("yearId") Integer yearId,
             @Param("student") Student student
     );
+
+    @Query("SELECT si FROM StudyIn si WHERE si.clazz.year.year = :year")
+    List<StudyIn> findStudyInsByYear(@Param("year") Integer year);
 }

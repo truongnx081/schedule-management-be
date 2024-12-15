@@ -43,4 +43,7 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
     Optional<Instructor> findByCode(String code);
 
     boolean existsByCode(String code);
+
+    @Query("SELECT COUNT(i) FROM Instructor i WHERE i.status = true")
+    Integer countActiveInstructor();
 }

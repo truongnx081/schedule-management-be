@@ -166,5 +166,12 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
     StudyResult findByStudyInIdAndMarkColumnId (@Param("studyInId") Integer studyInId,
                                                 @Param("markColumnId") Integer markColumnId);
 
+    @Query("SELECT sr.marked " +
+            "FROM StudyResult sr " +
+            "WHERE sr.markColumn.id = :markColumnId " +
+            "AND sr.studyIn.id = :studyInId")
+    Double findMarkedByMarkColumnIdAndStudyInId(@Param("markColumnId") Integer markColumnId,
+                                                @Param("studyInId") Integer studyInId);
+
 
 }
