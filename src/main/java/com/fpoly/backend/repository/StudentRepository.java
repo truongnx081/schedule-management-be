@@ -63,4 +63,8 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
             "WHERE si.clazz.id = :clazzId")
     List<Map<String, Object>> findStudentsWithQualifyByClazzId(@Param("clazzId") Integer clazzId);
 
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.year.year = :year")
+    Integer countStudentsByYear(@Param("year") Integer year);
+
 }
