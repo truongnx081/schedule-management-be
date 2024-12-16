@@ -224,6 +224,7 @@ public class StudyResultServiceImpl implements StudyResultService {
             Integer studentId = (Integer) row.get("studentId");
             String markName = (String) row.get("markName");
             Object studentMark = row.get("studentMark");
+            Integer studyInId = (Integer) row.get("studyInId");
 
             // Nếu sinh viên chưa có trong kết quả, tạo mới mục cho sinh viên đó
             result.putIfAbsent(studentId, new LinkedHashMap<String, Object>() {{
@@ -231,6 +232,7 @@ public class StudyResultServiceImpl implements StudyResultService {
                 put("studentCode", row.get("studentCode"));
                 put("studentFullName", row.get("studentFullName"));
                 put("marks", new ArrayList<Map<String, Object>>());
+                put("studyInId", studyInId);
             }});
 
             // Nếu có điểm, thêm vào danh sách marks của sinh viên
