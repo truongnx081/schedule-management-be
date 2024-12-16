@@ -23,7 +23,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         try {
             final Map result = this.cloudinary.uploader()
                     .upload(file.getBytes(),
-                            Map.of("public_id", "student/" + fileName));
+                            Map.of("public_id", fileName));
             final String publicId = (String) result.get("public_id");
 
             // Chỉ lấy ID mà không cần lưu đường dẫn đầy đủ
