@@ -112,7 +112,8 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "s.student.code as studentCode, " +
             "CONCAT(s.student.lastName, ' ', s.student.firstName) as studentFullName, " +
             "sr.marked as studentMark, " +
-            "mc.name as markName " +
+            "mc.name as markName, " +
+            "s.id as studyInId " +
             "FROM Clazz c " +
             "JOIN c.studyIns s " +
             "LEFT JOIN s.studyResults sr " +
