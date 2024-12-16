@@ -39,7 +39,6 @@ public class EventController {
             } catch (AppUnCheckedException e) {
                 return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
             }
-
     }
 
     // Lấy danh sách sự kiện theo khu vực
