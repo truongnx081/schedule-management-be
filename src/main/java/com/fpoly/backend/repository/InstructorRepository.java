@@ -19,7 +19,7 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer> 
 
     @Query("SELECT " +
             "c.id as clazzId, " +
-            "s.id as scheculeId, " +
+            "s.id as scheduleId, " +
             "s.date as date, " +
             "c.code as code, " +
             "c.subject.name as subjectName, " +
