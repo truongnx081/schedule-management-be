@@ -12,5 +12,6 @@ public interface AdminService {
     Admin findById(Integer id);
     AdminDTO getAdminInfor();
 
+//    Map<String, Object> findStatistisByYear(Integer year);
     Map<String, Object> findStatistisByYear(Integer year);
 }

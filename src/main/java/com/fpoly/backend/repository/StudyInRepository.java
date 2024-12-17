@@ -1,5 +1,6 @@
 package com.fpoly.backend.repository;
 
+import com.fpoly.backend.dto.StudyResultProjection;
 import com.fpoly.backend.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -81,4 +82,19 @@ public interface StudyInRepository extends JpaRepository<StudyIn,Integer> {
 
     @Query("SELECT si FROM StudyIn si WHERE si.clazz.year.year = :year")
     List<StudyIn> findStudyInsByYear(@Param("year") Integer year);
+
+    @Query("SELECT si.id AS studyInId, " +
+            "       si.clazz.subject.id AS subjectId, " +
+            "       COALESCE(SUM(sr.marked * sm.percentage) / 100, NULL) AS averageMark, " +
+            "       mc.id AS finalMarkColumnId, " +
+            "       srFinal.marked AS finalMark " +
+            "FROM StudyIn si " +
+            "LEFT JOIN si.clazz.subject.subjectMarks sm " +
+            "LEFT JOIN sm.markColumn mc " +
+            "LEFT JOIN StudyResult sr ON sr.studyIn.id = si.id AND sr.markColumn.id = mc.id " +
+            "LEFT JOIN StudyResult srFinal ON srFinal.studyIn.id = si.id AND srFinal.markColumn.id = mc.id AND mc.finalMarks = true " +
+            "WHERE si.clazz.year.year = :year " +
+            "GROUP BY si.id, si.clazz.subject.id, mc.id, srFinal.marked")
+    List<StudyResultProjection> findStudyResultsByYear(@Param("year") Integer year);
+
 }

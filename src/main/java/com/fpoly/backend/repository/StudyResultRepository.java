@@ -1,6 +1,6 @@
 package com.fpoly.backend.repository;
 
-import com.fpoly.backend.entities.*;
+import com.fpoly.backend.entities.StudyResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -173,6 +173,4 @@ public interface StudyResultRepository extends JpaRepository<StudyResult,Integer
             "AND sr.studyIn.id = :studyInId")
     Double findMarkedByMarkColumnIdAndStudyInId(@Param("markColumnId") Integer markColumnId,
                                                 @Param("studyInId") Integer studyInId);
-
-
 }
