@@ -24,7 +24,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             "a.student.code as studentCode, " +
             "CONCAT(a.student.lastName, ' ', a.student.firstName) as fullName, " +
             "a.student.avatar as avatar," +
-            "a.present as isPresent " +
+            "a.present as present " +
             "FROM Attendance a " +
             "JOIN a.schedule s " +
             "WHERE s.clazz.id = :clazzId " +
