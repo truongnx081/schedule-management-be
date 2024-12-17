@@ -36,20 +36,6 @@ public class AdminController {
         }
     }
 
-//    @GetMapping("/statistic")
-//    public ResponseEntity<Response> getStatisticByYear(@RequestParam("year") Integer year) {
-//        try {
-//            return ResponseEntity.ok(new Response(
-//                    LocalDateTime.now(),
-//                    adminService.findStatistisByYear(year),
-//                    "Lấy thống kê thành công!!",
-//                    HttpStatus.OK.value())
-//            );
-//        } catch (AppUnCheckedException e) {
-//            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(), null, e.getMessage(), e.getStatus().value()));
-//        }
-//    }
-
     @GetMapping("/statistic")
     public ResponseEntity<Response> getStatisticByYear(@RequestParam("year") Integer year) {
         try {

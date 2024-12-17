@@ -69,58 +69,6 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.toDTO(admin);
     }
 
-//    @Override
-//    public Map<String, Object> findStatistisByYear(Integer year) {
-//        SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
-//        Integer currentYear = semesterProgress.getYear().getYear();
-//
-//
-//        Map<String, Object> statistic = new HashMap<>();
-//
-//        List<StudyIn> studyIns = studyInRepository.findStudyInsByYear(year);
-//
-//        statistic.put("registed_students", studyIns.size());
-//
-//        statistic.put("active_instructor", instructorRepository.countActiveInstructor());
-//
-//        statistic.put("clazz_amount", clazzRepository.countClazzByYear(year));
-//
-//        statistic.put("student_amout", studentRepository.countStudentsByYear(year));
-//
-//        Integer pass = 0;
-//        Integer fail = 0;
-//
-//        for (StudyIn studyIn : studyIns){
-//            Integer studyInId = studyIn.getId();
-//            Integer subjectId = subjectRepository.findSubjectIdByStudyInId(studyInId);
-//
-//            Double averageMark = studyResultRepository.findAverangeMarkByStudyInId(studyInId, subjectId);
-//
-//            if (averageMark != null) {
-//                if (averageMark < 5) {
-//                    fail++;
-//                } else {
-//                    Integer finalMarkColumnId = markColumnRepository.findFinalMarkColumnBySubjectId(subjectId);
-//                    if (finalMarkColumnId != null) {
-//                        Double finalMark = studyResultRepository.findMarkedByMarkColumnIdAndStudyInId(finalMarkColumnId, studyInId);
-//                        if (finalMark < 5) {
-//                            fail++;
-//                        } else {
-//                            pass++;
-//                        }
-//                    }
-//
-//                }
-//            }
-//        }
-//        statistic.put("pass", pass);
-//        statistic.put("fail", fail);
-//
-//
-//
-//        return statistic;
-//    }
-
     @Override
     public Map<String, Object> findStatistisByYear(Integer year) {
         SemesterProgress semesterProgress = semesterProgressRepository.findActivedProgress();
@@ -142,7 +90,7 @@ public class AdminServiceImpl implements AdminService {
         Integer pass = 0;
         Integer fail = 0;
 
-// Lấy tất cả kết quả trong một truy vấn
+        // Lấy tất cả kết quả trong một truy vấn
         List<StudyResultProjection> results = studyInRepository.findStudyResultsByYear(year);
 
         for (StudyResultProjection result : results) {
