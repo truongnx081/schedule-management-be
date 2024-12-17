@@ -27,4 +27,9 @@ public class SubjectMarkServiceImpl implements SubjectMarkService {
         Integer subjectId = clazz.getSubject().getId();
         return subjectMarkRepository.findMarkColumnBySubjectId(subjectId);
     }
+
+    @Override
+    public List<Map<String, Object>> findSubjectMarkBySubjectId(Integer subjectId) {
+        return subjectMarkRepository.findMarkColumnBySubject(subjectId);
+    }
 }

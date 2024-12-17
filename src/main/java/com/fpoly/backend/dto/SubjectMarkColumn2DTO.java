@@ -9,7 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MarkColumnDTO {
-    private Long id;
+public class SubjectMarkColumn2DTO {
+    private Integer id;
     private String name;
+    private Double percentage;
+    private Integer part;
 }

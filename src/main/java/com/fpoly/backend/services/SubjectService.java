@@ -1,6 +1,7 @@
 package com.fpoly.backend.services;
 
 import com.fpoly.backend.dto.SubjectDTO;
+import com.fpoly.backend.dto.SubjectMarkColumnDTO;
 import com.fpoly.backend.entities.Subject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,8 +19,8 @@ public interface SubjectService {
 
     List<Map<String, Object>> getSubjectDetail(Integer subjectId);
     List<Map<String, Object>> findAllSubjectByEducationProgramId(Integer educationProgramId);
-    SubjectDTO create(SubjectDTO request);
-    SubjectDTO update(SubjectDTO request, Integer subjectId);
+    void create(SubjectMarkColumnDTO request);
+    void update(SubjectMarkColumnDTO request, Integer subjectId);
     void delete(Integer subjectId);
     void importSubject(MultipartFile file);
 }

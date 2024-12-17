@@ -33,4 +33,15 @@ public class SubjectMarkController {
             return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
         }
     }
+
+    @GetMapping("/subject")
+    public ResponseEntity<Response> getSubjectMarkBySubjectId(@RequestParam("subjectId") Integer subjectId) {
+        try {
+            List<Map<String, Object>> getAllMarkColumn = subjectMarkService.findSubjectMarkBySubjectId(subjectId);
+            return ResponseEntity.ok(new Response(LocalDateTime.now(), getAllMarkColumn, "Lấy danh sách cột điểm theo môn học thành công!  ", HttpStatus.OK.value()));
+        }
+        catch (AppUnCheckedException e) {
+            return ResponseEntity.status(e.getStatus()).body(new Response(LocalDateTime.now(),null,e.getMessage(),e.getStatus().value()));
+        }
+    }
 }

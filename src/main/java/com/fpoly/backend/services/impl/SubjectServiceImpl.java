@@ -1,11 +1,13 @@
 package com.fpoly.backend.services.impl;
 
 import com.fpoly.backend.dto.SubjectDTO;
-import com.fpoly.backend.entities.Event;
-import com.fpoly.backend.entities.Specialization;
-import com.fpoly.backend.entities.Subject;
+import com.fpoly.backend.dto.SubjectMarkColumn2DTO;
+import com.fpoly.backend.dto.SubjectMarkColumnDTO;
+import com.fpoly.backend.entities.*;
 import com.fpoly.backend.mapper.SubjectMapper;
+import com.fpoly.backend.repository.MarkColumnRepository;
 import com.fpoly.backend.repository.SpecializationRepository;
+import com.fpoly.backend.repository.SubjectMarkRepository;
 import com.fpoly.backend.repository.SubjectRepository;
 import com.fpoly.backend.services.IdentifyUserAccessService;
 import com.fpoly.backend.services.SubjectService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,10 @@ public class SubjectServiceImpl implements SubjectService {
     private IdentifyUserAccessService identifyUserAccessService;
     @Autowired
     private ExcelUtility excelUtility;
+    @Autowired
+    private SubjectMarkRepository subjectMarkRepository;
+    @Autowired
+    private MarkColumnRepository markColumnRepository;
 
     @Override
     public Subject findById(Integer id) {
@@ -60,46 +67,102 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public SubjectDTO create(SubjectDTO request) {
-        Subject subject = subjectMapper.toEntity(request);
+    public void create(SubjectMarkColumnDTO request) {
+//        try {
+            Subject subject = subjectMapper.toEntity(request.getSubjectDTO());
 
-        if(request.getRequiredId() != 0){
-            Subject subjectRequired = subjectRepository.findById(request.getRequiredId()).orElseThrow(()->
-                    new RuntimeException("Môn học này không tồn tại"));
-            subject.setRequired(subjectRequired);
-        }
+            if(subjectRepository.existsByCode(request.getSubjectDTO().getCode()))
+                throw new RuntimeException("Mã môn " +request.getSubjectDTO().getCode()+" này đã tồn tại");
 
-        Specialization specialization = specializationRepository.findById(request.getSpecializationId()).orElseThrow(()->
-                new RuntimeException("Bộ môn này không tồn tại"));
+            if(request.getSubjectDTO().getRequiredId() != 0){
+                Subject subjectRequired = subjectRepository.findById(request.getSubjectDTO().getRequiredId()).orElseThrow(()->
+                        new RuntimeException("Môn học này không tồn tại"));
+                subject.setRequired(subjectRequired);
+            }
 
-        subject.setSpecialization(specialization);
-        subject.setId(null);
-        subject.setStatus(true);
-        subject.setOffline(true);
-        subject.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+            Specialization specialization = specializationRepository.findById(request.getSubjectDTO().getSpecializationId()).orElseThrow(()->
+                    new RuntimeException("Bộ môn này không tồn tại"));
 
-        return subjectMapper.toDTO(subjectRepository.save(subject));
+            subject.setSpecialization(specialization);
+            subject.setId(null);
+            subject.setStatus(true);
+            subject.setOffline(true);
+            subject.setCreatedBy(identifyUserAccessService.getAdmin().getCode());
+
+            Subject subject1 = subjectRepository.save(subject);
+
+            List<SubjectMark> subjectMarks = new ArrayList<>();
+
+            for (SubjectMarkColumn2DTO subjectMarrkColumn : request.getItems()) {
+                SubjectMark subjectMark = new SubjectMark();
+
+                MarkColumn markColumn = markColumnRepository.findById(subjectMarrkColumn.getId()).orElseThrow(()->
+                        new RuntimeException("Cột điểm này không tồn tại"));
+
+                subjectMark.setSubject(subject1);
+                subjectMark.setMarkColumn(markColumn);
+                subjectMark.setPercentage(subjectMarrkColumn.getPercentage());
+                subjectMark.setPart(subjectMarrkColumn.getPart());
+
+                subjectMarks.add(subjectMark);
+            }
+            subjectMarkRepository.saveAll(subjectMarks);
+
+//            return true;
+//        }
+//        catch (Exception e){
+//            return false;
+//        }
+
     }
 
     @Override
-    public SubjectDTO update(SubjectDTO request, Integer subjectId) {
-        Subject subject = subjectRepository.findById(subjectId).orElseThrow(()->
-                new RuntimeException("Môn học này không tồn tại"));
+    public void update(SubjectMarkColumnDTO request, Integer subjectId) {
+//        try {
+            Subject subject = subjectRepository.findById(subjectId).orElseThrow(()->
+                    new RuntimeException("Môn học này không tồn tại"));
 
-        subjectMapper.updateSubject(subject, request);
+            subjectMapper.updateSubject(subject, request.getSubjectDTO());
 
-        if(request.getRequiredId() != 0){
-            Subject subjectRequired = subjectRepository.findById(request.getRequiredId()).orElseThrow(()->
-                    new RuntimeException("Môn học bắt buộc này không tồn tại"));
-            subject.setRequired(subjectRequired);
-        }
+            if(request.getSubjectDTO().getRequiredId() != 0){
+                Subject subjectRequired = subjectRepository.findById(request.getSubjectDTO().getRequiredId()).orElseThrow(()->
+                        new RuntimeException("Môn học bắt buộc này không tồn tại"));
+                subject.setRequired(subjectRequired);
+            }
 
-        subject.setUpdatedAt(new Date());
-        subject.setStatus(true);
-        subject.setOffline(true);
-        subject.setUpdatedBy(identifyUserAccessService.getAdmin().getCode());
+            subject.setUpdatedAt(new Date());
+            subject.setStatus(true);
+            subject.setOffline(true);
+            subject.setUpdatedBy(identifyUserAccessService.getAdmin().getCode());
+            subjectRepository.save(subject);
 
-        return subjectMapper.toDTO(subjectRepository.save(subject));
+            // Tìm kiếm tất cả subjectMark của subject
+            List<SubjectMark> subjectMarksList = subjectMarkRepository.findAllBySubject(subject);
+
+            // Xóa tất cả
+            subjectMarkRepository.deleteAll(subjectMarksList);
+
+            List<SubjectMark> subjectMarks = new ArrayList<>();
+
+            for (SubjectMarkColumn2DTO subjectMarkColumn : request.getItems()) {
+                SubjectMark subjectMark = new SubjectMark();
+
+                MarkColumn markColumn = markColumnRepository.findById(subjectMarkColumn.getId()).orElseThrow(()->
+                        new RuntimeException("Cột điểm này không tồn tại"));
+
+                subjectMark.setSubject(subject);
+                subjectMark.setMarkColumn(markColumn);
+                subjectMark.setPercentage(subjectMarkColumn.getPercentage());
+                subjectMark.setPart(subjectMarkColumn.getPart());
+
+                subjectMarks.add(subjectMark);
+            }
+            subjectMarkRepository.saveAll(subjectMarks);
+//            return true;
+//        }
+//        catch (Exception e){
+//            return false;
+//        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.fpoly.backend.controller;
 
 import com.fpoly.backend.dto.Response;
 import com.fpoly.backend.dto.SubjectDTO;
+import com.fpoly.backend.dto.SubjectMarkColumnDTO;
 import com.fpoly.backend.exception.AppUnCheckedException;
 import com.fpoly.backend.services.SubjectService;
 import com.fpoly.backend.until.ExcelUtility;
@@ -76,11 +77,12 @@ public class SubjectController {
 
     // Thêm mới môn học
     @PostMapping
-    public ResponseEntity<Response> create(@RequestBody SubjectDTO request){
+    public ResponseEntity<Response> create(@RequestBody SubjectMarkColumnDTO request){
         try {
+            subjectService.create(request);
             return ResponseEntity.ok(
                     new Response(LocalDateTime.now(),
-                            subjectService.create(request),
+                            null,
                             "Thêm mới môn học thành công",
                             HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){
@@ -90,12 +92,13 @@ public class SubjectController {
 
     // Cập nhật môn học
     @PutMapping
-    public ResponseEntity<Response> create(@RequestBody SubjectDTO request,
+    public ResponseEntity<Response> update(@RequestBody SubjectMarkColumnDTO request,
                                            @RequestParam Integer subjectId){
         try {
+            subjectService.update(request, subjectId);
             return ResponseEntity.ok(
                     new Response(LocalDateTime.now(),
-                            subjectService.update(request, subjectId),
+                            null,
                             "Cập nhật môn học thành công",
                             HttpStatus.OK.value()));
         } catch (AppUnCheckedException e){

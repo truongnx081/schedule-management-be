@@ -9,4 +9,5 @@ import java.util.Map;
 public interface SubjectMarkService {
 
     List<Map<String, Object>> findSubjectMarkByClazzId(Integer clazzId);
+    List<Map<String, Object>> findSubjectMarkBySubjectId(Integer subjectId);
 }
