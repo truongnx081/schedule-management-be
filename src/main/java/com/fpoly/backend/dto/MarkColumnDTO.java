@@ -12,4 +12,5 @@ import lombok.Setter;
 public class MarkColumnDTO {
     private Long id;
     private String name;
+    private boolean final_mark;
 }
